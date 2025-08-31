@@ -447,7 +447,7 @@ def calculate_vehicle_costs():
             f'${cost_difference:.0f}'
         ],
         'Description': [
-            'Higher depreciation on more expensive Lucid vs RDX',
+            'Lower depreciation on Lucid vs RDX (incentives reduce cost)',
             'Lease interest (money factor) vs loan interest',
             'Higher property tax on more expensive Lucid',
             'Higher insurance on luxury EV',
