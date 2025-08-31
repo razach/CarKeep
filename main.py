@@ -318,7 +318,7 @@ class VehicleCostCalculator:
         maintenance_diff = (self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) - self.cost_config.maintenance_monthly.get(vehicle1_config.name, 0)) * 36
         fuel_diff = (self.cost_config.fuel_monthly.get(vehicle2_config.name, 0) - self.cost_config.fuel_monthly.get(vehicle1_config.name, 0)) * 36
         equity_diff = 0 - (vehicle1_config.values_3yr[-1] - vehicle1_config.impairment)
-        investment_opp_diff = 0 - investment_opportunity
+        investment_opp_diff = investment_opportunity  # RDX gets investment opportunity, Lucid doesn't - this makes Lucid less attractive
         
         # Calculate 3-year totals for cost difference calculation
         vehicle1_loan_payments = loan_config.principal_balance + total_interest_paid
