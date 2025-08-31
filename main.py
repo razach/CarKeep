@@ -317,7 +317,7 @@ class VehicleCostCalculator:
         insurance_diff = (self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) - self.cost_config.insurance_monthly.get(vehicle1_config.name, 0)) * 36
         maintenance_diff = (self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) - self.cost_config.maintenance_monthly.get(vehicle1_config.name, 0)) * 36
         fuel_diff = (self.cost_config.fuel_monthly.get(vehicle2_config.name, 0) - self.cost_config.fuel_monthly.get(vehicle1_config.name, 0)) * 36
-        equity_diff = 0 - (vehicle1_config.values_3yr[-1] - vehicle1_config.impairment)
+        equity_diff = vehicle1_config.values_3yr[-1] - vehicle1_config.impairment  # RDX retains equity, Lucid doesn't - this makes Lucid less attractive
         investment_opp_diff = investment_opportunity  # RDX gets investment opportunity, Lucid doesn't - this makes Lucid less attractive
         
         # Calculate 3-year totals for cost difference calculation
@@ -339,6 +339,9 @@ class VehicleCostCalculator:
         
         cost_difference_data = {
             'Cost Component': [
+                'CONVENTION: Positive values = Lucid lease costs MORE (increases difference)',
+                'CONVENTION: Negative values = Lucid lease costs LESS (decreases difference)',
+                '',
                 'Depreciation Difference',
                 'Interest (Lease vs Loan)',
                 'Property Tax Difference',
@@ -350,6 +353,9 @@ class VehicleCostCalculator:
                 'TOTAL COST DIFFERENCE'
             ],
             'Amount': [
+                '',
+                '',
+                '',
                 f'${depreciation_diff:.0f}',
                 f'${interest_diff:.0f}',
                 f'${property_tax_diff:.0f}',
@@ -361,6 +367,9 @@ class VehicleCostCalculator:
                 f'${total_cost_difference:.0f}'
             ],
             'Description': [
+                '',
+                '',
+                '',
                 f'Lower depreciation on {vehicle2_config.name} vs {vehicle1_config.name} (incentives reduce cost)',
                 'Lease interest (money factor) vs loan interest',
                 f'Higher property tax on more expensive {vehicle2_config.name}',
