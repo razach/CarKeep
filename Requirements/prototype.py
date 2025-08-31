@@ -421,7 +421,7 @@ def calculate_vehicle_costs():
     maintenance_diff = lucid_maintenance_total - rdx_maintenance_total
     fuel_diff = lucid_electricity_total - rdx_fuel_total
     equity_diff = lucid_equity_end - (-rdx_equity_end)  # Lucid has 0 equity, RDX has positive equity
-    investment_opp_diff = 0 - total_investment_opportunity  # RDX gets investment opportunity, Lucid doesn't
+    investment_opp_diff = total_investment_opportunity  # RDX gets investment opportunity, Lucid doesn't - this makes Lucid less attractive
     
     cost_difference_breakdown = {
         'Cost Component': [
