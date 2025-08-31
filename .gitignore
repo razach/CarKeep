@@ -142,3 +142,7 @@ Desktop.ini
 *.sqlite
 logs/
 temp/
+
+# Generated CSV files
+prototype_results/
+*.csv
