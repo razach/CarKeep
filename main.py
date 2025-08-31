@@ -361,7 +361,7 @@ class VehicleCostCalculator:
                 f'${total_cost_difference:.0f}'
             ],
             'Description': [
-                f'Higher depreciation on more expensive {vehicle2_config.name} vs {vehicle1_config.name}',
+                f'Lower depreciation on {vehicle2_config.name} vs {vehicle1_config.name} (incentives reduce cost)',
                 'Lease interest (money factor) vs loan interest',
                 f'Higher property tax on more expensive {vehicle2_config.name}',
                 f'Higher insurance on luxury EV',
