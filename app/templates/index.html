@@ -80,6 +80,10 @@
                             data-tooltip="Create a copy of this scenario">
                         📋 Duplicate
                     </button>
+                    <button class="btn btn-danger" onclick="deleteScenario('{{ scenario_name }}', '{{ scenario_data.description }}')" 
+                            data-tooltip="Delete this scenario">
+                        🗑️ Delete
+                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -111,4 +115,156 @@
         </div>
     </div>
 </div>
+
+<script>
+function duplicateScenario(scenarioName) {
+    // TODO: Implement scenario duplication
+    alert('Scenario duplication coming soon!');
+}
+
+function deleteScenario(scenarioName, description) {
+    if (confirm(`Are you sure you want to delete "${description}"?\n\nThis action cannot be undone.`)) {
+        // Show loading state
+        const deleteBtn = event.target;
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = '🗑️ Deleting...';
+        deleteBtn.disabled = true;
+        
+        // Make delete request
+        fetch(`/scenario/${scenarioName}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the scenario card from the UI
+                const scenarioCard = document.querySelector(`[data-scenario="${scenarioName}"]`);
+                if (scenarioCard) {
+                    scenarioCard.remove();
+                }
+                
+                // Update the total scenarios count
+                updateScenarioCounts();
+                
+                // Show success message
+                showNotification('Scenario deleted successfully!', 'success');
+            } else {
+                showNotification(data.message || 'Failed to delete scenario', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while deleting the scenario', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            deleteBtn.innerHTML = originalText;
+            deleteBtn.disabled = false;
+        });
+    }
+}
+
+function updateScenarioCounts() {
+    // Update the total scenarios count
+    const scenarioCards = document.querySelectorAll('.scenario-card');
+    const totalScenarios = document.querySelector('.stat-card .stat-number');
+    if (totalScenarios) {
+        totalScenarios.textContent = scenarioCards.length;
+    }
+    
+    // Update lease/loan counts
+    const leaseCount = document.querySelectorAll('.scenario-card .type.lease').length;
+    const loanCount = document.querySelectorAll('.scenario-card .type.loan').length;
+    
+    const leaseStat = document.querySelectorAll('.stat-card .stat-number')[1];
+    const loanStat = document.querySelectorAll('.stat-card .stat-number')[2];
+    
+    if (leaseStat) leaseStat.textContent = leaseCount;
+    if (loanStat) loanStat.textContent = loanCount;
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.notification-success {
+    background: #27ae60;
+}
+
+.notification-error {
+    background: #e74c3c;
+}
+
+.notification-info {
+    background: #3498db;
+}
+
+.notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.notification button:hover {
+    opacity: 0.8;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+    border: 1px solid #e74c3c;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-danger:disabled {
+    background: #95a5a6;
+    border-color: #95a5a6;
+    cursor: not-allowed;
+}
+</style>
 {% endblock %}
