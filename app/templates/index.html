@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - Vehicle Cost Scenarios{% endblock %}
+
+{% block content %}
+<div class="scenarios-list">
+    <h1>Vehicle Cost Scenarios</h1>
+    
+    <div class="baseline-info">
+        <h2>Baseline: {{ baseline.vehicle.name }}</h2>
+        <p>{{ baseline.description }}</p>
+        <p>State: {{ baseline.state }}</p>
+    </div>
+    
+    <div class="scenarios-grid">
+        {% for scenario_name, scenario_data in scenarios.items() %}
+        <div class="scenario-card">
+            <h3>{{ scenario_data.description }}</h3>
+            <div class="scenario-meta">
+                <span class="type {{ scenario_data.scenario.type }}">
+                    {{ scenario_data.scenario.type|title }}
+                </span>
+                <span class="vehicle">{{ scenario_data.scenario.vehicle.name }}</span>
+            </div>
+            <div class="scenario-actions">
+                <a href="{{ url_for('main.view_scenario', scenario_name=scenario_name) }}" 
+                   class="btn btn-primary">View Results</a>
+                <button class="btn btn-secondary" onclick="editScenario('{{ scenario_name }}')">
+                    Edit
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="actions">
+        <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">
+            Create New Scenario
+        </a>
+        <a href="{{ url_for('main.comparison_matrix') }}" class="btn btn-info">
+            View Comparison Matrix
+        </a>
+    </div>
+</div>
+{% endblock %}

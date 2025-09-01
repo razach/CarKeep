@@ -1,0 +1,20 @@
+# CarKeep Web Application Dependencies
+
+# Core Flask dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Data processing (existing core functionality)
+pandas==2.3.2
+numpy==2.3.2
+
+# Development tools
+python-dotenv==1.0.0
+Flask-DebugToolbar==0.13.1
+
+# Testing (optional)
+pytest==7.4.2
+pytest-flask==1.2.0
+
+# Production (optional)
+gunicorn==21.2.0

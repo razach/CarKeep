@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - Create New Scenario{% endblock %}
+
+{% block content %}
+<div class="create-scenario">
+    <div class="create-header">
+        <h1>Create New Scenario</h1>
+        <p>Add a new vehicle cost comparison scenario</p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+    </div>
+    
+    <div class="create-form">
+        <form method="POST" action="{{ url_for('main.create_scenario') }}">
+            <div class="form-section">
+                <h3>Basic Information</h3>
+                <div class="form-group">
+                    <label for="scenario_name">Scenario Name:</label>
+                    <input type="text" id="scenario_name" name="scenario_name" required 
+                           placeholder="e.g., new_tesla_model_3">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required 
+                              placeholder="Brief description of the scenario"></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Vehicle Details</h3>
+                <div class="form-group">
+                    <label for="vehicle_name">Vehicle Name:</label>
+                    <input type="text" id="vehicle_name" name="vehicle_name" required 
+                           placeholder="e.g., Tesla Model 3">
+                </div>
+                <div class="form-group">
+                    <label for="msrp">MSRP:</label>
+                    <input type="number" id="msrp" name="msrp" required 
+                           placeholder="e.g., 45000">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Financing</h3>
+                <div class="form-group">
+                    <label for="financing_type">Financing Type:</label>
+                    <select id="financing_type" name="financing_type" required>
+                        <option value="lease">Lease</option>
+                        <option value="loan">Loan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="monthly_payment">Monthly Payment:</label>
+                    <input type="number" id="monthly_payment" name="monthly_payment" required 
+                           placeholder="e.g., 500" step="0.01">
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Create Scenario</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

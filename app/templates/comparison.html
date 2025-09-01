@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - Comparison Matrix{% endblock %}
+
+{% block content %}
+<div class="comparison-view">
+    <div class="comparison-header">
+        <h1>Comparison Matrix</h1>
+        <p>All scenarios compared side by side</p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+    </div>
+    
+    {% if csv_files %}
+        <div class="comparison-tables">
+            {% for filename, content in csv_files.items() %}
+            <div class="comparison-table">
+                <h2>{{ filename|replace('_', ' ')|replace('.csv', '')|title }}</h2>
+                <div class="table-container">
+                    <pre class="csv-content">{{ content }}</pre>
+                </div>
+                <a href="/download/{{ filename }}" class="btn btn-primary">Download CSV</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-comparison">
+            <p>No comparison data available. Please run the comparison matrix generation first.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

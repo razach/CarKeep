@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - {{ scenario_name }}{% endblock %}
+
+{% block content %}
+<div class="scenario-view">
+    <div class="scenario-header">
+        <h1>{{ scenario_name|replace('_', ' ')|title }}</h1>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+    </div>
+    
+    {% if results %}
+        <div class="scenario-results">
+            <h2>Results for: {{ results.description }}</h2>
+            
+            {% for table_name, table_data in results.results.items() %}
+            <div class="results-table">
+                <h3>{{ table_name|replace('_', ' ')|title }}</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                {% for column in table_data.columns %}
+                                <th>{{ column }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in table_data.data %}
+                            <tr>
+                                {% for cell in row %}
+                                <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            <p>No results available for this scenario.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

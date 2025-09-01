@@ -6,15 +6,20 @@ This creates a single CSV file that shows all examples side by side for easy com
 
 import json
 import pandas as pd
+from pathlib import Path
 from car_keep_runner import run_comparison_from_json
 
 
-def generate_comparison_matrix():
+def generate_comparison_matrix(data_folder=None):
     """Generate consolidated CSV files with all scenarios as columns."""
+    if data_folder is None:
+        data_folder = Path.cwd()
+    
     print("Running all scenarios to generate comparison matrix...")
     
     # Load scenarios from JSON
-    with open('scenarios.json', 'r') as f:
+    scenarios_file = data_folder / 'scenarios.json'
+    with open(scenarios_file, 'r') as f:
         scenarios_data = json.load(f)
     
     # Run all scenarios
