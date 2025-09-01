@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - Cost Analysis{% endblock %}
+
+{% block content %}
+<div class="cost-analysis fade-in">
+    <div class="analysis-header">
+        <h1>💰 Cost Analysis</h1>
+        <p>Simple breakdown of vehicle costs and savings</p>
+        <div class="header-actions">
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+        </div>
+    </div>
+    
+    {% if scenarios %}
+    <div class="analysis-content">
+        <!-- Cost Summary Cards -->
+        <div class="cost-summary">
+            <h3>📊 Cost Overview</h3>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h4>Current Monthly Cost</h4>
+                    <div class="cost-amount">${{ "{:,.0f}".format(baseline_monthly_cost) }}</div>
+                    <small>Your baseline vehicle</small>
+                </div>
+                <div class="summary-card">
+                    <h4>Lowest Alternative</h4>
+                    <div class="cost-amount savings">${{ "{:,.0f}".format(lowest_monthly_cost) }}</div>
+                    <small>{{ lowest_scenario_name }}</small>
+                </div>
+                <div class="summary-card">
+                    <h4>Potential Monthly Savings</h4>
+                    <div class="cost-amount highlight">${{ "{:,.0f}".format(monthly_savings) }}</div>
+                    <small>vs. current vehicle</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Cost Breakdown -->
+        <div class="cost-breakdown">
+            <h3>🔍 Detailed Breakdown</h3>
+            <div class="breakdown-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Monthly Payment</th>
+                            <th>Insurance</th>
+                            <th>Maintenance</th>
+                            <th>Fuel</th>
+                            <th>Total Monthly</th>
+                            <th>vs. Baseline</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Baseline Row -->
+                        <tr class="baseline-row">
+                            <td>
+                                <strong>{{ baseline.vehicle.name or 'Current Vehicle' }}</strong>
+                                <small class="scenario-name">Baseline</small>
+                            </td>
+                            <td>${{ "{:,.0f}".format(baseline.current_loan.monthly_payment or 0) }}</td>
+                            <td>$100</td>
+                            <td>$50</td>
+                            <td>$150</td>
+                            <td><strong>${{ "{:,.0f}".format(baseline_monthly_cost) }}</strong></td>
+                            <td><span class="baseline-marker">—</span></td>
+                        </tr>
+                        
+                        <!-- Alternative Scenarios -->
+                        {% for scenario in scenarios %}
+                        <tr>
+                            <td>
+                                <strong>{{ scenario.description or 'New Vehicle' }}</strong>
+                                <small class="scenario-name">{{ scenario.scenario_name }}</small>
+                            </td>
+                            <td>${{ "{:,.0f}".format(scenario.scenario.financing.monthly_payment) }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.insurance_monthly.get(scenario.scenario.vehicle.name, 100) if scenario.cost_overrides and scenario.cost_overrides.insurance_monthly else 100) }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.maintenance_monthly.get(scenario.scenario.vehicle.name, 50) if scenario.cost_overrides and scenario.cost_overrides.maintenance_monthly else 50) }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.fuel_monthly.get(scenario.scenario.vehicle.name, 150) if scenario.cost_overrides and scenario.cost_overrides.fuel_monthly else 150) }}</td>
+                            <td><strong>${{ "{:,.0f}".format(scenario.total_monthly_cost) }}</strong></td>
+                            <td>
+                                {% set diff = scenario.total_monthly_cost - baseline_monthly_cost %}
+                                {% if diff < 0 %}
+                                <span class="savings">-${{ "{:,.0f}".format(abs(diff)) }}</span>
+                                {% else %}
+                                <span class="cost-increase">+${{ "{:,.0f}".format(diff) }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>⚡ Next Steps</h3>
+            <div class="action-buttons">
+                <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">➕ Add More Scenarios</a>
+                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-warning">✏️ Update Baseline</a>
+                <a href="{{ url_for('main.comparison') }}" class="btn btn-outline">📊 View Comparison</a>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="no-scenarios">
+        <div class="empty-state">
+            <h3>📝 No Scenarios Yet</h3>
+            <p>Create scenarios to see cost analysis and potential savings.</p>
+            <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.cost-analysis {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.analysis-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.analysis-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.analysis-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cost-summary {
+    margin-bottom: 3rem;
+}
+
+.cost-summary h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.summary-card h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.cost-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.cost-amount.savings {
+    color: #27ae60;
+}
+
+.cost-amount.highlight {
+    color: #3498db;
+}
+
+.summary-card small {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.cost-breakdown {
+    margin-bottom: 3rem;
+}
+
+.cost-breakdown h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.breakdown-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.breakdown-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.breakdown-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.breakdown-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+}
+
+.breakdown-table tr:hover {
+    background: #f8f9fa;
+}
+
+.baseline-row {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+}
+
+.baseline-marker {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.savings {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.cost-increase {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.scenario-name {
+    display: block;
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.quick-actions {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.quick-actions h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.empty-state h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.empty-state p {
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .cost-analysis {
+        padding: 1rem;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .breakdown-table {
+        overflow-x: auto;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .breakdown-table th,
+    .breakdown-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}

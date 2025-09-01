@@ -7,7 +7,7 @@ A callable script that takes JSON input and runs vehicle cost comparisons.
 import json
 import sys
 from typing import Dict, Any, List
-from main import VehicleCostCalculator, VehicleConfig, LoanConfig, LeaseConfig, TradeInConfig, FinancingType
+from .vehicle_cost_calculator import VehicleCostCalculator, VehicleConfig, LoanConfig, LeaseConfig, TradeInConfig, FinancingType
 
 
 def parse_vehicle_config(data: Dict[str, Any]) -> VehicleConfig:

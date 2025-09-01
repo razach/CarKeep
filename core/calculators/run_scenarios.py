@@ -7,7 +7,7 @@ import json
 import sys
 import pandas as pd
 from pathlib import Path
-from car_keep_runner import run_comparison_from_json
+from .car_keep_runner import run_comparison_from_json
 
 
 def list_scenarios(data_folder=None):

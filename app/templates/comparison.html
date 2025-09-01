@@ -1,31 +1,252 @@
 {% extends "base.html" %}
 
-{% block title %}CarKeep - Comparison Matrix{% endblock %}
+{% block title %}CarKeep - Scenario Comparison{% endblock %}
 
 {% block content %}
-<div class="comparison-view">
+<div class="comparison-page fade-in">
     <div class="comparison-header">
-        <h1>Comparison Matrix</h1>
-        <p>All scenarios compared side by side</p>
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+        <h1>📊 Scenario Comparison</h1>
+        <p>Compare your baseline with alternative scenarios</p>
+        <div class="header-actions">
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+        </div>
     </div>
     
-    {% if csv_files %}
-        <div class="comparison-tables">
-            {% for filename, content in csv_files.items() %}
-            <div class="comparison-table">
-                <h2>{{ filename|replace('_', ' ')|replace('.csv', '')|title }}</h2>
-                <div class="table-container">
-                    <pre class="csv-content">{{ content }}</pre>
+    {% if scenarios %}
+    <div class="comparison-content">
+        <!-- Baseline Summary -->
+        <div class="baseline-summary">
+            <h3>🏠 Your Current Situation (Baseline)</h3>
+            <div class="baseline-card">
+                <div class="vehicle-info">
+                    <h4>{{ baseline.vehicle_name or 'Current Vehicle' }}</h4>
+                    <p><strong>Value:</strong> ${{ "{:,.0f}".format(baseline.current_value or 0) }}</p>
+                    <p><strong>Monthly Payment:</strong> ${{ "{:,.0f}".format(baseline.monthly_payment or 0) }}</p>
+                    <p><strong>State:</strong> {{ baseline.state or 'VA' }}</p>
                 </div>
-                <a href="/download/{{ filename }}" class="btn btn-primary">Download CSV</a>
             </div>
-            {% endfor %}
         </div>
+        
+        <!-- Scenarios Comparison -->
+        <div class="scenarios-comparison">
+            <h3>🚗 Alternative Scenarios</h3>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Vehicle</th>
+                            <th>MSRP</th>
+                            <th>Monthly Payment</th>
+                            <th>State</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scenario in scenarios %}
+                        <tr>
+                            <td>
+                                <strong>{{ scenario.description or 'New Vehicle' }}</strong>
+                                <small class="scenario-name">{{ scenario.scenario_name }}</small>
+                            </td>
+                            <td>{{ scenario.scenario.vehicle.name }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.scenario.vehicle.msrp) }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.scenario.financing.monthly_payment) }}</td>
+                            <td>{{ scenario.state or baseline.state or 'VA' }}</td>
+                            <td>
+                                <a href="{{ url_for('main.view_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-outline">View</a>
+                                <a href="{{ url_for('main.edit_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-warning">Edit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>⚡ Quick Actions</h3>
+            <div class="action-buttons">
+                <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">➕ Add New Scenario</a>
+                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-warning">✏️ Edit Baseline</a>
+                <a href="{{ url_for('main.state_taxes') }}" class="btn btn-info">🏛️ Manage State Taxes</a>
+            </div>
+        </div>
+    </div>
+    
     {% else %}
-        <div class="no-comparison">
-            <p>No comparison data available. Please run the comparison matrix generation first.</p>
+    <div class="no-scenarios">
+        <div class="empty-state">
+            <h3>📝 No Scenarios Yet</h3>
+            <p>Create your first scenario to start comparing vehicle costs.</p>
+            <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
         </div>
+    </div>
     {% endif %}
 </div>
+
+<style>
+.comparison-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.comparison-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.comparison-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.comparison-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.baseline-summary {
+    margin-bottom: 3rem;
+}
+
+.baseline-summary h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.baseline-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 2px solid #3498db;
+}
+
+.vehicle-info h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.vehicle-info p {
+    margin-bottom: 0.5rem;
+    color: #34495e;
+}
+
+.scenarios-comparison {
+    margin-bottom: 3rem;
+}
+
+.scenarios-comparison h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.comparison-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparison-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+}
+
+.comparison-table tr:hover {
+    background: #f8f9fa;
+}
+
+.scenario-name {
+    display: block;
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.quick-actions {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.quick-actions h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.empty-state h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.empty-state p {
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .comparison-page {
+        padding: 1rem;
+    }
+    
+    .comparison-table {
+        overflow-x: auto;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
 {% endblock %}

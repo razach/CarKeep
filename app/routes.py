@@ -12,9 +12,9 @@ import sys
 core_path = Path(__file__).parent.parent / 'core'
 sys.path.append(str(core_path))
 
-# Import core functionality
-from car_keep_runner import run_comparison_from_json
-from run_scenarios import list_scenarios, run_scenario
+# Import core functionality from new organized structure
+from core.calculators.car_keep_runner import run_comparison_from_json
+from core.calculators.run_scenarios import list_scenarios, run_scenario
 
 main_bp = Blueprint('main', __name__)
 
@@ -43,23 +43,28 @@ def view_scenario(scenario_name):
         return render_template('error.html', error=str(e)), 400
 
 @main_bp.route('/comparison')
-def comparison_matrix():
-    """Show comparison matrix of all scenarios."""
+def comparison():
+    """Simple scenario comparison view."""
     try:
+        # Load scenarios data using existing function
         data_folder = current_app.config['DATA_FOLDER']
-        from generate_comparison_matrix import generate_comparison_matrix
-        generate_comparison_matrix(data_folder)
+        scenarios_data = list_scenarios(data_folder)
         
-        # Read the generated CSV files
-        csv_files = {}
-        for filename in ['monthly_payment_matrix.csv', 'summary_matrix.csv', 'cost_difference_matrix.csv']:
-            if os.path.exists(filename):
-                with open(filename, 'r') as f:
-                    csv_files[filename] = f.read()
+        if not scenarios_data:
+            return render_template('comparison.html', scenarios=None, baseline=None)
         
-        return render_template('comparison.html', csv_files=csv_files)
+        # Get baseline data
+        baseline = scenarios_data.get('baseline', {})
+        
+        # Get alternative scenarios (exclude baseline)
+        scenarios = []
+        for scenario_name, scenario_data in scenarios_data.get('scenarios', {}).items():
+            scenarios.append(scenario_data)
+        
+        return render_template('comparison.html', scenarios=scenarios, baseline=baseline)
+        
     except Exception as e:
-        return render_template('error.html', error=str(e)), 400
+        return render_template('error.html', error=str(e)), 500
 
 @main_bp.route('/create', methods=['GET', 'POST'])
 def create_scenario():
@@ -508,3 +513,60 @@ def delete_scenario(scenario_name):
         
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error deleting scenario: {str(e)}'}), 500
+
+@main_bp.route('/cost-analysis')
+def cost_analysis():
+    """Simple cost analysis view."""
+    try:
+        # Load scenarios data using existing function
+        data_folder = current_app.config['DATA_FOLDER']
+        scenarios_data = list_scenarios(data_folder)
+        
+        if not scenarios_data:
+            return render_template('cost_analysis.html', scenarios=None, baseline=None)
+        
+        # Get baseline data
+        baseline = scenarios_data.get('baseline', {})
+        
+        # Calculate baseline monthly cost - use current_loan monthly_payment
+        baseline_monthly_cost = baseline.get('current_loan', {}).get('monthly_payment', 0) or 0
+        
+        # Get alternative scenarios and calculate costs
+        scenarios = []
+        lowest_monthly_cost = float('inf')
+        lowest_scenario_name = ""
+        
+        for scenario_name, scenario_data in scenarios_data.get('scenarios', {}).items():
+            # Calculate total monthly cost for this scenario
+            financing_monthly = scenario_data['scenario']['financing']['monthly_payment']
+            
+            # Get cost overrides if they exist
+            cost_overrides = scenario_data.get('cost_overrides', {})
+            insurance_monthly = cost_overrides.get('insurance_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 100) if 'insurance_monthly' in cost_overrides else 100
+            maintenance_monthly = cost_overrides.get('maintenance_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 50) if 'maintenance_monthly' in cost_overrides else 50
+            fuel_monthly = cost_overrides.get('fuel_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 150) if 'fuel_monthly' in cost_overrides else 150
+            
+            total_monthly_cost = financing_monthly + insurance_monthly + maintenance_monthly + fuel_monthly
+            
+            # Add total cost to scenario data
+            scenario_data['total_monthly_cost'] = total_monthly_cost
+            scenarios.append(scenario_data)
+            
+            # Track lowest cost scenario
+            if total_monthly_cost < lowest_monthly_cost:
+                lowest_monthly_cost = total_monthly_cost
+                lowest_scenario_name = scenario_data.get('description', 'New Vehicle')
+        
+        # Calculate potential savings
+        monthly_savings = baseline_monthly_cost - lowest_monthly_cost if lowest_monthly_cost != float('inf') else 0
+        
+        return render_template('cost_analysis.html', 
+                             scenarios=scenarios, 
+                             baseline=baseline,
+                             baseline_monthly_cost=baseline_monthly_cost,
+                             lowest_monthly_cost=lowest_monthly_cost,
+                             lowest_scenario_name=lowest_scenario_name,
+                             monthly_savings=monthly_savings)
+        
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
