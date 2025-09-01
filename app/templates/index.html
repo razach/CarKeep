@@ -3,43 +3,106 @@
 {% block title %}CarKeep - Vehicle Cost Scenarios{% endblock %}
 
 {% block content %}
-<div class="scenarios-list">
-    <h1>Vehicle Cost Scenarios</h1>
-    
-    <div class="baseline-info">
-        <h2>Baseline: {{ baseline.vehicle.name }}</h2>
-        <p>{{ baseline.description }}</p>
-        <p>State: {{ baseline.state }}</p>
+<div class="scenarios-list fade-in">
+    <div class="hero-section">
+        <h1>🚗 Vehicle Cost Scenarios</h1>
+        <p class="hero-subtitle">Compare your current car costs with potential alternatives</p>
     </div>
     
-    <div class="scenarios-grid">
-        {% for scenario_name, scenario_data in scenarios.items() %}
-        <div class="scenario-card">
-            <h3>{{ scenario_data.description }}</h3>
-            <div class="scenario-meta">
-                <span class="type {{ scenario_data.scenario.type }}">
-                    {{ scenario_data.scenario.type|title }}
+    <div class="baseline-info">
+        <div class="baseline-header">
+            <h2>📊 Your Baseline: {{ baseline.vehicle.name }}</h2>
+            <div class="baseline-stats">
+                <span class="stat-item">
+                    <strong>State:</strong> {{ baseline.state }}
                 </span>
-                <span class="vehicle">{{ scenario_data.scenario.vehicle.name }}</span>
-            </div>
-            <div class="scenario-actions">
-                <a href="{{ url_for('main.view_scenario', scenario_name=scenario_name) }}" 
-                   class="btn btn-primary">View Results</a>
-                <button class="btn btn-secondary" onclick="editScenario('{{ scenario_name }}')">
-                    Edit
-                </button>
+                <span class="stat-item">
+                    <strong>Current Value:</strong> ${{ "{:,.0f}".format(baseline.vehicle.current_value) }}
+                </span>
+                <span class="stat-item">
+                    <strong>Loan Balance:</strong> ${{ "{:,.0f}".format(baseline.current_loan.principal_balance) }}
+                </span>
             </div>
         </div>
-        {% endfor %}
+        <p class="baseline-description">{{ baseline.description }}</p>
+    </div>
+    
+    <div class="scenarios-section">
+        <div class="section-header">
+            <h2>🔄 Available Scenarios</h2>
+            <p>Click on any scenario to view detailed cost comparisons</p>
+        </div>
+        
+        <div class="scenarios-grid">
+            {% for scenario_name, scenario_data in scenarios.items() %}
+            <div class="scenario-card" data-scenario="{{ scenario_name }}">
+                <div class="card-header">
+                    <h3>{{ scenario_data.description }}</h3>
+                    <div class="scenario-badge">
+                        <span class="type {{ scenario_data.scenario.type }}">
+                            {{ scenario_data.scenario.type|title }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Vehicle:</span>
+                        <span class="vehicle">{{ scenario_data.scenario.vehicle.name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">MSRP:</span>
+                        <span class="price">${{ "{:,.0f}".format(scenario_data.scenario.vehicle.msrp) }}</span>
+                    </div>
+                    {% if scenario_data.scenario.financing.monthly_payment %}
+                    <div class="meta-item">
+                        <span class="meta-label">Monthly Payment:</span>
+                        <span class="payment">${{ "{:,.0f}".format(scenario_data.scenario.financing.monthly_payment) }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="scenario-actions">
+                    <a href="{{ url_for('main.view_scenario', scenario_name=scenario_name) }}" 
+                       class="btn btn-primary" data-tooltip="View detailed cost analysis">
+                        📊 View Results
+                    </a>
+                    <button class="btn btn-secondary" onclick="editScenario('{{ scenario_name }}')" 
+                            data-tooltip="Edit this scenario">
+                        ✏️ Edit
+                    </button>
+                    <button class="btn btn-info" onclick="duplicateScenario('{{ scenario_name }}')" 
+                            data-tooltip="Create a copy of this scenario">
+                        📋 Duplicate
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     
     <div class="actions">
         <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">
-            Create New Scenario
+            ➕ Create New Scenario
         </a>
         <a href="{{ url_for('main.comparison_matrix') }}" class="btn btn-info">
-            View Comparison Matrix
+            📈 View Comparison Matrix
         </a>
+    </div>
+    
+    <div class="quick-stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ scenarios|length }}</div>
+            <div class="stat-label">Total Scenarios</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'lease') | list | length }}</div>
+            <div class="stat-label">Lease Options</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'loan') | list | length }}</div>
+            <div class="stat-label">Loan Options</div>
+        </div>
     </div>
 </div>
 {% endblock %}
