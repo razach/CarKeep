@@ -3,7 +3,8 @@
 {% block title %}CarKeep - Vehicle Cost Scenarios{% endblock %}
 
 {% block content %}
-<div class="scenarios-list fade-in">
+<!-- Cache busting: {{ timestamp }} -->
+<div class="scenarios-container fade-in">
     <div class="hero-section">
         <h1>🚗 Vehicle Cost Scenarios</h1>
         <p class="hero-subtitle">Compare your current car costs with potential alternatives</p>
@@ -130,6 +131,8 @@ function deleteScenario(scenarioName, description) {
         deleteBtn.innerHTML = '🗑️ Deleting...';
         deleteBtn.disabled = true;
         
+        console.log('Deleting scenario:', scenarioName); // Debug log
+        
         // Make delete request
         fetch(`/scenario/${scenarioName}/delete`, {
             method: 'POST',
@@ -137,13 +140,20 @@ function deleteScenario(scenarioName, description) {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status); // Debug log
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data); // Debug log
             if (data.success) {
                 // Remove the scenario card from the UI
                 const scenarioCard = document.querySelector(`[data-scenario="${scenarioName}"]`);
                 if (scenarioCard) {
                     scenarioCard.remove();
+                    console.log('Scenario card removed from UI'); // Debug log
+                } else {
+                    console.log('Scenario card not found in UI'); // Debug log
                 }
                 
                 // Update the total scenarios count
@@ -151,12 +161,17 @@ function deleteScenario(scenarioName, description) {
                 
                 // Show success message
                 showNotification('Scenario deleted successfully!', 'success');
+                
+                // Refresh the page to ensure UI is in sync
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
                 showNotification(data.message || 'Failed to delete scenario', 'error');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error deleting scenario:', error);
             showNotification('An error occurred while deleting the scenario', 'error');
         })
         .finally(() => {

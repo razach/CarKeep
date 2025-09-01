@@ -2,11 +2,12 @@
 Main routes for CarKeep web application.
 """
 
-from flask import Blueprint, render_template, request, jsonify, send_file, current_app
+from flask import Blueprint, render_template, request, jsonify, send_file, current_app, make_response
 from pathlib import Path
 import json
 import os
 import sys
+import time
 
 # Add core directory to path for imports
 core_path = Path(__file__).parent.parent / 'core'
@@ -24,9 +25,18 @@ def index():
     try:
         data_folder = current_app.config['DATA_FOLDER']
         data = list_scenarios(data_folder)
-        return render_template('index.html', 
+        
+        response = make_response(render_template('index.html', 
                              baseline=data['baseline'], 
-                             scenarios=data['scenarios'])
+                             scenarios=data['scenarios'],
+                             timestamp=int(time.time())))
+        
+        # Add cache control headers to prevent browser caching
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        
+        return response
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 

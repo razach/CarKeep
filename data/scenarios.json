@@ -6,45 +6,23 @@
       "name": "Acura RDX",
       "msrp": 0,
       "current_value": 21000,
-      "values_3yr": [21000, 18900, 17000, 15300],
+      "values_3yr": [
+        21000,
+        18900,
+        17000,
+        15300
+      ],
       "impairment": 3000,
       "impairment_affects_taxes": false
     },
     "current_loan": {
       "principal_balance": 9909.95,
-      "monthly_payment": 564.10,
-      "extra_payment": 85.90,
+      "monthly_payment": 564.1,
+      "extra_payment": 85.9,
       "interest_rate": 0.0439
     }
   },
   "examples": {
-    "lucid_air_lease": {
-      "description": "Acura RDX vs Lucid Air lease",
-      "scenario": {
-        "type": "lease",
-        "vehicle": {
-          "name": "Lucid Air",
-          "msrp": 72800,
-          "current_value": 0,
-          "values_3yr": [71400, 55100, 41500, 31059]
-        },
-        "financing": {
-          "monthly_payment": 368,
-          "lease_terms": 36,
-          "msrp": 72800,
-          "incentives": {
-            "air_credit": 15000,
-            "ev_credit": 7500,
-            "onsite_credit": 2000
-          }
-        }
-      },
-      "trade_in": {
-        "trade_in_value": 18000,
-        "loan_balance": 9909.95,
-        "incentives": 2000
-      }
-    },
     "cpo_acura_mdx_loan": {
       "description": "Acura RDX vs CPO Acura MDX with loan financing",
       "scenario": {
@@ -53,7 +31,12 @@
           "name": "CPO Acura MDX",
           "msrp": 45000,
           "current_value": 0,
-          "values_3yr": [35000, 31500, 28350, 25515]
+          "values_3yr": [
+            35000,
+            31500,
+            28350,
+            25515
+          ]
         },
         "financing": {
           "monthly_payment": 1073.47,
@@ -76,7 +59,12 @@
           "name": "Lucid Air",
           "msrp": 72800,
           "current_value": 0,
-          "values_3yr": [71400, 55100, 41500, 31059]
+          "values_3yr": [
+            71400,
+            55100,
+            41500,
+            31059
+          ]
         },
         "financing": {
           "monthly_payment": 368,
@@ -109,54 +97,6 @@
         }
       }
     },
-    "cpo_bmw_x3_loan": {
-      "description": "Acura RDX vs CPO BMW X3 with loan financing",
-      "scenario": {
-        "type": "loan",
-        "vehicle": {
-          "name": "CPO BMW X3",
-          "msrp": 52000,
-          "current_value": 0,
-          "values_3yr": [42000, 37800, 34020, 30618]
-        },
-        "financing": {
-          "monthly_payment": 1280.00,
-          "loan_term": 36,
-          "principal_balance": 42000
-        }
-      },
-      "trade_in": {
-        "trade_in_value": 18000,
-        "loan_balance": 9909.95,
-        "incentives": 0
-      }
-    },
-    "cpo_bmw_x3_lease": {
-      "description": "Acura RDX vs CPO BMW X3 with lease financing",
-      "scenario": {
-        "type": "lease",
-        "vehicle": {
-          "name": "CPO BMW X3",
-          "msrp": 52000,
-          "current_value": 0,
-          "values_3yr": [42000, 37800, 34020, 30618]
-        },
-        "financing": {
-          "monthly_payment": 450.00,
-          "lease_terms": 36,
-          "msrp": 52000,
-          "incentives": {
-            "ev_credit": 7500,
-            "dealer_discount": 2000
-          }
-        }
-      },
-      "trade_in": {
-        "trade_in_value": 18000,
-        "loan_balance": 9909.95,
-        "incentives": 0
-      }
-    },
     "cpo_bmw_x3_custom_costs": {
       "description": "Acura RDX vs CPO BMW X3 with custom cost configurations",
       "scenario": {
@@ -165,10 +105,15 @@
           "name": "CPO BMW X3",
           "msrp": 52000,
           "current_value": 0,
-          "values_3yr": [42000, 37800, 34020, 30618]
+          "values_3yr": [
+            42000,
+            37800,
+            34020,
+            30618
+          ]
         },
         "financing": {
-          "monthly_payment": 1280.00,
+          "monthly_payment": 1280.0,
           "loan_term": 36,
           "principal_balance": 42000
         }
@@ -201,7 +146,12 @@
           "name": "Tesla Model Y",
           "msrp": 45000,
           "current_value": 0,
-          "values_3yr": [45000, 36000, 28800, 23040]
+          "values_3yr": [
+            45000,
+            36000,
+            28800,
+            23040
+          ]
         },
         "financing": {
           "monthly_payment": 550,
