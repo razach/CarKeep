@@ -10,12 +10,55 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 
+@dataclass
+class StateTaxConfig:
+    """Tax configuration for a specific state."""
+    property_tax_rate: float  # Percentage as decimal (e.g., 0.0457 for 4.57%)
+    pptra_relief: float       # Relief percentage as decimal (e.g., 0.51 for 51%)
+    relief_cap: float         # Maximum value for relief (e.g., 20000 for $20k)
+    state_name: str           # Full state name for display
+
+class StateTaxRegistry:
+    """Registry of state tax configurations."""
+    
+    def __init__(self):
+        self.states = {
+            'VA': StateTaxConfig(
+                property_tax_rate=0.0457,  # $4.57 per $100 of assessed value
+                pptra_relief=0.51,         # 51% relief on first $20k
+                relief_cap=20000,          # $20k cap for relief
+                state_name='Virginia (Fairfax County)'
+            ),
+            'TX': StateTaxConfig(
+                property_tax_rate=0.0625,  # $6.25 per $100 of assessed value
+                pptra_relief=0.0,          # No relief
+                relief_cap=0,              # No cap
+                state_name='Texas'
+            ),
+            'CA': StateTaxConfig(
+                property_tax_rate=0.0065,  # $0.65 per $100 of assessed value
+                pptra_relief=0.0,          # No relief
+                relief_cap=0,              # No cap
+                state_name='California'
+            )
+        }
+    
+    def get_state_config(self, state: str) -> StateTaxConfig:
+        """Get tax configuration for a state, defaulting to VA if not found."""
+        return self.states.get(state.upper(), self.states['VA'])
+    
+    def add_state(self, state_code: str, config: StateTaxConfig):
+        """Add or update a state tax configuration."""
+        self.states[state_code.upper()] = config
+    
+    def list_states(self) -> Dict[str, StateTaxConfig]:
+        """Get all available state configurations."""
+        return self.states.copy()
 
 class FinancingType(Enum):
     """Enumeration for vehicle financing types."""
     LEASE = "lease"
     LOAN = "loan"
-
 
 @dataclass
 class VehicleConfig:
@@ -71,13 +114,44 @@ class VehicleCostCalculator:
     
     def __init__(self, state: str = "VA"):
         self.state = state
+        self.tax_registry = self._load_tax_registry()
+        self.state_tax_config = self.tax_registry.get_state_config(state)
         self.cost_config = self._get_default_cost_config()
     
+    def _load_tax_registry(self) -> StateTaxRegistry:
+        """Load state tax configurations from persistent storage."""
+        import json
+        import os
+        
+        # Path to store state tax configurations
+        TAX_CONFIG_FILE = 'data/state_tax_configs.json'
+        
+        if os.path.exists(TAX_CONFIG_FILE):
+            try:
+                with open(TAX_CONFIG_FILE, 'r') as f:
+                    configs = json.load(f)
+                    # Convert to StateTaxConfig objects
+                    registry = StateTaxRegistry()
+                    for state_code, config_data in configs.items():
+                        config = StateTaxConfig(
+                            property_tax_rate=config_data['property_tax_rate'],
+                            pptra_relief=config_data['pptra_relief'],
+                            relief_cap=config_data['relief_cap'],
+                            state_name=config_data['state_name']
+                        )
+                        registry.states[state_code] = config
+                    return registry
+            except Exception as e:
+                print(f"Error loading tax configs: {e}")
+        
+        # Return default registry if file doesn't exist or error
+        return StateTaxRegistry()
+    
     def _get_default_cost_config(self) -> CostConfig:
-        """Get default cost configuration for VA."""
+        """Get default cost configuration."""
         return CostConfig(
-            property_tax_rate=4.57 / 100,  # $4.57 per $100 of assessed value
-            pptra_relief=0.51,  # 51% relief on first $20k
+            property_tax_rate=self.state_tax_config.property_tax_rate,
+            pptra_relief=self.state_tax_config.pptra_relief,
             insurance_monthly={"Acura RDX": 100, "Lucid Air": 176},
             maintenance_monthly={"Acura RDX": 47, "Lucid Air": 33},
             fuel_monthly={"Acura RDX": 167, "Lucid Air": 42},
@@ -85,11 +159,26 @@ class VehicleCostCalculator:
         )
     
     def calculate_property_tax(self, vehicle_value: float) -> float:
-        """Calculate property tax for Fairfax County, VA."""
-        pptra_amount = min(vehicle_value, 20000) * self.cost_config.property_tax_rate * self.cost_config.pptra_relief
-        tax_first_20k = min(vehicle_value, 20000) * self.cost_config.property_tax_rate
-        tax_over_20k = max(vehicle_value - 20000, 0) * self.cost_config.property_tax_rate
-        return tax_first_20k + tax_over_20k - pptra_amount
+        """Calculate property tax for the current state."""
+        if self.state_tax_config.relief_cap > 0:
+            # Apply relief up to the cap
+            relief_amount = min(vehicle_value, self.state_tax_config.relief_cap) * self.state_tax_config.property_tax_rate * self.state_tax_config.pptra_relief
+            tax_amount = vehicle_value * self.state_tax_config.property_tax_rate
+            return tax_amount - relief_amount
+        else:
+            # No relief, just straight tax
+            return vehicle_value * self.state_tax_config.property_tax_rate
+    
+    def get_state_tax_info(self) -> Dict[str, any]:
+        """Get information about the current state's tax configuration."""
+        return {
+            'state_code': self.state,
+            'state_name': self.state_tax_config.state_name,
+            'property_tax_rate': self.state_tax_config.property_tax_rate * 100,  # Convert to percentage
+            'pptra_relief': self.state_tax_config.pptra_relief * 100,  # Convert to percentage
+            'relief_cap': self.state_tax_config.relief_cap,
+            'has_relief': self.state_tax_config.relief_cap > 0
+        }
     
     def calculate_loan_payoff(self, principal: float, monthly_payment: float, interest_rate: float, max_months: int = 36) -> Tuple[int, float, float]:
         """Calculate loan payoff with accelerated payments."""

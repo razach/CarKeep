@@ -108,6 +108,12 @@ def create_scenario():
                     'trade_in_value': float(scenario_data.get('trade_in_value', 0)),
                     'loan_balance': 0,
                     'incentives': float(scenario_data.get('incentives', 0))
+                },
+                'cost_config': {
+                    'monthly_insurance': float(scenario_data.get('monthly_insurance', 100)),
+                    'monthly_maintenance': float(scenario_data.get('monthly_maintenance', 50)),
+                    'monthly_fuel': float(scenario_data.get('monthly_fuel', 150)),
+                    'investment_return_rate': float(scenario_data.get('investment_return_rate', 6)) / 100
                 }
             }
             
@@ -180,6 +186,212 @@ def api_scenario(scenario_name):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@main_bp.route('/state-taxes', methods=['GET', 'POST'])
+def state_taxes():
+    """Manage state tax configurations."""
+    try:
+        from core.main import StateTaxRegistry, StateTaxConfig
+        import json
+        import os
+        
+        # Path to store state tax configurations
+        TAX_CONFIG_FILE = 'data/state_tax_configs.json'
+        
+        def load_tax_configs():
+            """Load state tax configurations from file."""
+            if os.path.exists(TAX_CONFIG_FILE):
+                try:
+                    with open(TAX_CONFIG_FILE, 'r') as f:
+                        configs = json.load(f)
+                        # Convert back to StateTaxConfig objects
+                        registry = StateTaxRegistry()
+                        for state_code, config_data in configs.items():
+                            config = StateTaxConfig(
+                                property_tax_rate=config_data['property_tax_rate'],
+                                pptra_relief=config_data['pptra_relief'],
+                                relief_cap=config_data['relief_cap'],
+                                state_name=config_data['state_name']
+                            )
+                            registry.states[state_code] = config
+                        return registry
+                except Exception as e:
+                    print(f"Error loading tax configs: {e}")
+            
+            # Return default registry if file doesn't exist or error
+            return StateTaxRegistry()
+        
+        def save_tax_configs(registry):
+            """Save state tax configurations to file."""
+            # Ensure data directory exists
+            os.makedirs('data', exist_ok=True)
+            
+            # Convert StateTaxConfig objects to dictionaries
+            configs = {}
+            for state_code, config in registry.states.items():
+                configs[state_code] = {
+                    'property_tax_rate': config.property_tax_rate,
+                    'pptra_relief': config.pptra_relief,
+                    'relief_cap': config.relief_cap,
+                    'state_name': config.state_name
+                }
+            
+            # Save to file
+            with open(TAX_CONFIG_FILE, 'w') as f:
+                json.dump(configs, f, indent=2)
+        
+        if request.method == 'POST':
+            try:
+                form_data = request.form.to_dict()
+                
+                if 'action' in form_data:
+                    if form_data['action'] == 'add_state':
+                        # Load current configs
+                        tax_registry = load_tax_configs()
+                        
+                        # Add new state
+                        new_config = StateTaxConfig(
+                            property_tax_rate=float(form_data['property_tax_rate']) / 100,
+                            pptra_relief=float(form_data['pptra_relief']) / 100,
+                            relief_cap=float(form_data['relief_cap']),
+                            state_name=form_data['state_name']
+                        )
+                        tax_registry.add_state(form_data['state_code'], new_config)
+                        
+                        # Save updated configs
+                        save_tax_configs(tax_registry)
+                        
+                        return jsonify({
+                            'success': True,
+                            'message': f'State {form_data["state_code"]} added successfully!'
+                        })
+                    
+                    elif form_data['action'] == 'delete_state':
+                        # Load current configs
+                        tax_registry = load_tax_configs()
+                        
+                        state_code = form_data['state_code']
+                        if state_code in ['VA', 'TX', 'CA']:
+                            return jsonify({
+                                'success': False,
+                                'message': 'Cannot delete default states (VA, TX, CA)'
+                            }), 400
+                        
+                        # Remove from registry
+                        if state_code in tax_registry.states:
+                            del tax_registry.states[state_code]
+                            
+                            # Save updated configs
+                            save_tax_configs(tax_registry)
+                        
+                        return jsonify({
+                            'success': True,
+                            'message': f'State {state_code} removed successfully!'
+                        })
+                    
+                    elif form_data['action'] == 'edit_state':
+                        # Load current configs
+                        tax_registry = load_tax_configs()
+                        
+                        # Update existing state
+                        updated_config = StateTaxConfig(
+                            property_tax_rate=float(form_data['property_tax_rate']) / 100,
+                            pptra_relief=float(form_data['pptra_relief']) / 100,
+                            relief_cap=float(form_data['relief_cap']),
+                            state_name=form_data['state_name']
+                        )
+                        tax_registry.add_state(form_data['state_code'], updated_config)
+                        
+                        # Save updated configs
+                        save_tax_configs(tax_registry)
+                        
+                        return jsonify({
+                            'success': True,
+                            'message': f'State {form_data["state_code"]} updated successfully!'
+                        })
+                
+                return jsonify({'success': False, 'message': 'Invalid action'}), 400
+                
+            except Exception as e:
+                return jsonify({'success': False, 'message': f'Error: {str(e)}'}), 500
+        
+        # Get current state configurations
+        tax_registry = load_tax_configs()
+        states = tax_registry.list_states()
+        
+        return render_template('state_taxes.html', states=states)
+        
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
+
+@main_bp.route('/edit-baseline', methods=['GET', 'POST'])
+def edit_baseline():
+    """Edit the baseline scenario."""
+    try:
+        data_folder = current_app.config['DATA_FOLDER']
+        scenarios_file = data_folder / 'scenarios.json'
+        
+        with open(scenarios_file, 'r') as f:
+            data = json.load(f)
+        
+        if 'baseline' not in data:
+            return render_template('error.html', error='Baseline not found'), 404
+        
+        baseline_data = data['baseline']
+        
+        if request.method == 'POST':
+            try:
+                # Get form data
+                form_data = request.form.to_dict()
+                
+                # Validate required fields
+                required_fields = ['vehicle_name', 'current_value', 'principal_balance', 'monthly_payment']
+                for field in required_fields:
+                    if not form_data.get(field):
+                        return jsonify({'success': False, 'message': f'Missing required field: {field}'}), 400
+                
+                # Update baseline data
+                baseline_data['description'] = form_data.get('description', 'Your current vehicle (baseline)')
+                baseline_data['vehicle']['name'] = form_data['vehicle_name']
+                baseline_data['vehicle']['current_value'] = float(form_data['current_value'])
+                baseline_data['vehicle']['msrp'] = float(form_data.get('msrp', form_data['current_value']))
+                baseline_data['current_loan']['principal_balance'] = float(form_data['principal_balance'])
+                baseline_data['current_loan']['monthly_payment'] = float(form_data['monthly_payment'])
+                baseline_data['current_loan']['interest_rate'] = float(form_data.get('interest_rate', 5.5)) / 100
+                baseline_data['current_loan']['extra_payment'] = float(form_data.get('extra_payment', 0))
+                
+                # Update state if specified
+                if form_data.get('state'):
+                    baseline_data['state'] = form_data['state']
+                
+                # Update cost configuration
+                if 'cost_config' not in baseline_data:
+                    baseline_data['cost_config'] = {}
+                
+                baseline_data['cost_config'].update({
+                    'monthly_insurance': float(form_data.get('monthly_insurance', 100)),
+                    'monthly_maintenance': float(form_data.get('monthly_maintenance', 50)),
+                    'monthly_fuel': float(form_data.get('monthly_fuel', 150)),
+                    'investment_return_rate': float(form_data.get('investment_return_rate', 6)) / 100
+                })
+                
+                # Save updated data
+                data['baseline'] = baseline_data
+                with open(scenarios_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                
+                return jsonify({
+                    'success': True,
+                    'message': 'Baseline updated successfully!'
+                })
+                
+            except Exception as e:
+                return jsonify({'success': False, 'message': f'Error updating baseline: {str(e)}'}), 500
+        
+        return render_template('edit_baseline.html', baseline_data=baseline_data)
+        
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
+
 @main_bp.route('/scenario/<scenario_name>/edit', methods=['GET', 'POST'])
 def edit_scenario(scenario_name):
     """Edit an existing scenario."""
@@ -232,6 +444,17 @@ def edit_scenario(scenario_name):
                 # Update trade-in details
                 scenario_data['trade_in']['trade_in_value'] = float(form_data.get('trade_in_value', 0))
                 scenario_data['trade_in']['incentives'] = float(form_data.get('incentives', 0))
+                
+                # Update cost configuration
+                if 'cost_config' not in scenario_data:
+                    scenario_data['cost_config'] = {}
+                
+                scenario_data['cost_config'].update({
+                    'monthly_insurance': float(form_data.get('monthly_insurance', 100)),
+                    'monthly_maintenance': float(form_data.get('monthly_maintenance', 50)),
+                    'monthly_fuel': float(form_data.get('monthly_fuel', 150)),
+                    'investment_return_rate': float(form_data.get('investment_return_rate', 6)) / 100
+                })
                 
                 # Update state if specified
                 if form_data.get('state'):

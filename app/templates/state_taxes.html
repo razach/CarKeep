@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}CarKeep - State Tax Configuration{% endblock %}
+
+{% block content %}
+<div class="state-taxes fade-in">
+    <div class="tax-header">
+        <h1>🏛️ State Tax Configuration</h1>
+        <p>Manage property tax rates and relief programs for different states</p>
+        <div class="header-actions">
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+        </div>
+    </div>
+    
+    <div class="tax-content">
+        <div class="current-states">
+            <h3>📊 Current State Configurations</h3>
+            <div class="states-grid">
+                {% for state_code, config in states.items() %}
+                <div class="state-card">
+                    <div class="state-header">
+                        <h4>{{ config.state_name }} ({{ state_code }})</h4>
+                        {% if state_code in ['VA', 'TX', 'CA'] %}
+                        <span class="default-badge">Default</span>
+                        {% endif %}
+                    </div>
+                    <div class="state-details">
+                        <div class="tax-rate">
+                            <strong>Property Tax Rate:</strong> {{ "%.2f"|format(config.property_tax_rate * 100) }}%
+                        </div>
+                        {% if config.pptra_relief > 0 %}
+                        <div class="tax-relief">
+                            <strong>Relief:</strong> {{ "%.0f"|format(config.pptra_relief * 100) }}% on first ${{ "{:,.0f}".format(config.relief_cap) }}
+                        </div>
+                        {% else %}
+                        <div class="tax-relief">
+                            <strong>Relief:</strong> None
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="state-actions">
+                        <button class="btn btn-warning btn-sm" onclick="editState('{{ state_code }}', {{ config.property_tax_rate * 100 }}, {{ config.pptra_relief * 100 }}, {{ config.relief_cap }}, '{{ config.state_name }}')">Edit</button>
+                        {% if state_code not in ['VA', 'TX', 'CA'] %}
+                        <button class="btn btn-danger btn-sm" onclick="deleteState('{{ state_code }}')">Delete</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="add-state-section">
+            <h3 id="section-title">➕ Add New State</h3>
+            
+            <div class="tax-explanation" style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #007bff;">
+                <h4>💡 How Fairfax County Personal Property Tax Works:</h4>
+                <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                    <li><strong>Base Rate:</strong> 4.57% of vehicle value</li>
+                    <li><strong>PPTRA Relief:</strong> 51% relief on the first $20,000 of value</li>
+                    <li><strong>Example:</strong> A $30,000 vehicle pays tax on $30,000 at 4.57%, but gets 51% relief on the first $20,000</li>
+                    <li><strong>Calculation:</strong> ($30,000 × 0.0457) - ($20,000 × 0.0457 × 0.51) = $1,371 - $466 = $905 total tax</li>
+                </ul>
+            </div>
+            
+            <form id="addStateForm" class="add-state-form">
+                <input type="hidden" id="edit_mode" name="edit_mode" value="false">
+                <input type="hidden" id="original_state_code" name="original_state_code" value="">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="state_code">State Code *</label>
+                        <input type="text" id="state_code" name="state_code" required 
+                               placeholder="e.g., NY" maxlength="2" pattern="[A-Za-z]{2}">
+                        <small class="form-help">Two-letter state code (e.g., NY, FL, OH)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="state_name">State Name *</label>
+                        <input type="text" id="state_name" name="state_name" required 
+                               placeholder="e.g., New York">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="property_tax_rate">Property Tax Rate (%) *</label>
+                        <input type="number" id="property_tax_rate" name="property_tax_rate" required 
+                               placeholder="4.57" min="0" max="20" step="0.01">
+                        <small class="form-help">Annual property tax rate as percentage (e.g., 4.57% for Fairfax County)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="pptra_relief">Relief Percentage (%)</label>
+                        <input type="number" id="pptra_relief" name="pptra_relief" 
+                               placeholder="51" min="0" max="100" step="1" value="0">
+                        <small class="form-help">Tax relief percentage (e.g., 51% for Fairfax County PPTRA)</small>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="relief_cap">Relief Cap ($)</label>
+                        <input type="number" id="relief_cap" name="relief_cap" 
+                               placeholder="20000" min="0" step="1000" value="0">
+                        <small class="form-help">Maximum vehicle value eligible for relief (e.g., $20,000 for Fairfax County)</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success" id="submit-btn">Add State</button>
+                    <button type="reset" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                    <button type="button" class="btn btn-outline" id="cancel-edit" style="display: none;" onclick="cancelEdit()">Cancel Edit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.states-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.state-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.state-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.state-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.default-badge {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.state-details {
+    margin-bottom: 1rem;
+}
+
+.tax-rate, .tax-relief {
+    margin-bottom: 0.5rem;
+    color: #34495e;
+}
+
+.state-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem; /* Added gap for buttons */
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.add-state-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+}
+
+.tax-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.tax-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.tax-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+</style>
+
+<script>
+// Add state form handler
+document.getElementById('addStateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const isEditMode = formData.get('edit_mode') === 'true';
+    
+    if (isEditMode) {
+        formData.append('action', 'edit_state');
+    } else {
+        formData.append('action', 'add_state');
+    }
+    
+    fetch('{{ url_for("main.state_taxes") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            // Reload page to show changes
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while saving the state', 'error');
+    });
+});
+
+// Edit state function
+function editState(stateCode, taxRate, relief, reliefCap, stateName) {
+    // Populate form with existing data
+    document.getElementById('state_code').value = stateCode;
+    document.getElementById('state_name').value = stateName;
+    document.getElementById('property_tax_rate').value = taxRate;
+    document.getElementById('pptra_relief').value = relief;
+    document.getElementById('relief_cap').value = reliefCap;
+    
+    // Set edit mode
+    document.getElementById('edit_mode').value = 'true';
+    document.getElementById('original_state_code').value = stateCode;
+    
+    // Update UI
+    document.getElementById('section-title').textContent = '✏️ Edit State: ' + stateCode;
+    document.getElementById('submit-btn').textContent = 'Update State';
+    document.getElementById('cancel-edit').style.display = 'inline-block';
+    
+    // Disable state code field during edit (can't change the code)
+    document.getElementById('state_code').disabled = true;
+    
+    // Scroll to form
+    document.querySelector('.add-state-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Cancel edit function
+function cancelEdit() {
+    resetForm();
+}
+
+// Reset form function
+function resetForm() {
+    document.getElementById('addStateForm').reset();
+    document.getElementById('edit_mode').value = 'false';
+    document.getElementById('original_state_code').value = '';
+    
+    // Reset UI
+    document.getElementById('section-title').textContent = '➕ Add New State';
+    document.getElementById('submit-btn').textContent = 'Add State';
+    document.getElementById('cancel-edit').style.display = 'none';
+    
+    // Re-enable state code field
+    document.getElementById('state_code').disabled = false;
+}
+
+// Delete state function
+function deleteState(stateCode) {
+    if (confirm(`Are you sure you want to delete the state configuration for ${stateCode}?`)) {
+        const formData = new FormData();
+        formData.append('action', 'delete_state');
+        formData.append('state_code', stateCode);
+        
+        fetch('{{ url_for("main.state_taxes") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                // Reload page to reflect changes
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while deleting the state', 'error');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -3,6 +3,8 @@
 {% block title %}CarKeep - Edit Scenario{% endblock %}
 
 {% block content %}
+{% from "form_components.html" import basic_info_section, vehicle_details_section, financing_section, trade_in_section, operating_costs_section, form_actions, form_javascript %}
+
 <div class="edit-scenario fade-in">
     <div class="edit-header">
         <h1>✏️ Edit Scenario: {{ scenario_name }}</h1>
@@ -15,171 +17,49 @@
     
     <div class="edit-form">
         <form method="POST" action="{{ url_for('main.edit_scenario', scenario_name=scenario_name) }}" id="editForm">
-            <div class="form-section">
-                <h3>📝 Basic Information</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="scenario_name">Scenario Name</label>
-                        <input type="text" id="scenario_name" name="scenario_name" value="{{ scenario_name }}" readonly>
-                        <small class="form-help">Scenario name cannot be changed</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description *</label>
-                        <textarea id="description" name="description" required rows="3">{{ scenario_data.description }}</textarea>
-                    </div>
-                </div>
-            </div>
+            {{ basic_info_section(
+                scenario_name=scenario_name,
+                description=scenario_data.description,
+                readonly=true
+            ) }}
             
-            <div class="form-section">
-                <h3>🚗 Vehicle Details</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="vehicle_name">Vehicle Name *</label>
-                        <input type="text" id="vehicle_name" name="vehicle_name" required value="{{ scenario_data.scenario.vehicle.name }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="msrp">MSRP *</label>
-                        <div class="input-with-icon">
-                            <span class="currency-icon">$</span>
-                            <input type="number" id="msrp" name="msrp" required min="0" step="100" value="{{ scenario_data.scenario.vehicle.msrp }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="current_value">Current Value</label>
-                        <div class="input-with-icon">
-                            <span class="currency-icon">$</span>
-                            <input type="number" id="current_value" name="current_value" min="0" step="100" value="{{ scenario_data.scenario.vehicle.current_value }}">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <select id="state" name="state">
-                            <option value="">Use baseline state</option>
-                            <option value="VA" {% if scenario_data.get('state') == 'VA' %}selected{% endif %}>Virginia (VA)</option>
-                            <option value="TX" {% if scenario_data.get('state') == 'TX' %}selected{% endif %}>Texas (TX)</option>
-                            <option value="CA" {% if scenario_data.get('state') == 'CA' %}selected{% endif %}>California (CA)</option>
-                            <option value="NY" {% if scenario_data.get('state') == 'NY' %}selected{% endif %}>New York (NY)</option>
-                            <option value="FL" {% if scenario_data.get('state') == 'FL' %}selected{% endif %}>Florida (FL)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            {{ vehicle_details_section(
+                vehicle_name=scenario_data.scenario.vehicle.name,
+                msrp=scenario_data.scenario.vehicle.msrp,
+                current_value=scenario_data.scenario.vehicle.current_value,
+                state=scenario_data.get('state', '')
+            ) }}
             
-            <div class="form-section">
-                <h3>💰 Financing</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="financing_type">Financing Type *</label>
-                        <select id="financing_type" name="financing_type" required>
-                            <option value="lease" {% if scenario_data.scenario.type == 'lease' %}selected{% endif %}>Lease</option>
-                            <option value="loan" {% if scenario_data.scenario.type == 'loan' %}selected{% endif %}>Loan</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="monthly_payment">Monthly Payment *</label>
-                        <div class="input-with-icon">
-                            <span class="currency-icon">$</span>
-                            <input type="number" id="monthly_payment" name="monthly_payment" required min="0" step="0.01" value="{{ scenario_data.scenario.financing.monthly_payment }}">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Lease-specific fields -->
-                <div id="lease-fields" class="conditional-fields" {% if scenario_data.scenario.type != 'lease' %}style="display: none;"{% endif %}>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="lease_terms">Lease Terms (months)</label>
-                            <select id="lease_terms" name="lease_terms">
-                                <option value="24" {% if scenario_data.scenario.financing.get('lease_terms') == 24 %}selected{% endif %}>24 months</option>
-                                <option value="36" {% if scenario_data.scenario.financing.get('lease_terms') == 36 %}selected{% endif %}>36 months</option>
-                                <option value="48" {% if scenario_data.scenario.financing.get('lease_terms') == 48 %}selected{% endif %}>48 months</option>
-                                <option value="60" {% if scenario_data.scenario.financing.get('lease_terms') == 60 %}selected{% endif %}>60 months</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="down_payment">Down Payment</label>
-                            <div class="input-with-icon">
-                                <span class="currency-icon">$</span>
-                                <input type="number" id="down_payment" name="down_payment" min="0" step="100" value="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Loan-specific fields -->
-                <div id="loan-fields" class="conditional-fields" {% if scenario_data.scenario.type != 'loan' %}style="display: none;"{% endif %}>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="loan_term">Loan Term (months)</label>
-                            <select id="loan_term" name="loan_term">
-                                <option value="36" {% if scenario_data.scenario.financing.get('loan_term') == 36 %}selected{% endif %}>36 months</option>
-                                <option value="48" {% if scenario_data.scenario.financing.get('loan_term') == 48 %}selected{% endif %}>48 months</option>
-                                <option value="60" {% if scenario_data.scenario.financing.get('loan_term') == 60 %}selected{% endif %}>60 months</option>
-                                <option value="72" {% if scenario_data.scenario.financing.get('loan_term') == 72 %}selected{% endif %}>72 months</option>
-                                <option value="84" {% if scenario_data.scenario.financing.get('loan_term') == 84 %}selected{% endif %}>84 months</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="interest_rate">Interest Rate (%)</label>
-                            <input type="number" id="interest_rate" name="interest_rate" min="0" max="25" step="0.1" 
-                                   value="{{ (scenario_data.scenario.financing.get('interest_rate', 0.055) * 100) | round(1) }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{ financing_section(
+                financing_type=scenario_data.scenario.type,
+                monthly_payment=scenario_data.scenario.financing.monthly_payment,
+                lease_terms=scenario_data.scenario.financing.get('lease_terms', 36),
+                loan_term=scenario_data.scenario.financing.get('loan_term', 60),
+                interest_rate=(scenario_data.scenario.financing.get('interest_rate', 0.055) * 100) | round(1)
+            ) }}
             
-            <div class="form-section">
-                <h3>🔄 Trade-in & Incentives</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="trade_in_value">Trade-in Value</label>
-                        <div class="input-with-icon">
-                            <span class="currency-icon">$</span>
-                            <input type="number" id="trade_in_value" name="trade_in_value" min="0" step="100" value="{{ scenario_data.trade_in.trade_in_value }}">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="incentives">Incentives/Rebates</label>
-                        <div class="input-with-icon">
-                            <span class="currency-icon">$</span>
-                            <input type="number" id="incentives" name="incentives" min="0" step="100" value="{{ scenario_data.trade_in.incentives }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{ trade_in_section(
+                trade_in_value=scenario_data.trade_in.trade_in_value,
+                incentives=scenario_data.trade_in.incentives
+            ) }}
             
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">
-                    <span class="btn-text">Update Scenario</span>
-                    <span class="btn-loading" style="display: none;">Updating...</span>
-                </button>
-                <button type="reset" class="btn btn-secondary">Reset Changes</button>
-                <button type="button" class="btn btn-danger" onclick="deleteScenario('{{ scenario_name }}')">Delete Scenario</button>
-            </div>
+            {{ operating_costs_section(
+                monthly_insurance=scenario_data.get('cost_config', {}).get('monthly_insurance', 100),
+                monthly_maintenance=scenario_data.get('cost_config', {}).get('monthly_maintenance', 50),
+                monthly_fuel=scenario_data.get('cost_config', {}).get('monthly_fuel', 150),
+                investment_return_rate=(scenario_data.get('cost_config', {}).get('investment_return_rate', 0.06) * 100) | round(1)
+            ) }}
+            
+            {{ form_actions(
+                submit_text="Update Scenario",
+                show_delete=true,
+                scenario_name=scenario_name
+            ) }}
         </form>
     </div>
 </div>
 
 <script>
-// Show/hide conditional fields based on financing type
-document.getElementById('financing_type').addEventListener('change', function() {
-    const leaseFields = document.getElementById('lease-fields');
-    const loanFields = document.getElementById('loan-fields');
-    
-    if (this.value === 'lease') {
-        leaseFields.style.display = 'block';
-        loanFields.style.display = 'none';
-    } else if (this.value === 'loan') {
-        leaseFields.style.display = 'none';
-        loanFields.style.display = 'block';
-    } else {
-        leaseFields.style.display = 'none';
-        loanFields.style.display = 'none';
-    }
-});
-
 // Form submission handler
 document.getElementById('editForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -251,4 +131,6 @@ function deleteScenario(scenarioName) {
     }
 }
 </script>
+
+{{ form_javascript() }}
 {% endblock %}

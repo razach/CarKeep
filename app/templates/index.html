@@ -23,6 +23,11 @@
                     <strong>Loan Balance:</strong> ${{ "{:,.0f}".format(baseline.current_loan.principal_balance) }}
                 </span>
             </div>
+            <div class="baseline-actions">
+                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-secondary">
+                    ✏️ Edit Baseline
+                </a>
+            </div>
         </div>
         <p class="baseline-description">{{ baseline.description }}</p>
     </div>

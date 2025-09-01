@@ -1,0 +1,267 @@
+{# Shared form components for vehicle scenarios #}
+
+{# Basic Information Section #}
+{% macro basic_info_section(scenario_name="", description="", readonly=false) %}
+<div class="form-section">
+    <h3>📝 Basic Information</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="scenario_name">Scenario Name</label>
+            <input type="text" id="scenario_name" name="scenario_name" 
+                   value="{{ scenario_name }}" 
+                   {% if readonly %}readonly{% endif %}
+                   {% if not readonly %}required pattern="[a-z0-9_]+"{% endif %}
+                   placeholder="e.g., new_tesla_model_3">
+            {% if readonly %}
+            <small class="form-help">Scenario name cannot be changed</small>
+            {% else %}
+            <small class="form-help">Use lowercase letters, numbers, and underscores only</small>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="description">Description {% if not readonly %}*{% endif %}</label>
+            <textarea id="description" name="description" 
+                      {% if not readonly %}required{% endif %}
+                      rows="3" placeholder="Brief description of the scenario">{{ description }}</textarea>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{# Vehicle Details Section #}
+{% macro vehicle_details_section(vehicle_name="", msrp=0, current_value=0, state="", show_state_help=true) %}
+<div class="form-section">
+    <h3>🚗 Vehicle Details</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="vehicle_name">Vehicle Name *</label>
+            <input type="text" id="vehicle_name" name="vehicle_name" required 
+                   value="{{ vehicle_name }}" placeholder="e.g., Tesla Model 3">
+        </div>
+        <div class="form-group">
+            <label for="msrp">MSRP *</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="msrp" name="msrp" required 
+                       min="0" step="100" value="{{ msrp }}" placeholder="45000">
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="current_value">Current Value</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="current_value" name="current_value" 
+                       min="0" step="100" value="{{ current_value }}" placeholder="0">
+            </div>
+            <small class="form-help">Leave as 0 for new vehicles</small>
+        </div>
+        <div class="form-group">
+            <label for="state">State</label>
+            <select id="state" name="state">
+                <option value="">Use baseline state</option>
+                <option value="VA" {% if state == 'VA' %}selected{% endif %}>Virginia (VA)</option>
+                <option value="TX" {% if state == 'TX' %}selected{% endif %}>Texas (TX)</option>
+                <option value="CA" {% if state == 'CA' %}selected{% endif %}>California (CA)</option>
+                <option value="NY" {% if state == 'NY' %}selected{% endif %}>New York (NY)</option>
+                <option value="FL" {% if state == 'FL' %}selected{% endif %}>Florida (FL)</option>
+            </select>
+            {% if show_state_help %}
+            <small class="form-help">Property taxes are automatically calculated based on state selection</small>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{# Financing Section #}
+{% macro financing_section(financing_type="", monthly_payment=0, lease_terms=36, loan_term=60, interest_rate=5.5) %}
+<div class="form-section">
+    <h3>💰 Financing</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="financing_type">Financing Type *</label>
+            <select id="financing_type" name="financing_type" required>
+                <option value="">Select financing type</option>
+                <option value="lease" {% if financing_type == 'lease' %}selected{% endif %}>Lease</option>
+                <option value="loan" {% if financing_type == 'loan' %}selected{% endif %}>Loan</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="monthly_payment">Monthly Payment *</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="monthly_payment" name="monthly_payment" required 
+                       min="0" step="0.01" value="{{ monthly_payment }}" placeholder="500">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lease-specific fields -->
+    <div id="lease-fields" class="conditional-fields" {% if financing_type != 'lease' %}style="display: none;"{% endif %}>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="lease_terms">Lease Terms (months)</label>
+                <select id="lease_terms" name="lease_terms">
+                    <option value="24" {% if lease_terms == 24 %}selected{% endif %}>24 months</option>
+                    <option value="36" {% if lease_terms == 36 %}selected{% endif %}>36 months</option>
+                    <option value="48" {% if lease_terms == 48 %}selected{% endif %}>48 months</option>
+                    <option value="60" {% if lease_terms == 60 %}selected{% endif %}>60 months</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="down_payment">Down Payment</label>
+                <div class="input-with-icon">
+                    <span class="currency-icon">$</span>
+                    <input type="number" id="down_payment" name="down_payment" 
+                           placeholder="0" min="0" step="100">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loan-specific fields -->
+    <div id="loan-fields" class="conditional-fields" {% if financing_type != 'loan' %}style="display: none;"{% endif %}>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="loan_term">Loan Term (months)</label>
+                <select id="loan_term" name="loan_term">
+                    <option value="36" {% if loan_term == 36 %}selected{% endif %}>36 months</option>
+                    <option value="48" {% if loan_term == 48 %}selected{% endif %}>48 months</option>
+                    <option value="60" {% if loan_term == 60 %}selected{% endif %}>60 months</option>
+                    <option value="72" {% if loan_term == 72 %}selected{% endif %}>72 months</option>
+                    <option value="84" {% if loan_term == 84 %}selected{% endif %}>84 months</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="interest_rate">Interest Rate (%)</label>
+                <input type="number" id="interest_rate" name="interest_rate" 
+                       placeholder="5.5" min="0" max="25" step="0.1" value="{{ interest_rate }}">
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{# Trade-in & Incentives Section #}
+{% macro trade_in_section(trade_in_value=0, incentives=0) %}
+<div class="form-section">
+    <h3>🔄 Trade-in & Incentives</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="trade_in_value">Trade-in Value</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="trade_in_value" name="trade_in_value" 
+                       min="0" step="100" value="{{ trade_in_value }}" placeholder="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="incentives">Incentives/Rebates</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="incentives" name="incentives" 
+                       min="0" step="100" value="{{ incentives }}" placeholder="0">
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{# Operating Costs Section #}
+{% macro operating_costs_section(monthly_insurance=100, monthly_maintenance=50, monthly_fuel=150, investment_return_rate=6) %}
+<div class="form-section">
+    <h3>💰 Operating Costs</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="monthly_insurance">Monthly Insurance Cost</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="monthly_insurance" name="monthly_insurance" 
+                       min="0" step="1" value="{{ monthly_insurance }}" placeholder="100">
+            </div>
+            <small class="form-help">Estimated monthly insurance premium</small>
+        </div>
+        <div class="form-group">
+            <label for="monthly_maintenance">Monthly Maintenance</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="monthly_maintenance" name="monthly_maintenance" 
+                       min="0" step="1" value="{{ monthly_maintenance }}" placeholder="50">
+            </div>
+            <small class="form-help">Estimated monthly maintenance costs</small>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label for="monthly_fuel">Monthly Fuel/Electricity</label>
+            <div class="input-with-icon">
+                <span class="currency-icon">$</span>
+                <input type="number" id="monthly_fuel" name="monthly_fuel" 
+                       min="0" step="1" value="{{ monthly_fuel }}" placeholder="150">
+            </div>
+            <small class="form-help">Estimated monthly fuel or electricity costs</small>
+        </div>
+        <div class="form-group">
+            <label for="investment_return_rate">Investment Return Rate (%)</label>
+            <input type="number" id="investment_return_rate" name="investment_return_rate" 
+                   min="0" max="20" step="0.1" value="{{ investment_return_rate }}" placeholder="6">
+            <small class="form-help">Expected annual return on investments (default: 6%)</small>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{# Form Actions Section #}
+{% macro form_actions(submit_text="Submit", show_delete=false, scenario_name="") %}
+<div class="form-actions">
+    <button type="submit" class="btn btn-success">
+        <span class="btn-text">{{ submit_text }}</span>
+        <span class="btn-loading" style="display: none;">Processing...</span>
+    </button>
+    <button type="reset" class="btn btn-secondary">Reset Changes</button>
+    {% if show_delete %}
+    <button type="button" class="btn btn-danger" onclick="deleteScenario('{{ scenario_name }}')">Delete Scenario</button>
+    {% endif %}
+    <a href="{{ url_for('main.index') }}" class="btn btn-outline">Cancel</a>
+</div>
+{% endmacro %}
+
+{# JavaScript for form interactions #}
+{% macro form_javascript() %}
+<script>
+// Show/hide conditional fields based on financing type
+document.getElementById('financing_type').addEventListener('change', function() {
+    const leaseFields = document.getElementById('lease-fields');
+    const loanFields = document.getElementById('loan-fields');
+    
+    if (this.value === 'lease') {
+        leaseFields.style.display = 'block';
+        loanFields.style.display = 'none';
+    } else if (this.value === 'loan') {
+        leaseFields.style.display = 'none';
+        loanFields.style.display = 'block';
+    } else {
+        leaseFields.style.display = 'none';
+        loanFields.style.display = 'none';
+    }
+});
+
+// Form validation for scenario name
+document.addEventListener('DOMContentLoaded', function() {
+    const scenarioNameField = document.getElementById('scenario_name');
+    if (scenarioNameField && !scenarioNameField.readOnly) {
+        scenarioNameField.addEventListener('input', function() {
+            const pattern = /^[a-z0-9_]+$/;
+            if (this.value && !pattern.test(this.value)) {
+                this.setCustomValidity('Use only lowercase letters, numbers, and underscores');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+</script>
+{% endmacro %}
