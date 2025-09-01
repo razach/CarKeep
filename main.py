@@ -8,6 +8,13 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from enum import Enum
+
+
+class FinancingType(Enum):
+    """Enumeration for vehicle financing types."""
+    LEASE = "lease"
+    LOAN = "loan"
 
 
 @dataclass
@@ -139,6 +146,19 @@ class VehicleCostCalculator:
             'total_payments': total_lease_payments
         }
     
+    def calculate_loan_components(self, monthly_payment: float, principal: float, loan_term: int, interest_rate: float) -> Dict[str, float]:
+        """Calculate loan components for the second vehicle."""
+        total_payments = monthly_payment * loan_term
+        total_interest = total_payments - principal
+        
+        return {
+            'principal': principal,
+            'monthly_payment': monthly_payment,
+            'loan_term': loan_term,
+            'total_payments': total_payments,
+            'total_interest': total_interest
+        }
+    
     def calculate_investment_opportunity(self, months_to_payoff: int, monthly_payment: float, 
                                        investment_rate: float, total_period: int = 36) -> float:
         """Calculate investment opportunity after loan payoff."""
@@ -153,7 +173,8 @@ class VehicleCostCalculator:
         return total_opportunity
     
     def create_monthly_payment_table(self, vehicle1_config: VehicleConfig, vehicle2_config: VehicleConfig,
-                                   loan_config: LoanConfig, lease_config: LeaseConfig) -> pd.DataFrame:
+                                   loan_config: LoanConfig, lease_config: LeaseConfig, 
+                                   financing_type: FinancingType = FinancingType.LEASE) -> pd.DataFrame:
         """Create monthly payment breakdown table."""
         # Calculate loan payoff
         months_to_payoff, _, _ = self.calculate_loan_payoff(
@@ -169,15 +190,23 @@ class VehicleCostCalculator:
         vehicle1_avg_monthly_tax = sum(vehicle1_taxes[1:]) / 36
         vehicle2_avg_monthly_tax = sum(vehicle2_taxes[1:]) / 36
         
+        # Determine vehicle2 payment and label based on financing type
+        if financing_type == FinancingType.LEASE:
+            vehicle2_payment = lease_config.monthly_payment
+            vehicle2_label = f"{vehicle2_config.name} Lease (36 mo)"
+        else:  # LOAN
+            vehicle2_payment = lease_config.monthly_payment  # This will be the loan payment
+            vehicle2_label = f"{vehicle2_config.name} Loan (36 mo)"
+        
         monthly_data = {
             'Category': ['Payment', 'Property Tax', 'Insurance', 'Maintenance', 'Fuel/Electricity', 'TOTAL MONTHLY'],
-            f'{vehicle2_config.name} Lease (36 mo)': [
-                f'${lease_config.monthly_payment}',
+            vehicle2_label: [
+                f'${vehicle2_payment}',
                 f'${vehicle2_avg_monthly_tax:.0f}',
                 f'${self.cost_config.insurance_monthly.get(vehicle2_config.name, 0)}',
                 f'${self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0)}',
                 f'${self.cost_config.fuel_monthly.get(vehicle2_config.name, 0)}',
-                f'${lease_config.monthly_payment + vehicle2_avg_monthly_tax + self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) + self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) + self.cost_config.fuel_monthly.get(vehicle2_config.name, 0):.0f}'
+                f'${vehicle2_payment + vehicle2_avg_monthly_tax + self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) + self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) + self.cost_config.fuel_monthly.get(vehicle2_config.name, 0):.0f}'
             ],
             f'{vehicle1_config.name} Loan ({months_to_payoff} mo)': [
                 f'${loan_config.monthly_payment + loan_config.extra_payment:.0f}',
@@ -201,7 +230,7 @@ class VehicleCostCalculator:
     
     def create_summary_table(self, vehicle1_config: VehicleConfig, vehicle2_config: VehicleConfig,
                            loan_config: LoanConfig, lease_config: LeaseConfig, 
-                           trade_in_config: TradeInConfig) -> pd.DataFrame:
+                           trade_in_config: TradeInConfig, financing_type: FinancingType = FinancingType.LEASE) -> pd.DataFrame:
         """Create 3-year summary cost table."""
         # Calculate loan payoff
         months_to_payoff, total_interest_paid, _ = self.calculate_loan_payoff(
@@ -217,8 +246,23 @@ class VehicleCostCalculator:
             self.cost_config.investment_return_rate
         )
         
-        # Calculate lease components
-        lease_components = self.calculate_lease_components(lease_config)
+        # Calculate lease components or loan components based on financing type
+        if financing_type == FinancingType.LEASE:
+            lease_components = self.calculate_lease_components(lease_config)
+            vehicle2_payments = lease_config.monthly_payment * lease_config.lease_terms
+            vehicle2_interest = lease_components["lease_interest"]
+            vehicle2_equity = 0  # No equity with lease
+        else:  # LOAN
+            # For loan scenario, calculate proper loan components
+            loan_components = self.calculate_loan_components(
+                lease_config.monthly_payment,  # monthly payment
+                lease_config.msrp,            # principal (stored in msrp field)
+                lease_config.lease_terms,     # loan term (stored in lease_terms field)
+                0.06                          # default interest rate for CPO loans
+            )
+            vehicle2_payments = loan_components["total_payments"]
+            vehicle2_interest = loan_components["total_interest"]
+            vehicle2_equity = vehicle2_config.values_3yr[-1]  # End value is equity
         
         # Calculate property taxes
         vehicle1_taxes = [self.calculate_property_tax(val) for val in vehicle1_config.values_3yr]
@@ -234,10 +278,15 @@ class VehicleCostCalculator:
         vehicle1_fuel_total = self.cost_config.fuel_monthly.get(vehicle1_config.name, 0) * 36
         vehicle1_equity_end = vehicle1_config.values_3yr[-1] - vehicle1_config.impairment
         
-        vehicle2_lease_payments = lease_config.monthly_payment * lease_config.lease_terms
         vehicle2_insurance_total = self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) * 36
         vehicle2_maintenance_total = self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) * 36
         vehicle2_fuel_total = self.cost_config.fuel_monthly.get(vehicle2_config.name, 0) * 36
+        
+        # Determine vehicle2 label based on financing type
+        if financing_type == FinancingType.LEASE:
+            vehicle2_label = f"{vehicle2_config.name} (Lease)"
+        else:
+            vehicle2_label = f"{vehicle2_config.name} (Loan)"
         
         summary_data = {
             'Cost Category': [
@@ -266,25 +315,26 @@ class VehicleCostCalculator:
                 f'${investment_opportunity:.0f}',
                 f'${vehicle1_loan_payments + vehicle1_property_tax_total + vehicle1_insurance_total + vehicle1_maintenance_total + vehicle1_fuel_total - vehicle1_equity_end - investment_opportunity:.0f}'
             ],
-            f'{vehicle2_config.name} (Lease)': [
-                f'${vehicle2_lease_payments:.0f}',
-                f'${lease_components["lease_interest"]:.0f}',
+            vehicle2_label: [
+                f'${vehicle2_payments:.0f}',
+                f'${vehicle2_interest:.0f}',
                 '$0',
                 f'${vehicle2_property_tax_total:.0f}',
                 f'${vehicle2_insurance_total:.0f}',
                 f'${vehicle2_maintenance_total:.0f}',
                 f'${vehicle2_fuel_total:.0f}',
-                f'${vehicle2_lease_payments + lease_components["lease_interest"] + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total:.0f}',
+                f'${vehicle2_payments + vehicle2_interest + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total:.0f}',
+                f'-${vehicle2_equity:.0f}',
                 '$0',
-                '$0',
-                f'${vehicle2_lease_payments + lease_components["lease_interest"] + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total:.0f}'
+                f'${vehicle2_payments + vehicle2_interest + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total - vehicle2_equity:.0f}'
             ]
         }
         
         return pd.DataFrame(summary_data)
     
     def create_cost_difference_table(self, vehicle1_config: VehicleConfig, vehicle2_config: VehicleConfig,
-                                   loan_config: LoanConfig, lease_config: LeaseConfig) -> pd.DataFrame:
+                                   loan_config: LoanConfig, lease_config: LeaseConfig, 
+                                   financing_type: FinancingType = FinancingType.LEASE) -> pd.DataFrame:
         """Create cost difference breakdown table."""
         # Calculate loan payoff
         months_to_payoff, total_interest_paid, _ = self.calculate_loan_payoff(
@@ -300,8 +350,25 @@ class VehicleCostCalculator:
             self.cost_config.investment_return_rate
         )
         
-        # Calculate lease components
-        lease_components = self.calculate_lease_components(lease_config)
+        # Calculate lease components or loan components based on financing type
+        if financing_type == FinancingType.LEASE:
+            lease_components = self.calculate_lease_components(lease_config)
+            vehicle2_payments = lease_config.monthly_payment * lease_config.lease_terms
+            vehicle2_interest = lease_components["lease_interest"]
+            vehicle2_equity = 0  # No equity with lease
+            depreciation_diff = lease_components['depreciation'] - (vehicle1_config.current_value - (vehicle1_config.values_3yr[-1] - vehicle1_config.impairment))
+        else:  # LOAN
+            # For loan scenario, calculate proper loan components
+            loan_components = self.calculate_loan_components(
+                lease_config.monthly_payment,  # monthly payment
+                lease_config.msrp,            # principal (stored in msrp field)
+                lease_config.lease_terms,     # loan term (stored in lease_terms field)
+                0.06                          # default interest rate for CPO loans
+            )
+            vehicle2_payments = loan_components["total_payments"]
+            vehicle2_interest = loan_components["total_interest"]
+            vehicle2_equity = vehicle2_config.values_3yr[-1]  # End value is equity
+            depreciation_diff = (vehicle1_config.current_value - (vehicle1_config.values_3yr[-1] - vehicle1_config.impairment)) - (lease_config.msrp - vehicle2_equity)
         
         # Calculate property taxes
         vehicle1_taxes = [self.calculate_property_tax(val) for val in vehicle1_config.values_3yr]
@@ -311,14 +378,13 @@ class VehicleCostCalculator:
         vehicle2_property_tax_total = sum(vehicle2_taxes[1:])
         
         # Calculate differences
-        depreciation_diff = lease_components['depreciation'] - (vehicle1_config.current_value - (vehicle1_config.values_3yr[-1] - vehicle1_config.impairment))
-        interest_diff = lease_components['lease_interest'] - total_interest_paid
+        interest_diff = vehicle2_interest - total_interest_paid
         property_tax_diff = vehicle2_property_tax_total - vehicle1_property_tax_total
         insurance_diff = (self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) - self.cost_config.insurance_monthly.get(vehicle1_config.name, 0)) * 36
         maintenance_diff = (self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) - self.cost_config.maintenance_monthly.get(vehicle1_config.name, 0)) * 36
         fuel_diff = (self.cost_config.fuel_monthly.get(vehicle2_config.name, 0) - self.cost_config.fuel_monthly.get(vehicle1_config.name, 0)) * 36
-        equity_diff = vehicle1_config.values_3yr[-1] - vehicle1_config.impairment  # RDX retains equity, Lucid doesn't - this makes Lucid less attractive
-        investment_opp_diff = investment_opportunity  # RDX gets investment opportunity, Lucid doesn't - this makes Lucid less attractive
+        equity_diff = vehicle1_config.values_3yr[-1] - vehicle1_config.impairment - vehicle2_equity
+        investment_opp_diff = investment_opportunity  # RDX gets investment opportunity, new vehicle doesn't
         
         # Calculate 3-year totals for cost difference calculation
         vehicle1_loan_payments = loan_config.principal_balance + total_interest_paid
@@ -327,28 +393,35 @@ class VehicleCostCalculator:
         vehicle1_fuel_total = self.cost_config.fuel_monthly.get(vehicle1_config.name, 0) * 36
         vehicle1_equity_end = vehicle1_config.values_3yr[-1] - vehicle1_config.impairment
         
-        vehicle2_lease_payments = lease_config.monthly_payment * lease_config.lease_terms
+        # Calculate vehicle2 3-year totals
         vehicle2_insurance_total = self.cost_config.insurance_monthly.get(vehicle2_config.name, 0) * 36
         vehicle2_maintenance_total = self.cost_config.maintenance_monthly.get(vehicle2_config.name, 0) * 36
         vehicle2_fuel_total = self.cost_config.fuel_monthly.get(vehicle2_config.name, 0) * 36
         
-        # Calculate total costs the same way as prototype
         vehicle1_total_cost = vehicle1_loan_payments + vehicle1_property_tax_total + vehicle1_insurance_total + vehicle1_maintenance_total + vehicle1_fuel_total - vehicle1_equity_end - investment_opportunity
-        vehicle2_total_cost = vehicle2_lease_payments + lease_components["lease_interest"] + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total
+        vehicle2_total_cost = vehicle2_payments + vehicle2_interest + vehicle2_property_tax_total + vehicle2_insurance_total + vehicle2_maintenance_total + vehicle2_fuel_total - vehicle2_equity
         total_cost_difference = vehicle2_total_cost - vehicle1_total_cost
+        
+        # Determine vehicle2 label based on financing type
+        if financing_type == FinancingType.LEASE:
+            vehicle2_label = f"{vehicle2_config.name} lease"
+            equity_description = f"{vehicle2_config.name} has no equity, {vehicle1_config.name} retains ${vehicle1_config.values_3yr[-1] - vehicle1_config.impairment:.0f} value"
+        else:
+            vehicle2_label = f"{vehicle2_config.name} loan"
+            equity_description = f"{vehicle2_config.name} has ${vehicle2_equity:.0f} equity, {vehicle1_config.name} retains ${vehicle1_config.values_3yr[-1] - vehicle1_config.impairment:.0f} value"
         
         cost_difference_data = {
             'Cost Component': [
-                'CONVENTION: Positive values = Lucid lease costs MORE (increases difference)',
-                'CONVENTION: Negative values = Lucid lease costs LESS (decreases difference)',
+                'CONVENTION: Positive values = New vehicle costs MORE (increases difference)',
+                'CONVENTION: Negative values = New vehicle costs LESS (decreases difference)',
                 '',
                 'Depreciation Difference',
-                'Interest (Lease vs Loan)',
+                'Interest (New vs Current)',
                 'Property Tax Difference',
                 'Insurance Difference',
                 'Maintenance Difference',
                 'Fuel/Electricity Difference',
-                f'Equity Difference ({vehicle2_config.name} 0 vs {vehicle1_config.name} +${vehicle1_config.values_3yr[-1] - vehicle1_config.impairment:.0f})',
+                f'Equity Difference ({vehicle2_label} vs {vehicle1_config.name})',
                 'Investment Opportunity (Keep car only)',
                 'TOTAL COST DIFFERENCE'
             ],
@@ -370,15 +443,15 @@ class VehicleCostCalculator:
                 '',
                 '',
                 '',
-                f'Lower depreciation on {vehicle2_config.name} vs {vehicle1_config.name} (incentives reduce cost)',
-                'Lease interest (money factor) vs loan interest',
+                f'Depreciation difference between {vehicle2_label} and {vehicle1_config.name}',
+                f'Interest on {vehicle2_label} vs current loan interest',
                 f'Higher property tax on more expensive {vehicle2_config.name}',
-                f'Higher insurance on luxury EV',
-                'Lower maintenance on EV vs gas vehicle',
-                'Electricity savings vs gas costs',
-                f'{vehicle2_config.name} has no equity, {vehicle1_config.name} retains ${vehicle1_config.values_3yr[-1] - vehicle1_config.impairment:.0f} value',
-                'Investment opportunity lost with lease (Keep car gets this benefit)',
-                'Total additional cost of lease (sum of all above)'
+                f'Insurance difference between vehicles',
+                'Maintenance cost difference between vehicles',
+                'Fuel/electricity cost difference between vehicles',
+                equity_description,
+                'Investment opportunity lost with new vehicle (Keep car gets this benefit)',
+                'Total additional cost of new vehicle (sum of all above)'
             ]
         }
         
@@ -386,21 +459,21 @@ class VehicleCostCalculator:
     
     def run_comparison(self, vehicle1_config: VehicleConfig, vehicle2_config: VehicleConfig,
                       loan_config: LoanConfig, lease_config: LeaseConfig, 
-                      trade_in_config: TradeInConfig) -> Dict[str, pd.DataFrame]:
+                      trade_in_config: TradeInConfig, financing_type: FinancingType = FinancingType.LEASE) -> Dict[str, pd.DataFrame]:
         """Run the complete vehicle cost comparison."""
         results = {}
         
         # Generate all tables
         results['monthly_payment'] = self.create_monthly_payment_table(
-            vehicle1_config, vehicle2_config, loan_config, lease_config
+            vehicle1_config, vehicle2_config, loan_config, lease_config, financing_type
         )
         
         results['summary'] = self.create_summary_table(
-            vehicle1_config, vehicle2_config, loan_config, lease_config, trade_in_config
+            vehicle1_config, vehicle2_config, loan_config, lease_config, trade_in_config, financing_type
         )
         
         results['cost_difference'] = self.create_cost_difference_table(
-            vehicle1_config, vehicle2_config, loan_config, lease_config
+            vehicle1_config, vehicle2_config, loan_config, lease_config, financing_type
         )
         
         return results
@@ -454,7 +527,7 @@ def create_sample_comparison() -> Dict[str, pd.DataFrame]:
         incentives=2000
     )
     
-    return calculator.run_comparison(rdx_config, lucid_config, loan_config, lease_config, trade_in_config)
+    return calculator.run_comparison(rdx_config, lucid_config, loan_config, lease_config, trade_in_config, FinancingType.LEASE)
 
 
 def main():

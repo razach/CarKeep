@@ -1,0 +1,268 @@
+{
+  "examples": {
+    "basic_lease_comparison": {
+      "description": "Acura RDX vs Lucid Air using prototype values (Lease, VA)",
+      "state": "VA",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "Lucid Air",
+        "msrp": 72800,
+        "current_value": 0,
+        "values_3yr": [71400, 55100, 41500, 31059]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "lease",
+        "config": {
+          "monthly_payment": 368,
+          "lease_terms": 36,
+          "msrp": 72800,
+          "incentives": {
+            "air_credit": 15000,
+            "ev_credit": 7500,
+            "onsite_credit": 2000
+          }
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 2000
+      }
+    },
+    "cpo_loan_comparison": {
+      "description": "Acura RDX vs CPO Acura MDX with loan financing (VA)",
+      "state": "VA",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "CPO Acura MDX",
+        "msrp": 45000,
+        "current_value": 0,
+        "values_3yr": [35000, 31500, 28350, 25515]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "loan",
+        "config": {
+          "monthly_payment": 1073.47,
+          "loan_term": 36,
+          "principal_balance": 35000
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 0
+      }
+    },
+    "custom_costs_comparison": {
+      "description": "Acura RDX vs Lucid Air with custom Texas costs (Lease, TX)",
+      "state": "TX",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "Lucid Air",
+        "msrp": 72800,
+        "current_value": 0,
+        "values_3yr": [71400, 55100, 41500, 31059]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "lease",
+        "config": {
+          "monthly_payment": 368,
+          "lease_terms": 36,
+          "msrp": 72800,
+          "incentives": {
+            "air_credit": 15000,
+            "ev_credit": 7500,
+            "onsite_credit": 2000
+          }
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 2000
+      },
+      "cost_overrides": {
+        "insurance_monthly": {
+          "Acura RDX": 120,
+          "Lucid Air": 200
+        },
+        "maintenance_monthly": {
+          "Acura RDX": 50,
+          "Lucid Air": 35
+        },
+        "fuel_monthly": {
+          "Acura RDX": 150,
+          "Lucid Air": 45
+        }
+      }
+    },
+    "cpo_bmw_x3_loan": {
+      "description": "Acura RDX vs CPO BMW X3 with loan financing (VA)",
+      "state": "VA",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "CPO BMW X3",
+        "msrp": 52000,
+        "current_value": 0,
+        "values_3yr": [42000, 37800, 34020, 30618]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "loan",
+        "config": {
+          "monthly_payment": 1280.00,
+          "loan_term": 36,
+          "principal_balance": 42000
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 0
+      }
+    },
+    "cpo_bmw_x3_lease": {
+      "description": "Acura RDX vs CPO BMW X3 with lease financing (VA)",
+      "state": "VA",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "CPO BMW X3",
+        "msrp": 52000,
+        "current_value": 0,
+        "values_3yr": [42000, 37800, 34020, 30618]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "lease",
+        "config": {
+          "monthly_payment": 450.00,
+          "lease_terms": 36,
+          "msrp": 52000,
+          "incentives": {
+            "ev_credit": 7500,
+            "dealer_discount": 2000
+          }
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 0
+      }
+    },
+    "cpo_with_custom_costs": {
+      "description": "CPO BMW X3 with custom cost configurations (VA)",
+      "state": "VA",
+      "vehicle1": {
+        "name": "Acura RDX",
+        "msrp": 0,
+        "current_value": 21000,
+        "values_3yr": [21000, 18900, 17000, 15300],
+        "impairment": 3000,
+        "impairment_affects_taxes": false
+      },
+      "vehicle2": {
+        "name": "CPO BMW X3",
+        "msrp": 52000,
+        "current_value": 0,
+        "values_3yr": [42000, 37800, 34020, 30618]
+      },
+      "current_loan": {
+        "principal_balance": 9909.95,
+        "monthly_payment": 564.10,
+        "extra_payment": 85.90,
+        "interest_rate": 0.0439
+      },
+      "vehicle2_financing": {
+        "type": "loan",
+        "config": {
+          "monthly_payment": 1280.00,
+          "loan_term": 36,
+          "principal_balance": 42000
+        }
+      },
+      "trade_in": {
+        "trade_in_value": 18000,
+        "loan_balance": 9909.95,
+        "incentives": 0
+      },
+      "cost_overrides": {
+        "insurance_monthly": {
+          "CPO Acura MDX": 140,
+          "CPO BMW X3": 160
+        },
+        "maintenance_monthly": {
+          "CPO Acura MDX": 65,
+          "CPO BMW X3": 85
+        },
+        "fuel_monthly": {
+          "CPO Acura MDX": 200,
+          "CPO BMW X3": 180
+        }
+      }
+    }
+  }
+}
