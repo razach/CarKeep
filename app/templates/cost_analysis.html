@@ -6,13 +6,13 @@
 <div class="cost-analysis fade-in">
     <div class="analysis-header">
         <h1>💰 Cost Analysis</h1>
-        <p>Simple breakdown of vehicle costs and savings</p>
+        <p>Simple breakdown of vehicle costs and potential savings</p>
         <div class="header-actions">
             <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
-    {% if scenarios %}
+    {% if analysis %}
     <div class="analysis-content">
         <!-- Cost Summary Cards -->
         <div class="cost-summary">
@@ -20,71 +20,64 @@
             <div class="summary-cards">
                 <div class="summary-card">
                     <h4>Current Monthly Cost</h4>
-                    <div class="cost-amount">${{ "{:,.0f}".format(baseline_monthly_cost) }}</div>
-                    <small>Your baseline vehicle</small>
+                    <div class="cost-amount">${{ "{:,.0f}".format(analysis.baseline.total_monthly) }}</div>
+                    <small>{{ analysis.baseline.vehicle_name }}</small>
                 </div>
                 <div class="summary-card">
                     <h4>Lowest Alternative</h4>
-                    <div class="cost-amount savings">${{ "{:,.0f}".format(lowest_monthly_cost) }}</div>
-                    <small>{{ lowest_scenario_name }}</small>
+                    <div class="cost-amount savings">${{ "{:,.0f}".format(analysis.summary.lowest_monthly_cost) }}</div>
+                    <small>{{ analysis.summary.lowest_scenario_name }}</small>
                 </div>
                 <div class="summary-card">
                     <h4>Potential Monthly Savings</h4>
-                    <div class="cost-amount highlight">${{ "{:,.0f}".format(monthly_savings) }}</div>
+                    <div class="cost-amount highlight">${{ "{:,.0f}".format(analysis.summary.monthly_savings) }}</div>
                     <small>vs. current vehicle</small>
                 </div>
             </div>
         </div>
         
-        <!-- Detailed Cost Breakdown -->
-        <div class="cost-breakdown">
-            <h3>🔍 Detailed Breakdown</h3>
-            <div class="breakdown-table">
+        <!-- Simple Cost Comparison -->
+        <div class="cost-comparison">
+            <h3>🚗 Vehicle Cost Comparison</h3>
+            <div class="comparison-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Scenario</th>
+                            <th>Vehicle</th>
                             <th>Monthly Payment</th>
-                            <th>Insurance</th>
-                            <th>Maintenance</th>
-                            <th>Fuel</th>
+                            <th>Other Costs</th>
                             <th>Total Monthly</th>
-                            <th>vs. Baseline</th>
+                            <th>vs. Current</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Baseline Row -->
-                        <tr class="baseline-row">
+                        <!-- Current Vehicle Row -->
+                        <tr class="current-vehicle">
                             <td>
-                                <strong>{{ baseline.vehicle.name or 'Current Vehicle' }}</strong>
-                                <small class="scenario-name">Baseline</small>
+                                <strong>{{ analysis.baseline.vehicle_name }}</strong>
+                                <small>Current Vehicle</small>
                             </td>
-                            <td>${{ "{:,.0f}".format(baseline.current_loan.monthly_payment or 0) }}</td>
-                            <td>$100</td>
-                            <td>$50</td>
-                            <td>$150</td>
-                            <td><strong>${{ "{:,.0f}".format(baseline_monthly_cost) }}</strong></td>
+                            <td>${{ "{:,.0f}".format(analysis.baseline.monthly_payment) }}</td>
+                            <td>${{ "{:,.0f}".format(analysis.baseline.insurance_monthly + analysis.baseline.maintenance_monthly + analysis.baseline.fuel_monthly) }}</td>
+                            <td><strong>${{ "{:,.0f}".format(analysis.baseline.total_monthly) }}</strong></td>
                             <td><span class="baseline-marker">—</span></td>
                         </tr>
                         
-                        <!-- Alternative Scenarios -->
-                        {% for scenario in scenarios %}
-                        <tr>
+                        <!-- Alternative Vehicles -->
+                        {% for scenario in analysis.scenarios %}
+                        <tr class="{% if scenario.vs_baseline < 0 %}savings{% else %}cost-increase{% endif %}">
                             <td>
-                                <strong>{{ scenario.description or 'New Vehicle' }}</strong>
-                                <small class="scenario-name">{{ scenario.scenario_name }}</small>
+                                <strong>{{ scenario.vehicle_name }}</strong>
+                                <small>{{ scenario.description }}</small>
                             </td>
-                            <td>${{ "{:,.0f}".format(scenario.scenario.financing.monthly_payment) }}</td>
-                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.insurance_monthly.get(scenario.scenario.vehicle.name, 100) if scenario.cost_overrides and scenario.cost_overrides.insurance_monthly else 100) }}</td>
-                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.maintenance_monthly.get(scenario.scenario.vehicle.name, 50) if scenario.cost_overrides and scenario.cost_overrides.maintenance_monthly else 50) }}</td>
-                            <td>${{ "{:,.0f}".format(scenario.cost_overrides.fuel_monthly.get(scenario.scenario.vehicle.name, 150) if scenario.cost_overrides and scenario.cost_overrides.fuel_monthly else 150) }}</td>
-                            <td><strong>${{ "{:,.0f}".format(scenario.total_monthly_cost) }}</strong></td>
+                            <td>${{ "{:,.0f}".format(scenario.monthly_payment) }}</td>
+                            <td>${{ "{:,.0f}".format(scenario.insurance_monthly + scenario.maintenance_monthly + scenario.fuel_monthly) }}</td>
+                            <td><strong>${{ "{:,.0f}".format(scenario.total_monthly) }}</strong></td>
                             <td>
-                                {% set diff = scenario.total_monthly_cost - baseline_monthly_cost %}
-                                {% if diff < 0 %}
-                                <span class="savings">-${{ "{:,.0f}".format(abs(diff)) }}</span>
+                                {% if scenario.vs_baseline < 0 %}
+                                <span class="savings">-${{ "{:,.0f}".format(scenario.vs_baseline * -1) }}</span>
                                 {% else %}
-                                <span class="cost-increase">+${{ "{:,.0f}".format(diff) }}</span>
+                                <span class="cost-increase">+${{ "{:,.0f}".format(scenario.vs_baseline) }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -135,26 +128,34 @@
 .analysis-header h1 {
     margin-bottom: 1rem;
     font-size: 2.5rem;
+    color: #2c3e50;
 }
 
 .analysis-header p {
-    color: #7f8c8d;
     font-size: 1.1rem;
+    color: #7f8c8d;
     margin-bottom: 1.5rem;
 }
 
+.header-actions {
+    margin-top: 1.5rem;
+}
+
+/* Cost Summary Cards */
 .cost-summary {
     margin-bottom: 3rem;
 }
 
 .cost-summary h3 {
-    margin-bottom: 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
     color: #2c3e50;
 }
 
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -162,23 +163,31 @@
 .summary-card {
     background: white;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     text-align: center;
-    border: 1px solid #e9ecef;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
 .summary-card h4 {
     margin-bottom: 1rem;
-    color: #2c3e50;
-    font-size: 1.1rem;
+    color: #7f8c8d;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .cost-amount {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
     color: #2c3e50;
+    margin-bottom: 0.5rem;
 }
 
 .cost-amount.savings {
@@ -186,62 +195,84 @@
 }
 
 .cost-amount.highlight {
-    color: #3498db;
+    color: #e74c3c;
 }
 
 .summary-card small {
-    color: #7f8c8d;
+    color: #95a5a6;
     font-size: 0.9rem;
 }
 
-.cost-breakdown {
+/* Cost Comparison Table */
+.cost-comparison {
     margin-bottom: 3rem;
 }
 
-.cost-breakdown h3 {
-    margin-bottom: 1.5rem;
+.cost-comparison h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
     color: #2c3e50;
 }
 
-.breakdown-table {
+.comparison-table {
     background: white;
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-.breakdown-table table {
+.comparison-table table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.breakdown-table th {
+.comparison-table th {
     background: #f8f9fa;
     padding: 1rem;
     text-align: left;
     font-weight: 600;
     color: #2c3e50;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
 }
 
-.breakdown-table td {
+.comparison-table td {
     padding: 1rem;
     border-bottom: 1px solid #e9ecef;
     vertical-align: top;
 }
 
-.breakdown-table tr:hover {
-    background: #f8f9fa;
+.comparison-table tr:last-child td {
+    border-bottom: none;
 }
 
-.baseline-row {
+.comparison-table tr.current-vehicle {
     background: #f8f9fa;
-    border-left: 4px solid #3498db;
+    font-weight: 600;
+}
+
+.comparison-table tr.savings {
+    background: #f0fff4;
+}
+
+.comparison-table tr.cost-increase {
+    background: #fff5f5;
+}
+
+.comparison-table strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.comparison-table small {
+    color: #7f8c8d;
+    font-size: 0.85rem;
 }
 
 .baseline-marker {
-    color: #3498db;
-    font-weight: 600;
+    color: #95a5a6;
+    font-style: italic;
 }
 
 .savings {
@@ -254,37 +285,29 @@
     font-weight: 600;
 }
 
-.scenario-name {
-    display: block;
-    color: #7f8c8d;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-}
-
+/* Quick Actions */
 .quick-actions {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    margin-top: 3rem;
 }
 
 .quick-actions h3 {
     margin-bottom: 1.5rem;
+    font-size: 1.5rem;
     color: #2c3e50;
 }
 
 .action-buttons {
     display: flex;
     gap: 1rem;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
-.empty-state {
+/* Empty State */
+.no-scenarios {
     text-align: center;
     padding: 4rem 2rem;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
 .empty-state h3 {
@@ -297,6 +320,7 @@
     margin-bottom: 2rem;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
     .cost-analysis {
         padding: 1rem;
@@ -306,18 +330,18 @@
         grid-template-columns: 1fr;
     }
     
-    .breakdown-table {
+    .comparison-table {
         overflow-x: auto;
     }
     
     .action-buttons {
         flex-direction: column;
+        align-items: center;
     }
     
-    .breakdown-table th,
-    .breakdown-table td {
-        padding: 0.75rem 0.5rem;
-        font-size: 0.9rem;
+    .action-buttons .btn {
+        width: 100%;
+        max-width: 300px;
     }
 }
 </style>

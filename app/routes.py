@@ -523,50 +523,13 @@ def cost_analysis():
         scenarios_data = list_scenarios(data_folder)
         
         if not scenarios_data:
-            return render_template('cost_analysis.html', scenarios=None, baseline=None)
+            return render_template('cost_analysis.html', analysis=None)
         
-        # Get baseline data
-        baseline = scenarios_data.get('baseline', {})
+        # Use core cost analyzer to prepare all data
+        from core.calculators.cost_analyzer import analyze_scenarios_from_data
+        analysis = analyze_scenarios_from_data(scenarios_data)
         
-        # Calculate baseline monthly cost - use current_loan monthly_payment
-        baseline_monthly_cost = baseline.get('current_loan', {}).get('monthly_payment', 0) or 0
-        
-        # Get alternative scenarios and calculate costs
-        scenarios = []
-        lowest_monthly_cost = float('inf')
-        lowest_scenario_name = ""
-        
-        for scenario_name, scenario_data in scenarios_data.get('scenarios', {}).items():
-            # Calculate total monthly cost for this scenario
-            financing_monthly = scenario_data['scenario']['financing']['monthly_payment']
-            
-            # Get cost overrides if they exist
-            cost_overrides = scenario_data.get('cost_overrides', {})
-            insurance_monthly = cost_overrides.get('insurance_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 100) if 'insurance_monthly' in cost_overrides else 100
-            maintenance_monthly = cost_overrides.get('maintenance_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 50) if 'maintenance_monthly' in cost_overrides else 50
-            fuel_monthly = cost_overrides.get('fuel_monthly', {}).get(scenario_data['scenario']['vehicle']['name'], 150) if 'fuel_monthly' in cost_overrides else 150
-            
-            total_monthly_cost = financing_monthly + insurance_monthly + maintenance_monthly + fuel_monthly
-            
-            # Add total cost to scenario data
-            scenario_data['total_monthly_cost'] = total_monthly_cost
-            scenarios.append(scenario_data)
-            
-            # Track lowest cost scenario
-            if total_monthly_cost < lowest_monthly_cost:
-                lowest_monthly_cost = total_monthly_cost
-                lowest_scenario_name = scenario_data.get('description', 'New Vehicle')
-        
-        # Calculate potential savings
-        monthly_savings = baseline_monthly_cost - lowest_monthly_cost if lowest_monthly_cost != float('inf') else 0
-        
-        return render_template('cost_analysis.html', 
-                             scenarios=scenarios, 
-                             baseline=baseline,
-                             baseline_monthly_cost=baseline_monthly_cost,
-                             lowest_monthly_cost=lowest_monthly_cost,
-                             lowest_scenario_name=lowest_scenario_name,
-                             monthly_savings=monthly_savings)
+        return render_template('cost_analysis.html', analysis=analysis)
         
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
