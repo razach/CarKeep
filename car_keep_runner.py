@@ -67,7 +67,7 @@ def parse_cost_overrides(data: Dict[str, Any]) -> Dict[str, Dict[str, float]]:
     return cost_overrides
 
 
-def run_comparison_from_json(json_data: Dict[str, Any]) -> Dict[str, Any]:
+def run_comparison_from_json(json_data: Dict[str, Any], export_csv: bool = False) -> Dict[str, Any]:
     """Run vehicle cost comparison from JSON input data."""
     
     # Parse configuration
@@ -112,6 +112,13 @@ def run_comparison_from_json(json_data: Dict[str, Any]) -> Dict[str, Any]:
         lease_config, trade_in_config, financing_type
     )
     
+    # Export CSV files if requested
+    if export_csv:
+        for table_name, df in results.items():
+            filename = f"{table_name}_comparison.csv"
+            df.to_csv(filename, index=False)
+            print(f"Saved {filename}")
+    
     # Convert DataFrames to dictionaries for JSON serialization
     json_results = {}
     for table_name, df in results.items():
@@ -130,11 +137,13 @@ def run_comparison_from_json(json_data: Dict[str, Any]) -> Dict[str, Any]:
 def main():
     """Main function that reads JSON input and runs comparison."""
     
-    if len(sys.argv) != 2:
-        print("Usage: python car_keep_runner.py <input_file.json>")
+    if len(sys.argv) < 2:
+        print("Usage: python car_keep_runner.py <input_file.json> [--csv]")
+        print("  --csv    Export results to CSV files")
         sys.exit(1)
     
     input_file = sys.argv[1]
+    export_csv = "--csv" in sys.argv
     
     try:
         # Read JSON input file
@@ -142,10 +151,13 @@ def main():
             json_data = json.load(f)
         
         # Run comparison
-        results = run_comparison_from_json(json_data)
+        results = run_comparison_from_json(json_data, export_csv)
         
         # Output results as JSON
         print(json.dumps(results, indent=2))
+        
+        if export_csv:
+            print("\nCSV files have been generated for further processing and visualization.")
         
     except FileNotFoundError:
         print(f"Error: Input file '{input_file}' not found.")

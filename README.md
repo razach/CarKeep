@@ -26,7 +26,27 @@ python run_examples.py list
 
 # Run specific example
 python run_examples.py cpo_loan_comparison
+
+# Run example and export to CSV files
+python run_examples.py cpo_loan_comparison --csv
 ```
+
+### 3. Export to CSV
+
+Both scripts support CSV export:
+
+```bash
+# Export single comparison to CSV
+python car_keep_runner.py input.json --csv
+
+# Export example to CSV
+python run_examples.py cpo_loan_comparison --csv
+```
+
+This generates three CSV files:
+- `monthly_payment_comparison.csv` - Monthly cost breakdown
+- `summary_comparison.csv` - 3-year total cost summary
+- `cost_difference_comparison.csv` - Detailed cost difference analysis
 
 ## System Architecture
 
