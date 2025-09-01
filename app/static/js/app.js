@@ -137,18 +137,45 @@ function handleFormSubmit(event) {
     
     const form = event.target;
     const submitButton = form.querySelector('button[type="submit"]');
+    const btnText = submitButton.querySelector('.btn-text');
+    const btnLoading = submitButton.querySelector('.btn-loading');
     
-    // Add loading state
-    submitButton.textContent = 'Creating...';
+    // Show loading state
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline';
     submitButton.disabled = true;
     
-    // Simulate form processing
-    setTimeout(() => {
-        showNotification('Scenario created successfully!', 'success');
-        submitButton.textContent = 'Create Scenario';
+    // Get form data
+    const formData = new FormData(form);
+    
+    // Submit form via fetch
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            
+            // Redirect to the new scenario after a short delay
+            setTimeout(() => {
+                window.location.href = `/scenario/${data.scenario_name}`;
+            }, 1500);
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while creating the scenario', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
         submitButton.disabled = false;
-        form.reset();
-    }, 1500);
+    });
 }
 
 // Show notification messages

@@ -398,19 +398,32 @@ h3 {
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 .form-section {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
 }
 
 .form-section h3 {
     color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #667eea;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
     margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #ecf0f1;
 }
 
 .form-group {
@@ -422,6 +435,7 @@ h3 {
     margin-bottom: 0.5rem;
     font-weight: 600;
     color: #2c3e50;
+    font-size: 0.9rem;
 }
 
 .form-group input,
@@ -429,10 +443,11 @@ h3 {
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #ecf0f1;
+    border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background: white;
 }
 
 .form-group input:focus,
@@ -441,13 +456,104 @@ h3 {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
 }
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Input with currency icon */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: #6c757d;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.input-with-icon input {
+    padding-left: 2rem;
+}
+
+/* Conditional fields */
+.conditional-fields {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+/* Form actions */
 .form-actions {
     display: flex;
     gap: 1rem;
     justify-content: center;
     margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e9ecef;
+}
+
+/* Button outline variant */
+.btn-outline {
+    background: transparent;
+    color: #6c757d;
+    border: 2px solid #6c757d;
+}
+
+.btn-outline:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Loading button states */
+.btn-loading {
+    display: none;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Responsive form */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .create-form {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
 }
 
 /* Loading and animation states */
@@ -490,6 +596,70 @@ h3 {
 
 .error-actions {
     margin-top: 2rem;
+}
+
+/* Edit page styles */
+.edit-scenario {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.edit-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.edit-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.edit-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.edit-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Danger button */
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+/* Readonly input styling */
+input[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+input[readonly]:focus {
+    border-color: #6c757d;
+    box-shadow: none;
+    transform: none;
 }
 
 /* Hero section */

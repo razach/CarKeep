@@ -67,10 +67,10 @@
                        class="btn btn-primary" data-tooltip="View detailed cost analysis">
                         📊 View Results
                     </a>
-                    <button class="btn btn-secondary" onclick="editScenario('{{ scenario_name }}')" 
-                            data-tooltip="Edit this scenario">
+                    <a href="{{ url_for('main.edit_scenario', scenario_name=scenario_name) }}" 
+                       class="btn btn-secondary" data-tooltip="Edit this scenario">
                         ✏️ Edit
-                    </button>
+                    </a>
                     <button class="btn btn-info" onclick="duplicateScenario('{{ scenario_name }}')" 
                             data-tooltip="Create a copy of this scenario">
                         📋 Duplicate
