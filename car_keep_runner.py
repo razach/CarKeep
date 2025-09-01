@@ -68,70 +68,152 @@ def parse_cost_overrides(data: Dict[str, Any]) -> Dict[str, Dict[str, float]]:
 
 
 def run_comparison_from_json(json_data: Dict[str, Any], export_csv: bool = False) -> Dict[str, Any]:
-    """Run vehicle cost comparison from JSON input data."""
+    """
+    Run a vehicle cost comparison from JSON data.
     
-    # Parse configuration
-    state = json_data.get('state', 'VA')
-    calculator = VehicleCostCalculator(state=state)
+    Expected JSON structure:
+    {
+        "baseline": {
+            "description": "Baseline vehicle description",
+            "state": "VA",
+            "vehicle": {...},
+            "current_loan": {...}
+        },
+        "examples": {
+            "scenario_name": {
+                "description": "Scenario description",
+                "state": "VA",  # Optional, defaults to baseline state
+                "scenario": {
+                    "type": "lease" | "loan",
+                    "vehicle": {...},
+                    "financing": {...}
+                },
+                "trade_in": {...},
+                "cost_overrides": {...}  # Optional
+            }
+        }
+    }
+    """
     
-    # Apply cost overrides if provided
-    if 'cost_overrides' in json_data:
-        cost_overrides = parse_cost_overrides(json_data['cost_overrides'])
-        for cost_type, overrides in cost_overrides.items():
-            getattr(calculator.cost_config, cost_type).update(overrides)
+    # Extract baseline data
+    baseline = json_data.get('baseline', {})
+    baseline_state = baseline.get('state', 'VA')
+    baseline_vehicle = baseline.get('vehicle', {})
+    baseline_loan = baseline.get('current_loan', {})
     
-    # Parse vehicle configurations
-    vehicle1_config = parse_vehicle_config(json_data['vehicle1'])
-    vehicle2_config = parse_vehicle_config(json_data['vehicle2'])
+    # Extract examples
+    examples = json_data.get('examples', {})
     
-    # Parse loan configuration (current vehicle)
-    current_loan_config = parse_loan_config(json_data['current_loan'])
+    results = {}
     
-    # Parse financing configuration for vehicle2
-    financing_type = FinancingType(json_data['vehicle2_financing']['type'])
-    
-    if financing_type == FinancingType.LEASE:
-        # For lease, use lease_config directly
-        lease_config = parse_lease_config(json_data['vehicle2_financing']['config'])
-    else:
-        # For loan, create lease_config structure to hold loan info
-        loan_data = json_data['vehicle2_financing']['config']
-        lease_config = LeaseConfig(
-            monthly_payment=loan_data['monthly_payment'],
-            lease_terms=loan_data.get('loan_term', 36),
-            msrp=loan_data['principal_balance'],
-            incentives={}
+    for example_name, example_data in examples.items():
+        print(f"  Processing: {example_data.get('description', example_name)}")
+        
+        # Use example state if provided, otherwise use baseline state
+        state = example_data.get('state', baseline_state)
+        
+        # Extract scenario data
+        scenario = example_data.get('scenario', {})
+        scenario_type = scenario.get('type', 'lease')
+        scenario_vehicle = scenario.get('vehicle', {})
+        scenario_financing = scenario.get('financing', {})
+        
+        # Extract trade-in and cost overrides
+        trade_in = example_data.get('trade_in', {})
+        cost_overrides = example_data.get('cost_overrides', {})
+        
+        # Create VehicleConfig objects
+        vehicle1_config = VehicleConfig(
+            name=baseline_vehicle.get('name', 'Current Vehicle'),
+            msrp=baseline_vehicle.get('msrp', 0),
+            current_value=baseline_vehicle.get('current_value', 0),
+            values_3yr=baseline_vehicle.get('values_3yr', [0, 0, 0, 0]),
+            impairment=baseline_vehicle.get('impairment', 0),
+            impairment_affects_taxes=baseline_vehicle.get('impairment_affects_taxes', False)
         )
-    
-    # Parse trade-in configuration
-    trade_in_config = parse_trade_in_config(json_data['trade_in'])
-    
-    # Run comparison
-    results = calculator.run_comparison(
-        vehicle1_config, vehicle2_config, current_loan_config, 
-        lease_config, trade_in_config, financing_type
-    )
+        
+        vehicle2_config = VehicleConfig(
+            name=scenario_vehicle.get('name', 'New Vehicle'),
+            msrp=scenario_vehicle.get('msrp', 0),
+            current_value=scenario_vehicle.get('current_value', 0),
+            values_3yr=scenario_vehicle.get('values_3yr', [0, 0, 0, 0]),
+            impairment=0,
+            impairment_affects_taxes=False
+        )
+        
+        # Create LoanConfig for current loan
+        current_loan_config = LoanConfig(
+            principal_balance=baseline_loan.get('principal_balance', 0),
+            monthly_payment=baseline_loan.get('monthly_payment', 0),
+            extra_payment=baseline_loan.get('extra_payment', 0),
+            interest_rate=baseline_loan.get('interest_rate', 0)
+        )
+        
+        # Create financing config based on type
+        if scenario_type == 'lease':
+            vehicle2_financing = LeaseConfig(
+                monthly_payment=scenario_financing.get('monthly_payment', 0),
+                lease_terms=scenario_financing.get('lease_terms', 36),
+                msrp=scenario_financing.get('msrp', 0),
+                incentives=scenario_financing.get('incentives', {})
+            )
+            financing_type = FinancingType.LEASE
+        else:  # loan
+            vehicle2_financing = LeaseConfig(  # Reusing LeaseConfig for loan data
+                monthly_payment=scenario_financing.get('monthly_payment', 0),
+                lease_terms=scenario_financing.get('loan_term', 36),
+                msrp=scenario_financing.get('principal_balance', 0),
+                incentives={}
+            )
+            financing_type = FinancingType.LOAN
+        
+        # Create TradeInConfig
+        trade_in_config = TradeInConfig(
+            trade_in_value=trade_in.get('trade_in_value', 0),
+            loan_balance=trade_in.get('loan_balance', 0),
+            incentives=trade_in.get('incentives', 0)
+        )
+        
+        # Create calculator and run comparison
+        calculator = VehicleCostCalculator(state)
+        comparison_results = calculator.run_comparison(
+            vehicle1_config=vehicle1_config,
+            vehicle2_config=vehicle2_config,
+            loan_config=current_loan_config,
+            lease_config=vehicle2_financing,
+            trade_in_config=trade_in_config,
+            financing_type=financing_type
+        )
+        
+        # Store results
+        results[example_name] = {
+            'description': example_data.get('description', example_name),
+            'results': comparison_results
+        }
     
     # Export CSV files if requested
     if export_csv:
-        for table_name, df in results.items():
-            filename = f"{table_name}_comparison.csv"
-            df.to_csv(filename, index=False)
-            print(f"Saved {filename}")
+        for example_name, example_results in results.items():
+            for table_name, df in example_results['results'].items():
+                filename = f"{example_name}_{table_name}_comparison.csv"
+                df.to_csv(filename, index=False)
+                print(f"Saved {filename}")
     
     # Convert DataFrames to dictionaries for JSON serialization
     json_results = {}
-    for table_name, df in results.items():
-        json_results[table_name] = {
-            'columns': df.columns.tolist(),
-            'data': df.values.tolist()
+    for example_name, example_results in results.items():
+        json_results[example_name] = {
+            'description': example_results['description'],
+            'results': {}
         }
+        
+        for table_name, df in example_results['results'].items():
+            json_results[example_name]['results'][table_name] = {
+                'columns': df.columns.tolist(),
+                'data': df.values.tolist()
+            }
     
-    return {
-        'comparison_type': f"{vehicle1_config.name} vs {vehicle2_config.name} ({financing_type.value})",
-        'state': state,
-        'results': json_results
-    }
+    return json_results
 
 
 def main():

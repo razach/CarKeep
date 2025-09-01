@@ -1,193 +1,164 @@
-# CarKeep Vehicle Cost Comparison Tool
+# CarKeep - Vehicle Cost Comparison Tool
 
-A comprehensive vehicle cost comparison tool that supports both lease and loan financing scenarios for the second vehicle. The system can evaluate keeping your current vehicle vs. leasing a new one or buying a CPO vehicle with a loan.
+A comprehensive tool for comparing the total cost of ownership between keeping your current vehicle and getting a new one (lease or loan).
 
-## Features
+## 🚗 **Structure: Baseline + Scenarios**
 
-- **Dual Financing Support**: Compare keeping current vehicle vs. lease OR loan for new vehicle
-- **CPO Vehicle Analysis**: Evaluate Certified Pre-Owned vehicle purchases with realistic depreciation curves
-- **State-Specific Calculations**: Support for different states with custom cost configurations
-- **Flexible Input**: JSON-based input system for easy integration with web applications
-- **Comprehensive Analysis**: Monthly payment breakdowns, 3-year summaries, and cost difference analysis
+The system uses a **baseline + scenarios** approach that makes it easy to add new comparison scenarios:
 
-## Quick Start
+### **Baseline (Do Nothing Option)**
+- **Acura RDX** - Your current car that you're considering keeping
+- All scenarios compare against this baseline
+- Single source of truth for current vehicle data
 
-### 1. Run a Single Comparison
+### **Scenarios (What You Could Do Instead)**
+Each scenario represents a different option you could choose instead of keeping the RDX:
 
-```bash
-python car_keep_runner.py input.json
-```
+1. **Lucid Air Lease** - Luxury EV lease
+2. **CPO Acura MDX Loan** - Certified pre-owned SUV with financing
+3. **Lucid Air Lease (Texas)** - Same car, different state costs
+4. **CPO BMW X3 Loan** - German luxury SUV with financing
+5. **CPO BMW X3 Lease** - Same car, lease financing
+6. **CPO BMW X3 Custom Costs** - Same car, customized insurance/maintenance
+7. **New Tesla Model Y** - Brand new EV lease (example of adding new scenarios)
 
-### 2. Run Examples
+## 📊 **Output Formats**
 
-```bash
-# List available examples
-python run_examples.py list
+### **Individual Scenario Results**
+- Run single scenarios: `python run_scenarios.py <scenario_name>`
+- Export to CSV: `python run_scenarios.py <scenario_name> --csv`
 
-# Run specific example
-python run_examples.py cpo_loan_comparison
+### **Consolidated Comparison Matrix**
+- All scenarios side-by-side: `python generate_comparison_matrix.py`
+- Creates three consolidated CSV files:
+  - `monthly_payment_matrix.csv` - Monthly costs across all scenarios
+  - `summary_matrix.csv` - 3-year totals across all scenarios  
+  - `cost_difference_matrix.csv` - Cost differences with dedicated description columns
 
-# Run example and export to CSV files
-python run_examples.py cpo_loan_comparison --csv
-```
+## 🔧 **Adding New Scenarios**
 
-### 3. Export to CSV
-
-Both scripts support CSV export:
-
-```bash
-# Export single comparison to CSV
-python car_keep_runner.py input.json --csv
-
-# Export example to CSV
-python run_examples.py cpo_loan_comparison --csv
-```
-
-This generates three CSV files:
-- `monthly_payment_comparison.csv` - Monthly cost breakdown
-- `summary_comparison.csv` - 3-year total cost summary
-- `cost_difference_comparison.csv` - Detailed cost difference analysis
-
-## System Architecture
-
-- **`main.py`** - Core calculation engine and data structures
-- **`car_keep_runner.py`** - Main script that takes JSON input and runs comparisons
-- **`examples.json`** - Collection of example inputs for testing
-- **`run_examples.py`** - Helper script to run examples
-
-## JSON Input Format
+Adding a new comparison scenario is incredibly simple! Just add to `scenarios.json`:
 
 ```json
-{
-  "description": "Description of the comparison",
-  "state": "VA",
-  "vehicle1": {
-    "name": "Current Vehicle Name",
-    "msrp": 0,
-    "current_value": 21000,
-    "values_3yr": [21000, 18900, 17000, 15300],
-    "impairment": 3000,
-    "impairment_affects_taxes": false
-  },
-  "vehicle2": {
-    "name": "New Vehicle Name",
-    "msrp": 45000,
-    "current_value": 0,
-    "values_3yr": [35000, 31500, 28350, 25515]
-  },
-  "current_loan": {
-    "principal_balance": 9909.95,
-    "monthly_payment": 564.10,
-    "extra_payment": 85.90,
-    "interest_rate": 0.0439
-  },
-  "vehicle2_financing": {
-    "type": "loan",
-    "config": {
-      "monthly_payment": 1073.47,
-      "loan_term": 36,
-      "principal_balance": 35000
+"my_new_scenario": {
+  "description": "Acura RDX vs [Your New Car]",
+  "scenario": {
+    "type": "lease",  // or "loan"
+    "vehicle": {
+      "name": "Your Car Name",
+      "msrp": 50000,
+      "current_value": 0,
+      "values_3yr": [50000, 40000, 32000, 25600]
+    },
+    "financing": {
+      "monthly_payment": 600,
+      "lease_terms": 36,  // or "loan_term" for loans
+      "msrp": 50000,      // or "principal_balance" for loans
+      "incentives": {
+        "ev_credit": 7500,
+        "dealer_discount": 1000
+      }
     }
   },
   "trade_in": {
     "trade_in_value": 18000,
     "loan_balance": 9909.95,
-    "incentives": 0
+    "incentives": 1000
   }
 }
 ```
 
-## Financing Types
+### **What You Need to Define:**
+- **Vehicle details**: Name, MSRP, 3-year depreciation values
+- **Financing**: Monthly payment, term, incentives
+- **Trade-in**: Value, loan balance, incentives
+- **Optional**: Custom costs, state overrides
 
-### Lease Financing
-```json
-"vehicle2_financing": {
-  "type": "lease",
-  "config": {
-    "monthly_payment": 368,
-    "lease_terms": 36,
-    "msrp": 72800,
-    "incentives": {
-      "ev_credit": 7500,
-      "dealer_discount": 2000
-    }
-  }
-}
+### **What's Automatically Handled:**
+- Property taxes (with state-specific rates)
+- Insurance costs (with defaults)
+- Maintenance costs (with defaults)
+- Fuel/electricity costs (with defaults)
+- Investment opportunity costs
+- Equity calculations
+- All comparison logic
+
+## 🏗️ **System Architecture**
+
+```
+scenarios.json (Baseline + Scenarios)
+           ↓
+car_keep_runner.py (Processes JSON)
+           ↓
+main.py (Core calculation engine)
+           ↓
+Output: Individual CSVs + Consolidated Matrix
 ```
 
-### Loan Financing
-```json
-"vehicle2_financing": {
-  "type": "loan",
-  "config": {
-    "monthly_payment": 1073.47,
-    "loan_term": 36,
-    "principal_balance": 35000
-  }
-}
+## 📈 **Key Benefits of New Structure**
+
+1. **Clear Baseline**: RDX is always the "do nothing" option
+2. **Easy Scenario Addition**: Just add JSON, no code changes needed
+3. **Consistent Comparisons**: All scenarios use same baseline data
+4. **Flexible Financing**: Support for both lease and loan scenarios
+5. **State Flexibility**: Override baseline state when needed
+6. **Cost Customization**: Override default costs for specific scenarios
+
+## 🚀 **Usage Examples**
+
+### **List All Available Scenarios**
+```bash
+python run_scenarios.py list
 ```
 
-## Available Examples
-
-1. **`basic_lease_comparison`** - Acura RDX vs Lucid Air (Lease, VA)
-2. **`cpo_loan_comparison`** - Acura RDX vs CPO Acura MDX (Loan, VA)
-3. **`custom_costs_comparison`** - Acura RDX vs Lucid Air with Texas costs (Lease, TX)
-4. **`cpo_bmw_x3_loan`** - Acura RDX vs CPO BMW X3 (Loan, VA)
-5. **`cpo_bmw_x3_lease`** - Acura RDX vs CPO BMW X3 (Lease, VA)
-6. **`cpo_with_custom_costs`** - CPO BMW X3 with custom cost configurations (VA)
-
-## Output Format
-
-The system outputs structured JSON with three main result tables:
-
-1. **`monthly_payment`** - Monthly cost breakdown
-2. **`summary`** - 3-year total cost summary  
-3. **`cost_difference`** - Detailed cost difference analysis
-
-## Cost Customization
-
-Override default costs for specific vehicles:
-
-```json
-"cost_overrides": {
-  "insurance_monthly": {
-    "CPO BMW X3": 160,
-    "CPO Acura MDX": 140
-  },
-  "maintenance_monthly": {
-    "CPO BMW X3": 85,
-    "CPO Acura MDX": 65
-  },
-  "fuel_monthly": {
-    "CPO BMW X3": 180,
-    "CPO Acura MDX": 200
-  }
-}
+### **Run a Specific Scenario**
+```bash
+python run_scenarios.py cpo_bmw_x3_lease
+python run_scenarios.py lucid_air_lease_tx --csv
 ```
 
-## State Support
+### **Generate Consolidated Matrix**
+```bash
+python generate_comparison_matrix.py
+```
 
-- **VA** (Virginia) - Default with Fairfax County property tax calculations
-- **TX** (Texas) - Custom cost configurations
+### **Run Individual Comparisons**
+```bash
+python car_keep_runner.py scenarios.json
+```
 
-## Dependencies
+## 🔍 **What Gets Calculated**
+
+For each scenario, the system calculates:
+
+- **Monthly Costs**: Payment, taxes, insurance, maintenance, fuel
+- **3-Year Totals**: All costs over the comparison period
+- **Cost Differences**: How much more/less the new option costs
+- **Equity Impact**: Value retention vs. depreciation
+- **Investment Opportunity**: Lost returns from new vehicle costs
+
+## 📋 **Dependencies**
 
 - Python 3.8+
 - pandas
 - numpy
+- dateutil
 
-## Webapp Integration
+## 🌐 **Webapp Ready**
 
-The JSON-based system is perfect for web applications:
+The JSON-based input system makes this ready for web application integration:
+- RESTful API endpoints
+- Dynamic scenario generation
+- Real-time cost comparisons
+- User-friendly scenario builders
 
-- **Input**: Accept JSON from web forms or API calls
-- **Processing**: Call `run_comparison_from_json()` function  
-- **Output**: Return structured JSON results for frontend display
+## 📝 **Example: Adding Tesla Model Y**
 
-## Future Enhancements
+The Tesla Model Y example demonstrates how easy it is to add new scenarios:
 
-- Additional state tax calculations
-- More sophisticated depreciation models
-- API endpoints for web integration
-- Database storage for comparison history
-- Export to various formats (CSV, Excel, PDF)
+1. **Added to JSON**: New scenario with lease terms and incentives
+2. **Automatic Processing**: System handles all calculations
+3. **Matrix Update**: New scenario appears in consolidated output
+4. **No Code Changes**: Pure configuration addition
+
+This makes CarKeep a powerful, flexible tool for vehicle cost analysis that can easily adapt to new vehicles, financing options, and cost structures!
