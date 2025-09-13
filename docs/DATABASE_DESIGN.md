@@ -1,17 +1,35 @@
 # CarKeep Database Design
 
 ## Overview
-This document outlines the database schema design for CarKeep, transitioning from JSON files to a proper relational database structure.
+This document outlines the database schema design for CarKeep, aligning with our API-first architecture approach.
 
-## Current State
-- **Data Storage**: Single `data/scenarios/scenarios.json` file
-- **Issues**: No validation, no backup/recovery, single point of failure
-- **Limitations**: Hard to query, no relationships, no data integrity
+## Migration Strategy
 
-## Target Architecture
-- **Database**: SQLite (lightweight, file-based, perfect for single-user applications)
-- **ORM**: SQLAlchemy for Python integration
-- **Migration Path**: JSON → Database with data validation
+### Phase 1: API Preparation (Current)
+- Continue using JSON files
+- Build complete REST API layer
+- Implement data validation in API layer
+- Document all API endpoints
+
+### Phase 2: Database Implementation
+- Implement SQLAlchemy models
+- Add database migration scripts
+- Keep API interface unchanged
+- Run parallel with JSON storage
+
+### Phase 3: Complete Migration
+- Switch to database-only storage
+- Remove JSON file handling
+- Maintain API compatibility
+
+## Database Architecture
+
+### Technology Stack
+- **Database**: SQLite (lightweight, file-based)
+- **ORM**: SQLAlchemy
+- **Migration Tool**: Alembic
+- **API Layer**: Flask-RESTful
+- **Authentication**: JWT (future)
 
 ## Database Schema
 

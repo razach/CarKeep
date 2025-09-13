@@ -15,23 +15,6 @@ The system uses a **baseline + scenarios** approach:
 
 All scenarios are compared against the baseline, providing a clear and consistent analysis.
 
-# CarKeep Development Guide
-
-This document provides a comprehensive overview of the CarKeep project, from high-level vision to technical implementation details.
-
-## 1. Project Overview & Vision
-
-CarKeep is a tool for comparing the total cost of ownership between keeping a current vehicle and purchasing a new one. The project transforms a command-line tool into a user-friendly web application, allowing users to create, manage, and compare vehicle cost scenarios through a browser interface.
-
-### 1.1. Core Concept: Baseline + Scenarios
-
-The system uses a **baseline + scenarios** approach:
-
-*   **Baseline**: Represents the "do nothing" option (i.e., keeping the current vehicle).
-*   **Scenarios**: Represent different alternatives, such as leasing a new car or financing a certified pre-owned (CPO) vehicle.
-
-All scenarios are compared against the baseline, providing a clear and consistent analysis.
-
 ## 2. Web Application Requirements
 
 ### 2.1. Core Features
@@ -44,7 +27,7 @@ All scenarios are compared against the baseline, providing a clear and consisten
 
 *   **Backend**: Python 3.12+ with Flask.
 *   **Frontend**: HTML5, CSS3, and vanilla JavaScript.
-*   **Data Storage**: Scenarios are stored in a JSON file (`data/scenarios/scenarios.json`).
+*   **Data Storage**: Scenarios and configurations stored in JSON files.
 
 ### 2.3. User Experience
 
@@ -59,7 +42,7 @@ All scenarios are compared against the baseline, providing a clear and consisten
 *   **Backend**: Flask
 *   **Frontend**: HTML, CSS, JavaScript
 *   **Data Processing**: Pandas, NumPy
-*   **Data Storage**: JSON
+*   **Data Storage**: JSON (with planned migration to SQLite)
 
 ### 3.2. File Structure
 
@@ -69,62 +52,91 @@ A detailed explanation of the file structure can be found in [FOLDER_STRUCTURE.m
 
 *   **`app/`**: The Flask web application, including routes, templates, and static files.
 *   **`core/`**: The core business logic and calculation engine.
-*   **`data/`**: Data files, including `scenarios.json`.
+*   **`data/`**: Data files, including scenarios and configurations.
 *   **`run.py`**: The entry point for running the Flask application.
 
 ## 4. Database Design
 
-The current implementation uses a JSON file for data storage. A future enhancement is to migrate to a relational database (SQLite with SQLAlchemy). The detailed schema and migration plan can be found in [DATABASE_DESIGN.md](DATABASE_DESIGN.md).
+The current implementation uses JSON files for data storage. A future enhancement is to migrate to a relational database (SQLite with SQLAlchemy). The detailed schema and migration plan can be found in [DATABASE_DESIGN.md](DATABASE_DESIGN.md).
 
 ## 5. Project Roadmap & Implementation Plan
 
 ### 5.1. High-Level Roadmap
 
 *   **Phase 1 (Complete)**: Foundational web application with core functionality.
-*   **Phase 2 (In Progress)**: Advanced features, including data validation and a backup system.
-*   **Phase 3 (Future)**: Database migration.
-*   **Phase 4 (Future)**: User accounts and scenario sharing.
+*   **Phase 2 (In Progress)**: Advanced features, frontend-backend decoupling.
+*   **Phase 3 (Planned)**: Database migration.
+*   **Phase 4 (Planned)**: User accounts and scenario sharing.
 
 ### 5.2. Current Status & Immediate Next Steps
 
-*   **Current Status**: All core CRUD operations are functional. The file structure has been cleaned up and organized.
+*   **Current Status**: 
+    - All core CRUD operations are functional and tested
+    - File structure has been cleaned up and organized
+    - Frontend components have been modularized
+    - State tax configuration system implemented
+    - Enhanced cost analysis with detailed breakdowns
 *   **Immediate Next Steps**:
-    1.  Implement data validation for all JSON operations.
-    2.  Create a simple backup system for the `scenarios.json` file.
-    3.  Add data export functionality (e.g., to CSV or PDF).
+    1.  Complete Stage 1 of frontend-backend decoupling (API Expansion)
+    2.  Implement comprehensive data validation for all JSON operations
+    3.  Create an automated backup system for all JSON configuration files
+    4.  Enhance data export functionality with more formats and customization options
+    5.  Begin preparations for database migration
 
 ## 6. Frontend-Backend Decoupling Plan
 
-To improve maintainability and user experience, the long-term goal is to decouple the frontend and backend into two separate applications. The Flask backend will serve a REST API, and the frontend will be a single-page application (SPA).
+To improve maintainability and user experience, we are implementing a phased approach to decouple the frontend and backend:
 
 ### Stage 1: API Expansion (Current Focus)
 
 *   **Goal**: Expose all application functionality through a comprehensive REST API.
 *   **Checklist** (Backend - Flask):
-    *   [ ] **Review existing API endpoints**: Identify gaps for full CRUD operations (Create, Read, Update, Delete) for scenarios and state tax configurations.
-    *   [ ] **Implement missing API endpoints**: Develop new endpoints for any functionality not yet exposed (e.g., detailed scenario data, state tax management).
-    *   [ ] **Standardize API responses**: Ensure consistent JSON response formats for all endpoints (e.g., success/error messages, data structures).
+    *   [x] **Review existing API endpoints**: Basic CRUD operations identified for scenarios and state tax configurations.
+    *   [✓] **Initial JSON API Routes**: JSON response routes implemented for:
+        *   [x] Scenario listing and individual retrieval
+        *   [x] State tax configuration management
+        *   [x] Cost analysis data export
+    *   [ ] **Implement missing API endpoints**: Need to develop endpoints for:
+        *   [ ] Detailed scenario comparison matrices
+        *   [ ] Bulk operations
+        *   [ ] Configuration backup/restore
+    *   [~] **Standardize API responses**: Partially complete
+        *   [x] Basic success/error message structure
+        *   [ ] Comprehensive error handling
+        *   [ ] Response schema documentation
     *   [ ] **Implement API authentication/authorization**: (Future consideration, if user accounts are introduced).
     *   [ ] **Document API endpoints**: Use tools like Swagger/OpenAPI to generate interactive API documentation.
 
 ### Stage 2: Frontend Scaffolding
 
 *   **Goal**: Set up the foundation for the new frontend application.
+*   **Current Status**: Initial frontend improvements in place with vanilla JavaScript
 *   **Checklist** (Frontend - React/Vue/Svelte):
-    *   [ ] **Choose a JavaScript framework**: Select React, Vue, or Svelte based on project needs and team expertise.
+    *   [~] **Modern JavaScript Foundation**: 
+        *   [x] Modular JavaScript structure
+        *   [x] Client-side form validation
+        *   [x] Dynamic UI updates
+        *   [ ] Framework selection pending
     *   [ ] **Initialize new frontend project**: Use the framework's CLI (e.g., Create React App, Vue CLI) to set up the `frontend/` directory.
-    *   [ ] **Configure development environment**: Set up hot-reloading, build processes, and testing tools for the frontend.
-    *   [ ] **Implement basic API client**: Create a service or utility to make HTTP requests to the Flask API.
-    *   [ ] **Create a "Hello World" component**: Fetch and display a simple piece of data from an existing API endpoint (e.g., a list of scenario names) to verify the connection.
+    *   [~] **Development Environment**: 
+        *   [x] Basic asset pipeline
+        *   [x] Static file organization
+        *   [ ] Hot-reloading setup pending
+    *   [x] **Basic API Integration**: 
+        *   [x] AJAX requests for state tax management
+        *   [x] JSON data handling
+        *   [x] Dynamic form submission
+    *   [ ] **Framework Migration**: Pending framework selection
 
 ### Stage 3: Gradual Component Migration
 
 *   **Goal**: Incrementally replace server-rendered pages with client-side components.
 *   **Checklist** (Frontend & Backend):
-    *   [ ] **Migrate "State Taxes" page**:
-        *   [ ] Create a new frontend component for state tax management.
-        *   [ ] Implement fetching, adding, editing, and deleting state tax configurations using the API.
-        *   [ ] Integrate the new component into the existing Flask template (e.g., by embedding the SPA or serving it from a new Flask route).
+    *   [~] **State Taxes Management**:
+        *   [x] Dynamic frontend component implemented
+        *   [x] CRUD operations via API endpoints
+        *   [x] Real-time UI updates
+        *   [ ] Complete SPA conversion pending
     *   [ ] **Migrate "Scenario List" and "Scenario View" pages**:
         *   [ ] Create frontend components for displaying and viewing scenarios.
         *   [ ] Implement data fetching and display from the API.
@@ -153,82 +165,3 @@ While a significant change, integrating a database backend (as outlined in [DATA
     *   [ ] Develop data migration scripts from JSON to the database.
     *   [ ] Update Flask API endpoints to interact with the database instead of JSON files.
     *   [ ] Implement robust error handling and data validation at the database level.
-
-
-## 3. Architecture & Technical Implementation
-
-### 3.1. Technology Stack
-
-*   **Backend**: Flask
-*   **Frontend**: HTML, CSS, JavaScript
-*   **Data Processing**: Pandas, NumPy
-*   **Data Storage**: JSON
-
-### 3.2. File Structure
-
-A detailed explanation of the file structure can be found in [FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md).
-
-### 3.3. Core Components
-
-*   **`app/`**: The Flask web application, including routes, templates, and static files.
-*   **`core/`**: The core business logic and calculation engine.
-*   **`data/`**: Data files, including `scenarios.json`.
-*   **`run.py`**: The entry point for running the Flask application.
-
-## 4. Database Design
-
-The current implementation uses a JSON file for data storage. A future enhancement is to migrate to a relational database (SQLite with SQLAlchemy). The detailed schema and migration plan can be found in [DATABASE_DESIGN.md](DATABASE_DESIGN.md).
-
-## 5. Project Roadmap & Implementation Plan
-
-### 5.1. High-Level Roadmap
-
-*   **Phase 1 (Complete)**: Foundational web application with core functionality.
-*   **Phase 2 (In Progress)**: Advanced features, including data validation and a backup system.
-*   **Phase 3 (Future)**: Database migration.
-*   **Phase 4 (Future)**: User accounts and scenario sharing.
-
-### 5.2. Current Status & Immediate Next Steps
-
-*   **Current Status**: All core CRUD operations are functional. The file structure has been cleaned up and organized.
-*   **Immediate Next Steps**:
-    1.  Implement data validation for all JSON operations.
-    2.  Create a simple backup system for the `scenarios.json` file.
-    3.  Add data export functionality (e.g., to CSV or PDF).
-
-## 6. Frontend-Backend Decoupling Plan
-
-To improve maintainability and user experience, the long-term goal is to decouple the frontend and backend into two separate applications. The Flask backend will serve a REST API, and the frontend will be a single-page application (SPA).
-
-### Stage 1: API Expansion
-
-*   **Goal**: Expose all application functionality through a comprehensive REST API.
-*   **Tasks**:
-    *   Expand the existing Flask API to cover all CRUD operations for scenarios and state tax configurations.
-    *   Ensure all data needed by the frontend is available through the API.
-    *   Document the API endpoints and their usage.
-
-### Stage 2: Frontend Scaffolding
-
-*   **Goal**: Set up the foundation for the new frontend application.
-*   **Tasks**:
-    *   Create a new `frontend/` directory.
-    *   Initialize a new project using a modern JavaScript framework (e.g., React, Vue, or Svelte).
-    *   Create a basic project structure with components, services, and views.
-    *   Implement a simple component to fetch and display data from the Flask API (e.g., the list of scenarios) to verify the connection.
-
-### Stage 3: Gradual Component Migration
-
-*   **Goal**: Incrementally replace server-rendered pages with client-side components.
-*   **Tasks**:
-    *   Re-implement one feature at a time as a frontend component that consumes the API.
-    *   Start with a simple, self-contained feature, such as the "State Taxes" page.
-    *   Gradually migrate more complex features, like the scenario creation and editing forms.
-
-### Stage 4: Finalization and Cleanup
-
-*   **Goal**: Complete the migration and remove legacy code.
-*   **Tasks**:
-    *   Once all pages have been migrated to the SPA, remove the old Jinja2 templates.
-    *   Remove the parts of the Flask backend that were responsible for rendering templates.
-    *   Update the project's documentation to reflect the new, decoupled architecture.
