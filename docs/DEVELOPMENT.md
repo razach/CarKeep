@@ -75,3 +75,40 @@ The current implementation uses a JSON file for data storage. A future enhanceme
     1.  Implement data validation for all JSON operations.
     2.  Create a simple backup system for the `scenarios.json` file.
     3.  Add data export functionality (e.g., to CSV or PDF).
+
+## 6. Frontend-Backend Decoupling Plan
+
+To improve maintainability and user experience, the long-term goal is to decouple the frontend and backend into two separate applications. The Flask backend will serve a REST API, and the frontend will be a single-page application (SPA).
+
+### Stage 1: API Expansion
+
+*   **Goal**: Expose all application functionality through a comprehensive REST API.
+*   **Tasks**:
+    *   Expand the existing Flask API to cover all CRUD operations for scenarios and state tax configurations.
+    *   Ensure all data needed by the frontend is available through the API.
+    *   Document the API endpoints and their usage.
+
+### Stage 2: Frontend Scaffolding
+
+*   **Goal**: Set up the foundation for the new frontend application.
+*   **Tasks**:
+    *   Create a new `frontend/` directory.
+    *   Initialize a new project using a modern JavaScript framework (e.g., React, Vue, or Svelte).
+    *   Create a basic project structure with components, services, and views.
+    *   Implement a simple component to fetch and display data from the Flask API (e.g., the list of scenarios) to verify the connection.
+
+### Stage 3: Gradual Component Migration
+
+*   **Goal**: Incrementally replace server-rendered pages with client-side components.
+*   **Tasks**:
+    *   Re-implement one feature at a time as a frontend component that consumes the API.
+    *   Start with a simple, self-contained feature, such as the "State Taxes" page.
+    *   Gradually migrate more complex features, like the scenario creation and editing forms.
+
+### Stage 4: Finalization and Cleanup
+
+*   **Goal**: Complete the migration and remove legacy code.
+*   **Tasks**:
+    *   Once all pages have been migrated to the SPA, remove the old Jinja2 templates.
+    *   Remove the parts of the Flask backend that were responsible for rendering templates.
+    *   Update the project's documentation to reflect the new, decoupled architecture.
