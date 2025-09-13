@@ -37,7 +37,7 @@ Each scenario represents a different option you could choose instead of keeping 
 
 ## 🔧 **Adding New Scenarios**
 
-Adding a new comparison scenario is incredibly simple! Just add to `scenarios.json`:
+Adding a new comparison scenario is incredibly simple! Just add to `data/scenarios/scenarios.json`:
 
 ```json
 "my_new_scenario": {
@@ -86,7 +86,7 @@ Adding a new comparison scenario is incredibly simple! Just add to `scenarios.js
 ## 🏗️ **System Architecture**
 
 ```
-scenarios.json (Baseline + Scenarios)
+data/scenarios/scenarios.json (Baseline + Scenarios)
            ↓
 car_keep_runner.py (Processes JSON)
            ↓
@@ -124,7 +124,7 @@ python generate_comparison_matrix.py
 
 ### **Run Individual Comparisons**
 ```bash
-python car_keep_runner.py scenarios.json
+python car_keep_runner.py data/scenarios/scenarios.json
 ```
 
 ## 🔍 **What Gets Calculated**

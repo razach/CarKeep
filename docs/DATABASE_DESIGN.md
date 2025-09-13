@@ -4,7 +4,7 @@
 This document outlines the database schema design for CarKeep, transitioning from JSON files to a proper relational database structure.
 
 ## Current State
-- **Data Storage**: Single `scenarios.json` file
+- **Data Storage**: Single `data/scenarios/scenarios.json` file
 - **Issues**: No validation, no backup/recovery, single point of failure
 - **Limitations**: Hard to query, no relationships, no data integrity
 
@@ -234,7 +234,7 @@ CREATE TABLE default_costs (
 3. Create data validation functions
 
 ### Phase 2: Data Migration
-1. Read existing `scenarios.json`
+1. Read existing `data/scenarios/scenarios.json`
 2. Validate data structure
 3. Insert into database with proper relationships
 4. Verify data integrity

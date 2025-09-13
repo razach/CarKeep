@@ -4,7 +4,6 @@ CarKeep Web Application Entry Point
 Flask-based web interface for vehicle cost comparison scenarios.
 """
 
-from flask import Flask
 from app import create_app
 
 app = create_app()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Helper script to run individual scenarios from the scenarios.json file.
+Helper script to run individual scenarios from the data/scenarios/scenarios.json file.
 """
 
 import json
@@ -15,7 +15,7 @@ def list_scenarios(data_folder=None):
     if data_folder is None:
         data_folder = Path.cwd()
     
-    scenarios_file = data_folder / 'scenarios.json'
+    scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
     with open(scenarios_file, 'r') as f:
         data = json.load(f)
     
@@ -31,7 +31,7 @@ def run_scenario(scenario_name: str, export_csv: bool = False, data_folder=None)
     if data_folder is None:
         data_folder = Path.cwd()
     
-    scenarios_file = data_folder / 'scenarios.json'
+    scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
     with open(scenarios_file, 'r') as f:
         data = json.load(f)
     

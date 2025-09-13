@@ -18,7 +18,7 @@ def generate_comparison_matrix(data_folder=None):
     print("Running all scenarios to generate comparison matrix...")
     
     # Load scenarios from JSON
-    scenarios_file = data_folder / 'scenarios.json'
+    scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
     with open(scenarios_file, 'r') as f:
         scenarios_data = json.load(f)
     

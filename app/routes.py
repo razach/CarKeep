@@ -97,7 +97,7 @@ def create_scenario():
             
             # Load existing scenarios
             data_folder = current_app.config['DATA_FOLDER']
-            scenarios_file = data_folder / 'scenarios.json'
+            scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
             
             with open(scenarios_file, 'r') as f:
                 data = json.load(f)
@@ -178,7 +178,7 @@ def api_scenarios():
     """API endpoint to get all scenarios."""
     try:
         data_folder = current_app.config['DATA_FOLDER']
-        scenarios_file = data_folder / 'scenarios.json'
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
         with open(scenarios_file, 'r') as f:
             data = json.load(f)
         return jsonify(data)
@@ -190,7 +190,7 @@ def api_scenario(scenario_name):
     """API endpoint to get specific scenario."""
     try:
         data_folder = current_app.config['DATA_FOLDER']
-        scenarios_file = data_folder / 'scenarios.json'
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
         with open(scenarios_file, 'r') as f:
             data = json.load(f)
         
@@ -343,7 +343,7 @@ def edit_baseline():
     """Edit the baseline scenario."""
     try:
         data_folder = current_app.config['DATA_FOLDER']
-        scenarios_file = data_folder / 'scenarios.json'
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
         
         with open(scenarios_file, 'r') as f:
             data = json.load(f)
@@ -412,7 +412,7 @@ def edit_scenario(scenario_name):
     """Edit an existing scenario."""
     try:
         data_folder = current_app.config['DATA_FOLDER']
-        scenarios_file = data_folder / 'scenarios.json'
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
         
         with open(scenarios_file, 'r') as f:
             data = json.load(f)
@@ -501,7 +501,7 @@ def delete_scenario(scenario_name):
     """Delete a scenario."""
     try:
         data_folder = current_app.config['DATA_FOLDER']
-        scenarios_file = data_folder / 'scenarios.json'
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
         
         with open(scenarios_file, 'r') as f:
             data = json.load(f)
