@@ -332,6 +332,75 @@ def cost_analysis():
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 
+@main_bp.route('/edit-baseline', methods=['GET', 'POST'])
+def edit_baseline():
+    """Edit baseline view route."""
+    try:
+        data_folder = current_app.config['DATA_FOLDER']
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
+        
+        with open(scenarios_file, 'r') as f:
+            data = json.load(f)
+        
+        if 'baseline' not in data:
+            return render_template('error.html', error='Baseline not found'), 404
+        
+        baseline_data = data['baseline']
+        
+        if request.method == 'POST':
+            try:
+                # Get form data
+                form_data = request.form.to_dict()
+                
+                # Validate required fields
+                required_fields = ['vehicle_name', 'current_value', 'principal_balance', 'monthly_payment']
+                for field in required_fields:
+                    if not form_data.get(field):
+                        return jsonify({'success': False, 'message': f'Missing required field: {field}'}), 400
+                
+                # Update baseline data
+                baseline_data['description'] = form_data.get('description', 'Your current vehicle (baseline)')
+                baseline_data['vehicle']['name'] = form_data['vehicle_name']
+                baseline_data['vehicle']['current_value'] = float(form_data['current_value'])
+                baseline_data['vehicle']['msrp'] = float(form_data.get('msrp', form_data['current_value']))
+                baseline_data['current_loan']['principal_balance'] = float(form_data['principal_balance'])
+                baseline_data['current_loan']['monthly_payment'] = float(form_data['monthly_payment'])
+                baseline_data['current_loan']['interest_rate'] = float(form_data.get('interest_rate', 5.5)) / 100
+                baseline_data['current_loan']['extra_payment'] = float(form_data.get('extra_payment', 0))
+                
+                # Update state if specified
+                if form_data.get('state'):
+                    baseline_data['state'] = form_data['state']
+                
+                # Update cost configuration
+                if 'cost_config' not in baseline_data:
+                    baseline_data['cost_config'] = {}
+                
+                baseline_data['cost_config'].update({
+                    'monthly_insurance': float(form_data.get('monthly_insurance', 100)),
+                    'monthly_maintenance': float(form_data.get('monthly_maintenance', 50)),
+                    'monthly_fuel': float(form_data.get('monthly_fuel', 150)),
+                    'investment_return_rate': float(form_data.get('investment_return_rate', 6)) / 100
+                })
+                
+                # Save updated data
+                data['baseline'] = baseline_data
+                with open(scenarios_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                
+                return jsonify({
+                    'success': True,
+                    'message': 'Baseline updated successfully!'
+                })
+                
+            except Exception as e:
+                return jsonify({'success': False, 'message': f'Error updating baseline: {str(e)}'}), 500
+        
+        return render_template('edit_baseline.html', baseline_data=baseline_data)
+        
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
+
 @main_bp.route('/api/baseline', methods=['PUT'])
 def api_update_baseline():
     """API endpoint to update the baseline scenario."""
