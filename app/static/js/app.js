@@ -67,8 +67,63 @@ function handleFormSubmit(event) {
     const form = event.target;
     const submitButton = form.querySelector('button[type="submit"]');
     
-    if (submitButton) {
-        addLoadingState(submitButton);
+    // If it's the edit form
+    if (form.id === 'editForm') {
+        event.preventDefault();
+        
+        // Add loading state
+        if (submitButton) {
+            addLoadingState(submitButton);
+        }
+        
+        // Get form data
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            // Convert numeric strings to numbers
+            if (!isNaN(value) && value !== '') {
+                data[key] = parseFloat(value);
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Send POST request
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                // Redirect after successful update
+                setTimeout(() => {
+                    window.location.href = `/scenario/${data.scenario_name}`;
+                }, 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while saving changes', 'error');
+        })
+        .finally(() => {
+            if (submitButton) {
+                submitButton.textContent = 'Save Changes';
+                submitButton.disabled = false;
+            }
+        });
+    } else {
+        // For other forms, add loading state only
+        if (submitButton) {
+            addLoadingState(submitButton);
+        }
     }
 }
 
@@ -93,11 +148,48 @@ function showNotification(message, type = 'info') {
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
     
-    // Style the notification
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+        padding: 12px 24px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    // Add color based on type
+    switch(type) {
+        case 'success':
+            notification.style.borderLeft = '4px solid #28a745';
+            break;
+        case 'error':
+            notification.style.borderLeft = '4px solid #dc3545';
+            break;
+        case 'warning':
+            notification.style.borderLeft = '4px solid #ffc107';
+            break;
+        default:
+            notification.style.borderLeft = '4px solid #17a2b8';
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
         padding: 1rem 1.5rem;
         border-radius: 8px;
         color: white;
