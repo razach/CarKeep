@@ -461,7 +461,7 @@ def api_update_baseline():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error updating baseline: {str(e)}'}), 500
 
-@main_bp.route('/scenario/<scenario_name>/edit')
+@main_bp.route('/scenario/<scenario_name>/edit', methods=['GET', 'POST'])
 def edit_scenario(scenario_name):
     """Edit an existing scenario."""
     try:
@@ -475,6 +475,75 @@ def edit_scenario(scenario_name):
             return render_template('error.html', error=f'Scenario "{scenario_name}" not found'), 404
         
         scenario_data = data['examples'][scenario_name]
+
+        if request.method == 'POST':
+            try:
+                # Get form data
+                form_data = request.form.to_dict()
+                
+                # Validate required fields
+                required_fields = ['description', 'vehicle_name', 'msrp', 'financing_type', 'monthly_payment']
+                for field in required_fields:
+                    if not form_data.get(field):
+                        return jsonify({'success': False, 'message': f'Missing required field: {field}'}), 400
+                
+                # Update scenario data
+                scenario_data['description'] = form_data['description']
+                scenario_data['scenario']['vehicle']['name'] = form_data['vehicle_name']
+                scenario_data['scenario']['vehicle']['msrp'] = float(form_data['msrp'])
+                scenario_data['scenario']['vehicle']['current_value'] = float(form_data.get('current_value', 0))
+                scenario_data['scenario']['type'] = form_data['financing_type']
+                
+                # Update financing details
+                if form_data['financing_type'] == 'lease':
+                    scenario_data['scenario']['financing'] = {
+                        'monthly_payment': float(form_data['monthly_payment']),
+                        'lease_terms': int(form_data.get('lease_terms', 36)),
+                        'msrp': float(form_data['msrp']),
+                        'incentives': {}
+                    }
+                else:  # loan
+                    scenario_data['scenario']['financing'] = {
+                        'monthly_payment': float(form_data['monthly_payment']),
+                        'loan_term': int(form_data.get('loan_term', 60)),
+                        'principal_balance': float(form_data['msrp']),
+                        'interest_rate': float(form_data.get('interest_rate', 5.5)) / 100
+                    }
+                
+                # Update trade-in details
+                scenario_data['trade_in']['trade_in_value'] = float(form_data.get('trade_in_value', 0))
+                scenario_data['trade_in']['incentives'] = float(form_data.get('incentives', 0))
+                
+                # Update cost configuration
+                if 'cost_config' not in scenario_data:
+                    scenario_data['cost_config'] = {}
+                
+                scenario_data['cost_config'].update({
+                    'monthly_insurance': float(form_data.get('monthly_insurance', 100)),
+                    'monthly_maintenance': float(form_data.get('monthly_maintenance', 50)),
+                    'monthly_fuel': float(form_data.get('monthly_fuel', 150)),
+                    'investment_return_rate': float(form_data.get('investment_return_rate', 6)) / 100
+                })
+                
+                # Update state if specified
+                if form_data.get('state'):
+                    scenario_data['state'] = form_data['state']
+                elif 'state' in scenario_data:
+                    del scenario_data['state']
+                
+                # Save updated data
+                data['examples'][scenario_name] = scenario_data
+                with open(scenarios_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Scenario "{scenario_name}" updated successfully!',
+                    'scenario_name': scenario_name
+                })
+                
+            except Exception as e:
+                return jsonify({'success': False, 'message': f'Error updating scenario: {str(e)}'}), 500
         
         return render_template('edit.html', scenario_name=scenario_name, scenario_data=scenario_data)
         
