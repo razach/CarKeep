@@ -210,7 +210,7 @@ def state_taxes():
         import os
         
         # Path to store state tax configurations
-        TAX_CONFIG_FILE = 'data/state_tax_configs.json'
+        TAX_CONFIG_FILE = 'data/configs/state_tax_configs.json'
         
         def load_tax_configs():
             """Load state tax configurations from file."""
@@ -238,7 +238,7 @@ def state_taxes():
         def save_tax_configs(registry):
             """Save state tax configurations to file."""
             # Ensure data directory exists
-            os.makedirs('data', exist_ok=True)
+            os.makedirs('data/configs', exist_ok=True)
             
             # Convert StateTaxConfig objects to dictionaries
             configs = {}
