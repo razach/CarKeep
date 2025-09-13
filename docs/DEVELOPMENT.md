@@ -76,16 +76,88 @@ The current implementation uses JSON files for data storage. A future enhancemen
     - Frontend components have been modularized
     - State tax configuration system implemented
     - Enhanced cost analysis with detailed breakdowns
+    - Initial API endpoints established
 *   **Immediate Next Steps**:
-    1.  Complete Stage 1 of frontend-backend decoupling (API Expansion)
-    2.  Implement comprehensive data validation for all JSON operations
-    3.  Create an automated backup system for all JSON configuration files
-    4.  Enhance data export functionality with more formats and customization options
-    5.  Begin preparations for database migration
+    1. Service Separation Implementation:
+        - Create new repository for frontend application
+        - Restructure backend as dedicated API service
+        - Set up cross-origin resource sharing (CORS)
+        - Implement API authentication system
+    2. Data Layer Improvements:
+        - Move configuration files to appropriate services
+        - Implement proper environment-based configuration
+        - Set up data synchronization between services
+    3. Development Environment Updates:
+        - Create docker-compose for local development
+        - Set up environment variable management
+        - Implement development proxy configuration
+    4. Documentation & Testing:
+        - Create API documentation with OpenAPI/Swagger
+        - Update deployment guides for separated services
+        - Add service-specific testing suites
 
-## 6. Frontend-Backend Decoupling Plan
+## 6. Service Separation & Deployment Architecture
 
-To improve maintainability and user experience, we are implementing a phased approach to decouple the frontend and backend:
+The application will be split into two separate services for improved scalability and maintainability:
+
+### 6.1. Service Architecture
+
+#### Frontend Service (carkeep-frontend)
+```
+carkeep-frontend/
+├── app/
+│   ├── static/          # Static assets
+│   └── templates/       # Jinja2 templates
+├── data/
+│   └── exports/         # Generated files for display
+└── config/
+    └── environment/     # Environment-specific configs
+```
+
+#### Backend Service (carkeep-backend)
+```
+carkeep-backend/
+├── core/
+│   ├── calculators/     # Business logic
+│   └── models/         # Data models
+├── data/
+│   ├── configs/        # Backend configurations
+│   └── templates/      # Calculation templates
+└── api/
+    └── routes/         # API endpoints
+```
+
+### 6.2. Data Management Strategy
+
+#### Configuration Files
+- Frontend: User interface configurations, display templates
+- Backend: Tax rates, calculation parameters, business rules
+
+#### Data Flow
+1. Frontend makes authenticated API calls to backend
+2. Backend processes requests and returns JSON responses
+3. Frontend renders data and handles user interactions
+
+### 6.3. Deployment Considerations
+
+* **Environment Configuration**
+  - Use environment variables for service URLs
+  - Implement proper CORS policies
+  - Set up API authentication
+
+* **Development Environment**
+  - Docker Compose for local development
+  - Development proxy for API calls
+  - Hot reloading for both services
+
+* **Production Deployment**
+  - Separate deployment pipelines
+  - Independent scaling
+  - Proper monitoring and logging
+
+## 7. Frontend-Backend Decoupling Plan
+
+To achieve the service separation, we are implementing a phased approach:
 
 ### Stage 1: API Expansion (Current Focus)
 

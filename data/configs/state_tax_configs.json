@@ -1,0 +1,20 @@
+{
+    "VA": {
+        "property_tax_rate": 0.0457,
+        "pptra_relief": 0.51,
+        "relief_cap": 20000,
+        "state_name": "Virginia (Fairfax County)"
+    },
+    "TX": {
+        "property_tax_rate": 0.0625,
+        "pptra_relief": 0.0,
+        "relief_cap": 0,
+        "state_name": "Texas"
+    },
+    "CA": {
+        "property_tax_rate": 0.0065,
+        "pptra_relief": 0.0,
+        "relief_cap": 0,
+        "state_name": "California"
+    }
+}
