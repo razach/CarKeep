@@ -15,35 +15,10 @@
     <div class="tax-content">
         <div class="current-states">
             <h3>📊 Current State Configurations</h3>
-            <div class="states-grid">
+            <div class="states-grid" id="states-grid">
                 {% for state_code, config in states.items() %}
-                <div class="state-card">
-                    <div class="state-header">
-                        <h4>{{ config.state_name }} ({{ state_code }})</h4>
-                        {% if state_code in ['VA', 'TX', 'CA'] %}
-                        <span class="default-badge">Default</span>
-                        {% endif %}
-                    </div>
-                    <div class="state-details">
-                        <div class="tax-rate">
-                            <strong>Property Tax Rate:</strong> {{ "%.2f"|format(config.property_tax_rate * 100) }}%
-                        </div>
-                        {% if config.pptra_relief > 0 %}
-                        <div class="tax-relief">
-                            <strong>Relief:</strong> {{ "%.0f"|format(config.pptra_relief * 100) }}% on first ${{ "{:,.0f}".format(config.relief_cap) }}
-                        </div>
-                        {% else %}
-                        <div class="tax-relief">
-                            <strong>Relief:</strong> None
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="state-actions">
-                        <button class="btn btn-warning btn-sm" onclick="editState('{{ state_code }}', {{ config.property_tax_rate * 100 }}, {{ config.pptra_relief * 100 }}, {{ config.relief_cap }}, '{{ config.state_name }}')">Edit</button>
-                        {% if state_code not in ['VA', 'TX', 'CA'] %}
-                        <button class="btn btn-danger btn-sm" onclick="deleteState('{{ state_code }}')">Delete</button>
-                        {% endif %}
-                    </div>
+                <div id="state-{{ state_code }}">
+                    {% include 'components/state_tax_row.html' %}
                 </div>
                 {% endfor %}
             </div>
@@ -209,115 +184,6 @@
 </style>
 
 <script>
-// Add state form handler
-document.getElementById('addStateForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const formData = new FormData(form);
-    const isEditMode = formData.get('edit_mode') === 'true';
-    
-    if (isEditMode) {
-        formData.append('action', 'edit_state');
-    } else {
-        formData.append('action', 'add_state');
-    }
-    
-    fetch('{{ url_for("frontend.state_taxes") }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification(data.message, 'success');
-            // Reload page to show changes
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        } else {
-            showNotification(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred while saving the state', 'error');
-    });
-});
-
-// Edit state function
-function editState(stateCode, taxRate, relief, reliefCap, stateName) {
-    // Populate form with existing data
-    document.getElementById('state_code').value = stateCode;
-    document.getElementById('state_name').value = stateName;
-    document.getElementById('property_tax_rate').value = taxRate;
-    document.getElementById('pptra_relief').value = relief;
-    document.getElementById('relief_cap').value = reliefCap;
-    
-    // Set edit mode
-    document.getElementById('edit_mode').value = 'true';
-    document.getElementById('original_state_code').value = stateCode;
-    
-    // Update UI
-    document.getElementById('section-title').textContent = '✏️ Edit State: ' + stateCode;
-    document.getElementById('submit-btn').textContent = 'Update State';
-    document.getElementById('cancel-edit').style.display = 'inline-block';
-    
-    // Disable state code field during edit (can't change the code)
-    document.getElementById('state_code').disabled = true;
-    
-    // Scroll to form
-    document.querySelector('.add-state-section').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Cancel edit function
-function cancelEdit() {
-    resetForm();
-}
-
-// Reset form function
-function resetForm() {
-    document.getElementById('addStateForm').reset();
-    document.getElementById('edit_mode').value = 'false';
-    document.getElementById('original_state_code').value = '';
-    
-    // Reset UI
-    document.getElementById('section-title').textContent = '➕ Add New State';
-    document.getElementById('submit-btn').textContent = 'Add State';
-    document.getElementById('cancel-edit').style.display = 'none';
-    
-    // Re-enable state code field
-    document.getElementById('state_code').disabled = false;
-}
-
-// Delete state function
-function deleteState(stateCode) {
-    if (confirm(`Are you sure you want to delete the state configuration for ${stateCode}?`)) {
-        const formData = new FormData();
-        formData.append('action', 'delete_state');
-        formData.append('state_code', stateCode);
-        
-        fetch('{{ url_for("frontend.state_taxes") }}', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showNotification(data.message, 'success');
-                // Reload page to reflect changes
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                showNotification(data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('An error occurred while deleting the state', 'error');
-        });
-    }
-}
+// No custom JS required now; inline edits handled via htmx in each row.
 </script>
 {% endblock %}

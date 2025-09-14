@@ -222,6 +222,50 @@ def create_state_tax():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
+@api_bp.route('/state-taxes/<state_code>', methods=['PUT'])
+def update_state_tax(state_code):
+    """Update an existing state tax configuration."""
+    try:
+        payload = request.json
+        if not isinstance(payload, dict):
+            return jsonify({'success': False, 'error': 'Invalid payload'}), 400
+
+        # Normalize numbers: expect percentages as numbers (not strings)
+        prop_rate = float(payload.get('property_tax_rate')) / 100.0
+        relief_pct = float(payload.get('pptra_relief')) / 100.0
+        relief_cap = float(payload.get('relief_cap', 0))
+        state_name = payload.get('state_name') or state_code
+
+        registry = StateTaxRegistry()
+        registry.add_state(state_code, StateTaxConfig(
+            property_tax_rate=prop_rate,
+            pptra_relief=relief_pct,
+            relief_cap=relief_cap,
+            state_name=state_name
+        ))
+        registry.save()
+
+        return jsonify({'success': True, 'message': 'State tax configuration updated', 'state_code': state_code})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@api_bp.route('/state-taxes/<state_code>', methods=['DELETE'])
+def delete_state_tax(state_code):
+    """Delete a state tax configuration (except protected defaults)."""
+    try:
+        protected = {'VA', 'TX', 'CA'}
+        if state_code.upper() in protected:
+            return jsonify({'success': False, 'error': 'Cannot delete default state'}), 400
+
+        registry = StateTaxRegistry()
+        removed = registry.remove_state(state_code)
+        if not removed:
+            return jsonify({'success': False, 'error': 'State not found'}), 404
+        registry.save()
+        return jsonify({'success': True, 'message': 'State deleted', 'state_code': state_code})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 @api_bp.route('/comparison-results', methods=['GET'])
 def get_comparison_results():
     """Get comparison results for all scenarios."""

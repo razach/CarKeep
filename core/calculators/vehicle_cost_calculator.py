@@ -27,13 +27,13 @@ class StateTaxRegistry:
         import os
         
         # Get the absolute path to the config file
-        config_path = os.path.join(
+        self._config_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             'data', 'configs', 'state_tax_configs.json'
         )
         
         try:
-            with open(config_path, 'r') as f:
+            with open(self._config_path, 'r') as f:
                 config_data = json.load(f)
             
             self.states = {
@@ -68,6 +68,30 @@ class StateTaxRegistry:
     def list_states(self) -> Dict[str, StateTaxConfig]:
         """Get all available state configurations."""
         return self.states.copy()
+
+    def remove_state(self, state_code: str) -> bool:
+        """Remove a state from the registry. Returns True if removed."""
+        code = state_code.upper()
+        if code in self.states:
+            del self.states[code]
+            return True
+        return False
+
+    def save(self) -> None:
+        """Persist current states to the JSON config file."""
+        import json
+        # Serialize dataclasses to plain dict
+        output = {
+            code: {
+                'property_tax_rate': cfg.property_tax_rate,
+                'pptra_relief': cfg.pptra_relief,
+                'relief_cap': cfg.relief_cap,
+                'state_name': cfg.state_name
+            }
+            for code, cfg in self.states.items()
+        }
+        with open(self._config_path, 'w') as f:
+            json.dump(output, f, indent=4)
 
 class FinancingType(Enum):
     """Enumeration for vehicle financing types."""

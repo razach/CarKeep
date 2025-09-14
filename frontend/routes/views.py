@@ -142,6 +142,72 @@ def state_taxes():
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 
+@frontend_bp.route('/_state-taxes/<state_code>/row', methods=['GET'])
+def state_tax_row(state_code):
+    """Return a single state row/card partial (for htmx swaps)."""
+    try:
+        response = current_app.api_client.get('/api/state-taxes')
+        states = response.json()
+        config = states.get(state_code)
+        if not config:
+            return Response('Not found', status=404)
+        html = render_template('components/state_tax_row.html', state_code=state_code, config=config)
+        return html
+    except Exception:
+        return Response('Error', status=500)
+
+@frontend_bp.route('/_state-taxes/<state_code>/save', methods=['POST'])
+def save_state_tax(state_code):
+    """Save edits for a state (proxy to API) and return updated row + toast."""
+    try:
+        # Accept form data (percent values) and forward as JSON to API
+        form = request.form
+        payload = {
+            'property_tax_rate': form.get('property_tax_rate'),
+            'pptra_relief': form.get('pptra_relief', 0),
+            'relief_cap': form.get('relief_cap', 0),
+            'state_name': form.get('state_name', state_code)
+        }
+        api_resp = current_app.api_client.put(f'/api/state-taxes/{state_code}', json=payload)
+        if api_resp.status_code >= 400:
+            msg = api_resp.json().get('error', 'Failed to save state')
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = f'{{"toast":{{"type":"error","message":"{msg}"}}}}'
+            return resp
+
+        # Re-fetch and render updated row
+        sc_response = current_app.api_client.get('/api/state-taxes')
+        states = sc_response.json()
+        config = states.get(state_code)
+        html = render_template('components/state_tax_row.html', state_code=state_code, config=config)
+        resp = make_response(html, 200)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State tax saved"}}'
+        return resp
+    except Exception:
+        resp = Response(status=500)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error saving state"}}'
+        return resp
+
+@frontend_bp.route('/_state-taxes/<state_code>/delete', methods=['POST'])
+def delete_state_tax_action(state_code):
+    """Delete a state via API; return 204 + toast (caller removes element)."""
+    try:
+        api_resp = current_app.api_client.delete(f'/api/state-taxes/{state_code}')
+        payload = api_resp.json()
+        if payload.get('success'):
+            resp = Response(status=204)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State deleted"}}'
+            return resp
+        else:
+            msg = payload.get('error', 'Failed to delete state')
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = f'{{"toast":{{"type":"error","message":"{msg}"}}}}'
+            return resp
+    except Exception:
+        resp = Response(status=500)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error deleting state"}}'
+        return resp
+
 @frontend_bp.route('/scenario/<scenario_name>/edit', methods=['GET', 'POST'])
 def edit_scenario(scenario_name):
     """Edit an existing scenario."""
