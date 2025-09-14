@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize any existing notification cleanup
     cleanupOldNotifications();
+
+    // Listen for htmx-driven toasts
+    document.body.addEventListener('htmx:afterRequest', (evt) => {
+        try {
+            const trigger = evt?.detail?.xhr?.getResponseHeader('HX-Trigger');
+            if (!trigger) return;
+            const data = JSON.parse(trigger);
+            if (data.toast) {
+                const { type = 'info', message = '' } = data.toast;
+                if (message) showNotification(message, type);
+            }
+        } catch (e) {
+            // ignore parsing errors
+        }
+    });
 });
 
 // Scenario Management Functions

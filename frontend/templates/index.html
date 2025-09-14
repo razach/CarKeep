@@ -81,7 +81,11 @@
                             data-tooltip="Create a copy of this scenario">
                         📋 Duplicate
                     </button>
-                    <button class="btn btn-danger" onclick="deleteScenario('{{ scenario_name }}', '{{ scenario_data.description }}')" 
+                    <button class="btn btn-danger"
+                            hx-post="{{ url_for('frontend.delete_scenario_action', scenario_name=scenario_name) }}"
+                            hx-target="closest .scenario-card"
+                            hx-swap="outerHTML:remove"
+                            hx-confirm="Are you sure you want to delete &quot;{{ scenario_data.description }}&quot;? This cannot be undone."
                             data-tooltip="Delete this scenario">
                         🗑️ Delete
                     </button>

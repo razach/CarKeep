@@ -66,6 +66,32 @@ def create_scenario():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
+@api_bp.route('/scenarios/<scenario_name>', methods=['DELETE'])
+def delete_scenario(scenario_name):
+    """Delete an existing scenario."""
+    try:
+        data_folder = current_app.config['DATA_FOLDER']
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
+
+        if not scenarios_file.exists():
+            return jsonify({'success': False, 'error': 'Scenario not found'}), 404
+
+        with open(scenarios_file, 'r') as f:
+            scenarios = json.load(f)
+
+        if scenario_name not in scenarios:
+            return jsonify({'success': False, 'error': 'Scenario not found'}), 404
+
+        # Remove the scenario
+        del scenarios[scenario_name]
+
+        with open(scenarios_file, 'w') as f:
+            json.dump(scenarios, f, indent=4)
+
+        return jsonify({'success': True, 'message': 'Scenario deleted'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 @api_bp.route('/scenario/<scenario_name>', methods=['GET'])
 def get_scenario(scenario_name):
     """Get a specific scenario."""

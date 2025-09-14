@@ -9,6 +9,7 @@ from flask import (
 )
 from pathlib import Path
 import time
+from flask import Response
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -179,3 +180,23 @@ def cost_analysis():
                              analysis=analysis)
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
+
+@frontend_bp.route('/_scenarios/<scenario_name>/delete', methods=['POST'])
+def delete_scenario_action(scenario_name):
+    """Proxy deletion to API and return htmx-friendly response."""
+    try:
+        api_resp = current_app.api_client.delete(f'/api/scenarios/{scenario_name}')
+        payload = api_resp.json()
+        if payload.get('success'):
+            # Return 204 No Content with HX-Trigger to show a toast on client
+            resp = Response(status=204)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"Scenario deleted"}}'
+            return resp
+        else:
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Failed to delete scenario"}}'
+            return resp
+    except Exception as e:
+        resp = Response(status=500)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error deleting scenario"}}'
+        return resp
