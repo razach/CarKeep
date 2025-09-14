@@ -28,7 +28,7 @@
       <button type="submit" class="btn btn-success btn-sm">Save</button>
       <button type="button" class="btn btn-secondary btn-sm" hx-get="{{ url_for('frontend.state_tax_row', state_code=state_code) }}" hx-target="#state-{{ state_code }}" hx-swap="outerHTML">Cancel</button>
       {% if state_code not in ['VA', 'TX', 'CA'] %}
-      <button type="button" class="btn btn-danger btn-sm" hx-post="{{ url_for('frontend.delete_state_tax_action', state_code=state_code) }}" hx-target="#state-{{ state_code }}" hx-swap="outerHTML:remove" hx-confirm="Are you sure you want to delete {{ state_code }}?">Delete</button>
+      <button type="button" class="btn btn-danger btn-sm" hx-post="{{ url_for('frontend.delete_state_tax_action', state_code=state_code) }}" hx-target="#state-{{ state_code }}" hx-swap="outerHTML" hx-confirm="Are you sure you want to delete {{ state_code }}?">Delete</button>
       {% endif %}
     </div>
   </form>

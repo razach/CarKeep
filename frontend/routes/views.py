@@ -195,7 +195,8 @@ def delete_state_tax_action(state_code):
         api_resp = current_app.api_client.delete(f'/api/state-taxes/{state_code}')
         payload = api_resp.json()
         if payload.get('success'):
-            resp = Response(status=204)
+            # Return 200 with empty body so hx-swap="outerHTML" will remove the element
+            resp = make_response('', 200)
             resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State deleted"}}'
             return resp
         else:
@@ -208,54 +209,54 @@ def delete_state_tax_action(state_code):
         resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error deleting state"}}'
         return resp
 
-    @frontend_bp.route('/_state-taxes/create', methods=['POST'])
-    def create_state_tax_action():
-        """Create a new state via API and return the new row to insert into the grid."""
-        try:
-            form = request.form
-            # Expect raw percent inputs from the form; API expects numbers as strings
-            payload = {
-                'state_code': form.get('state_code', '').upper(),
-                'state_name': form.get('state_name', ''),
-                'property_tax_rate': form.get('property_tax_rate', '0'),
-                'pptra_relief': form.get('pptra_relief', '0'),
-                'relief_cap': form.get('relief_cap', '0')
-            }
+@frontend_bp.route('/_state-taxes/create', methods=['POST'])
+def create_state_tax_action():
+    """Create a new state via API and return the new row to insert into the grid."""
+    try:
+        form = request.form
+        # Expect raw percent inputs from the form; API expects numbers as strings
+        payload = {
+            'state_code': form.get('state_code', '').upper(),
+            'state_name': form.get('state_name', ''),
+            'property_tax_rate': form.get('property_tax_rate', '0'),
+            'pptra_relief': form.get('pptra_relief', '0'),
+            'relief_cap': form.get('relief_cap', '0')
+        }
 
-            # Basic validation
-            if not payload['state_code'] or not payload['state_name']:
-                resp = Response(status=400)
-                resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"State Code and Name are required"}}'
-                return resp
+        # Basic validation
+        if not payload['state_code'] or not payload['state_name']:
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"State Code and Name are required"}}'
+            return resp
 
-            api_resp = current_app.api_client.post('/api/state-taxes', json=payload)
-            if api_resp.status_code >= 400:
-                msg = api_resp.json().get('error', 'Failed to add state')
-                resp = Response(status=400)
-                resp.headers['HX-Trigger'] = f'{{"toast":{{"type":"error","message":"{msg}"}}}}'
-                return resp
+        api_resp = current_app.api_client.post('/api/state-taxes', json=payload)
+        if api_resp.status_code >= 400:
+            msg = api_resp.json().get('error', 'Failed to add state')
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = f'{{"toast":{{"type":"error","message":"{msg}"}}}}'
+            return resp
 
-            # Re-fetch the states and render the new row
-            sc_response = current_app.api_client.get('/api/state-taxes')
-            states = sc_response.json()
-            code = payload['state_code']
-            config = states.get(code)
-            if not config:
-                # Fallback: nothing to render
-                resp = Response(status=204)
-                resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State added"}}'
-                return resp
-
-            row_html = render_template('components/state_tax_row.html', state_code=code, config=config)
-            # Include a small OOB script to reset the form
-            oob = '<script hx-swap-oob="true">(function(){try{document.getElementById("addStateForm").reset()}catch(e){}})();</script>'
-            resp = make_response(row_html + oob, 201)
+        # Re-fetch the states and render the new row
+        sc_response = current_app.api_client.get('/api/state-taxes')
+        states = sc_response.json()
+        code = payload['state_code']
+        config = states.get(code)
+        if not config:
+            # Fallback: nothing to render
+            resp = Response(status=204)
             resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State added"}}'
             return resp
-        except Exception:
-            resp = Response(status=500)
-            resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error adding state"}}'
-            return resp
+
+        row_html = render_template('components/state_tax_row.html', state_code=code, config=config)
+        # Include a small OOB script to reset the form
+        oob = '<script hx-swap-oob="true">(function(){try{document.getElementById("addStateForm").reset()}catch(e){}})();</script>'
+        resp = make_response(row_html + oob, 201)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"State added"}}'
+        return resp
+    except Exception:
+        resp = Response(status=500)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error adding state"}}'
+        return resp
 
 @frontend_bp.route('/scenario/<scenario_name>/edit', methods=['GET', 'POST'])
 def edit_scenario(scenario_name):
