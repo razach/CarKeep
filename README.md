@@ -2,6 +2,16 @@
 
 A comprehensive tool for comparing the total cost of ownership between keeping your current vehicle and getting a new one (lease or loan).
 
+## ✅ Project Direction: Keep It Simple (Sep 2025)
+
+CarKeep intentionally stays lightweight and easy to maintain:
+
+- Server-rendered Flask + Jinja UI
+- Incremental enhancements with htmx (and optional Alpine.js) via CDN
+- No SPA framework or service split for now (those plans remain in docs as a future option)
+
+See `docs/DEVELOPMENT.md` Section 8 for the UI Overhaul Plan focused on clarity, accessibility, and small, fast improvements.
+
 ## 🚗 **Structure: Baseline + Scenarios**
 
 The system uses a **baseline + scenarios** approach that makes it easy to add new comparison scenarios:

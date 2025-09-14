@@ -40,6 +40,8 @@ CarKeep/
 │   └── dev.txt       # Development requirements
 └── run.py            # Application entry point
 
+Note: We are keeping the `frontend/` package as the UI root (no separate top-level `app/` directory). If we later adopt the “Target Structure” nesting (`frontend/app`), we can migrate gradually without breaking routes.
+
 Migration Status:
 ✓ Directory structure created
 ✓ Route separation implemented
@@ -98,9 +100,9 @@ CarKeep/
 └── run.py              # Application entry point
 ```
 
-### **App Directory** (`/app`)
+### **Frontend Directory** (`/frontend`)
 ```
-app/
+frontend/
 ├── templates/              # Page templates
 │   ├── components/        # Reusable template components
 │   │   └── form_components.html
@@ -119,7 +121,7 @@ app/
 │   ├── js/                # JavaScript modules
 │   └── img/               # Images
 ├── utils/                  # Web-specific utilities
-├── routes.py              # Route handlers and API endpoints
+├── routes/                 # Route handlers and views (e.g., views.py)
 └── __init__.py            # Flask app initialization
 ```
 
@@ -229,8 +231,8 @@ instance/
 from core.calculators.vehicle_cost_calculator import VehicleCostCalculator
 from core.main import StateTaxRegistry
 
-# App functionality
-from app.utils.form_helpers import validate_scenario
+# Frontend functionality
+from frontend.utils.api_client import APIClient
 ```
 
 ## 📝 **Adding New Features**
@@ -238,18 +240,18 @@ from app.utils.form_helpers import validate_scenario
 ### **New Calculation Feature**
 1. Add calculator to `core/calculators/`
 2. Update core exports in `core/__init__.py`
-3. Create API endpoint in `app/routes.py`
-4. Add frontend integration in `app/static/js/`
+3. Create API endpoint in `core/api/routes/`
+4. Add frontend integration in `frontend/static/js/`
 
 ### **New UI Component**
-1. Add template to `app/templates/components/`
-2. Add related styles to `app/static/css/`
-3. Add JavaScript module to `app/static/js/`
+1. Add template to `frontend/templates/components/`
+2. Add related styles to `frontend/static/css/`
+3. Add JavaScript module to `frontend/static/js/`
 
 ### **New Configuration Type**
 1. Add schema to `core/models/`
 2. Add template to `data/templates/`
 3. Add configuration handler to `core/utils/`
-4. Create management UI in `app/templates/`
+4. Create management UI in `frontend/templates/`
 
 This structure supports both current functionality and future expansion while maintaining clear separation of concerns and modularity. 🚗✨

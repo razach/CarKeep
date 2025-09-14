@@ -102,6 +102,15 @@ The current implementation uses JSON files for data storage. A future enhancemen
 
 ## 5. Project Roadmap & Implementation Plan
 
+### Decision (Sep 2025): Keep It Simple
+
+We will keep the stack lightweight and maintainable:
+
+- Continue using Flask + Jinja server-rendered pages.
+- Incrementally enhance interactions with htmx (and optionally Alpine.js) via CDN.
+- Defer a full SPA or multi-repo service separation. Sections 6–7 remain as future options but are not active work.
+- Focus immediate work on the UI Overhaul Plan (Section 8) and small API quality-of-life improvements.
+
 ### 5.1. High-Level Roadmap
 
 *   **Phase 1 (Complete)**: Foundational web application with core functionality.
@@ -111,33 +120,40 @@ The current implementation uses JSON files for data storage. A future enhancemen
 
 ### 5.2. Current Status & Immediate Next Steps
 
-*   **Current Status**: 
+*   **Current Status (as of Sep 2025)**: 
     - All core CRUD operations are functional and tested
     - File structure has been cleaned up and organized
     - Frontend components have been modularized
     - State tax configuration system implemented
     - Enhanced cost analysis with detailed breakdowns
-    - Initial API endpoints established
-*   **Immediate Next Steps**:
-    1. Service Separation Implementation:
-        - Create new repository for frontend application
-        - Restructure backend as dedicated API service
-        - Set up cross-origin resource sharing (CORS)
-        - Implement API authentication system
-    2. Data Layer Improvements:
-        - Move configuration files to appropriate services
-        - Implement proper environment-based configuration
-        - Set up data synchronization between services
-    3. Development Environment Updates:
-        - Create docker-compose for local development
-        - Set up environment variable management
-        - Implement development proxy configuration
-    4. Documentation & Testing:
-        - Create API documentation with OpenAPI/Swagger
-        - Update deployment guides for separated services
-        - Add service-specific testing suites
+    - Initial API endpoints established and integrated in UI
+    - Frontend pages implemented and functional:
+      - Scenarios (index)
+      - Scenario detail view
+      - Comparison overview
+      - Cost Analysis (3-year and monthly breakdowns)
+      - State Taxes management
+      - Create/Edit Scenario and Edit Baseline
+*   **Immediate Next Steps (Simple Path)**:
+    1. UI v0.1 Visual Foundation (Section 8)
+        - Add `static/css/tokens.css` and `static/css/components.css`
+        - Polish base layout (nav/footer, container spacing)
+        - Add basic toasts/badges and active-state nav
+    2. Adopt htmx for targeted interactions
+        - Scenario delete/duplicate with confirm + toast (partial swaps)
+        - Inline edits for State Taxes rows with save/cancel
+    3. Add lightweight charts on Cost Analysis
+        - Chart.js via CDN for monthly totals and 3-year breakdown
+    4. Accessibility & Performance basics
+        - Visible focus styles, skip links; defer non-critical scripts
+    5. API QoL (as time permits)
+        - Standardize error payloads; document current endpoints briefly
+
+    Note: Service separation, auth, and Docker-based multi-service setup are deferred. See Sections 6–7 for a future path.
 
 ## 6. Service Separation & Deployment Architecture
+
+Status: Deferred — we are keeping a single Flask app with server-rendered pages and an internal API under `/api`. The following outlines a future option if we choose to decouple later.
 
 The application will be split into two separate services for improved scalability and maintainability:
 
@@ -198,6 +214,8 @@ carkeep-backend/
 
 ## 7. Frontend-Backend Decoupling Plan
 
+Status: Deferred — keeping Flask + Jinja + htmx for now. This section remains as a reference roadmap if/when we migrate toward a SPA or separate frontend service.
+
 To achieve the service separation, we are implementing a phased approach:
 
 ### Stage 1: API Expansion (Current Focus)
@@ -208,9 +226,9 @@ To achieve the service separation, we are implementing a phased approach:
     *   [✓] **Initial JSON API Routes**: JSON response routes implemented for:
         *   [x] Scenario listing and individual retrieval
         *   [x] State tax configuration management
-        *   [x] Cost analysis data export
+        *   [x] Cost analysis and comparison data
     *   [ ] **Implement missing API endpoints**: Need to develop endpoints for:
-        *   [ ] Detailed scenario comparison matrices
+        *   [x] Detailed scenario comparison matrices
         *   [ ] Bulk operations
         *   [ ] Configuration backup/restore
     *   [~] **Standardize API responses**: Partially complete
@@ -230,7 +248,7 @@ To achieve the service separation, we are implementing a phased approach:
         *   [x] Client-side form validation
         *   [x] Dynamic UI updates
         *   [ ] Framework selection pending
-    *   [ ] **Initialize new frontend project**: Use the framework's CLI (e.g., Create React App, Vue CLI) to set up the `frontend/` directory.
+    *   [ ] **Initialize new frontend project**: Use the framework's CLI (e.g., Create React App, Vue CLI) to set up the `frontend/` directory. (Deferred; continuing with Flask + Jinja + vanilla JS.)
     *   [~] **Development Environment**: 
         *   [x] Basic asset pipeline
         *   [x] Static file organization
@@ -245,7 +263,7 @@ To achieve the service separation, we are implementing a phased approach:
 
 *   **Goal**: Incrementally replace server-rendered pages with client-side components.
 *   **Checklist** (Frontend & Backend):
-    *   [~] **State Taxes Management**:
+    *   [x] **State Taxes Management**:
         *   [x] Dynamic frontend component implemented
         *   [x] CRUD operations via API endpoints
         *   [x] Real-time UI updates
@@ -278,3 +296,95 @@ While a significant change, integrating a database backend (as outlined in [DATA
     *   [ ] Develop data migration scripts from JSON to the database.
     *   [ ] Update Flask API endpoints to interact with the database instead of JSON files.
     *   [ ] Implement robust error handling and data validation at the database level.
+
+## 8. UI Overhaul Plan (September 2025)
+
+This plan modernizes the current Flask/Jinja UI while keeping the stack simple (vanilla JS + CSS). It focuses on clarity, consistency, and performance without requiring an immediate SPA migration.
+
+### Goals
+* Improve information hierarchy and scannability
+* Establish a consistent design system (spacing, colors, typography, components)
+* Enhance accessibility (keyboard, contrast, ARIA)
+* Keep performance lean (no heavy frameworks; optional CDN charting only)
+
+### Foundation
+* Design tokens: colors, spacing, radius, shadows defined in a single CSS file (`static/css/tokens.css`)
+* CSS architecture: small utility classes + component styles (`static/css/components/*.css`)
+* Global states: success/info/warn/error badges and toasts
+* Dark mode (prefers-color-scheme) with safe contrast
+
+### Global Layout & Navigation
+* Persistent top nav with active-state highlight; add quick status pill (total scenarios)
+* Breadcrumb bar under nav on detail pages
+* Footer with version/build info (API base, commit hash when available)
+
+### Page Improvements
+1) Scenarios Home (index)
+    - Card grid refinements: consistent headers, iconography, and metadata alignment
+    - Add client-side sort/filter (type: lease/loan; payment; MSRP)
+    - Convert destructive actions (Delete) to confirm modal; unobtrusive toast feedback
+    - Quick actions row pinned at bottom on mobile
+
+2) Scenario Detail
+    - Sticky summary panel with key numbers (Monthly total, 3-year net, recommendation)
+    - Color-coded chips: green for savings, red for higher costs, neutral for equal
+    - Expand/collapse descriptions in tables; default collapsed on mobile
+    - Export buttons (CSV for monthly/summary; print-friendly view)
+
+3) Comparison
+    - Responsive table with sticky header; sortable columns (Scenario, MSRP, Monthly)
+    - Inline tags for state and financing type
+    - Optional: CSV export of visible rows; client-side filter bar
+
+4) Cost Analysis
+    - Visual charts for monthly totals and 3-year breakdown (Chart.js via CDN, no build step)
+    - Sectioned layout: Key Metrics, 3-Year Breakdown, Monthly Evolution, Decision Summary
+    - Clear legend explaining sign conventions (positive = costs more; negative = saves)
+
+5) State Taxes
+    - Editable rows with inline validation and save/cancel; success/error toasts
+    - Form help text and input masks for percent/currency
+    - Add search/filter for state list
+
+6) Create/Edit Scenario & Edit Baseline
+    - Multi-section form with sticky sidebar summary
+    - Inline helpers and validation states; keyboard and screen-reader friendly
+    - Warn on unsaved changes when navigating away
+
+### Accessibility Checklist
+* [ ] Visible focus states and skip-to-content link
+* [ ] Sufficient color contrast (WCAG AA)
+* [ ] Semantic landmarks (nav, main, footer) and ARIA labels for complex widgets
+* [ ] Keyboard operability for menus, modals, and tables
+
+### Performance
+* [ ] Defer non-critical scripts; inline critical CSS for above-the-fold
+* [ ] Reduce repaint/relayout by minimizing DOM thrash in JS
+* [ ] Cache API responses where safe; add ETags on backend responses (future)
+
+### Deliverables & Milestones
+1) v0.1 Visual Foundation (1–2 days)
+    - [ ] tokens.css, components.css, basic toasts and badges
+    - [ ] Base layout polish (nav/footer, container spacing)
+
+2) v0.2 Scenarios + Scenario Detail (2–3 days)
+    - [ ] Cards polish, filter/sort, confirm modal for delete, toasts
+    - [ ] Detail page sticky summary, colored chips, CSV/print exports
+
+3) v0.3 Comparison + Cost Analysis (2–3 days)
+    - [ ] Sortable responsive table with tags and CSV export
+    - [ ] Charts for monthly and 3-year breakdown via Chart.js CDN
+
+4) v0.4 Forms + State Taxes (2–3 days)
+    - [ ] Multi-section forms, validation, unsaved-changes guard
+    - [ ] Inline editable state tax rows with validation and toasts
+
+5) v0.5 Accessibility & Perf Polish (1–2 days)
+    - [ ] Focus states, contrast audit, keyboard flows
+    - [ ] Script defers, small CSS/JS trims
+
+### Notes
+* This overhaul keeps the current Flask/Jinja structure. If we later choose a SPA, the design system and component styling will carry over.
+* Optional library additions (no build step):
+  - Chart.js (charts) via CDN
+  - Shoelace or Pico.css for minimal components (optional; can stay custom)

@@ -8,7 +8,5 @@ from frontend import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5001)
-    
-    # Run the application
-    app.run(debug=True, port=5000)
+    # Run the frontend on port 5001
+    app.run(host='localhost', port=5001, debug=True)
