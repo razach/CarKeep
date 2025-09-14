@@ -45,6 +45,12 @@ Option B (Recommended): Separate Frontend and API on Render.
 - Make CORS origins environment-driven (e.g., API_ALLOWED_ORIGINS) in run_api.py
 - Authentication: Prefer token-based (Bearer) if you add accounts; cross-origin cookies require SameSite=None; Secure.
 
+## Pre-Deploy Checklist (TODO)
+
+- [ ] Add lightweight /health endpoints on Frontend and API services for Render health checks
+- [ ] Add a Procfile with gunicorn commands for both services
+- [ ] Verify environment variables are set in Render Dashboard (SECRET_KEY, API_BASE_URL, API_ALLOWED_ORIGINS, FLASK_DEBUG=0)
+
 ## Troubleshooting
 
 - Mixed content errors: Ensure API_BASE_URL uses https.

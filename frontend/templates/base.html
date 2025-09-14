@@ -4,27 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CarKeep{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
 </head>
 <body>
-    <nav class="navbar">
+        <a class="skip-link" href="#main">Skip to content</a>
+        <nav class="navbar" role="navigation" aria-label="Main">
         <div class="nav-brand">
             <a href="{{ url_for('frontend.index') }}">CarKeep</a>
         </div>
         <ul class="nav-menu">
-            <li><a href="{{ url_for('frontend.index') }}">Scenarios</a></li>
-            <li><a href="{{ url_for('frontend.comparison') }}">Comparison</a></li>
-            <li><a href="{{ url_for('frontend.cost_analysis') }}">Cost Analysis</a></li>
-            <li><a href="{{ url_for('frontend.create_scenario') }}">Create New</a></li>
-            <li><a href="{{ url_for('frontend.state_taxes') }}">State Taxes</a></li>
+                        <li><a href="{{ url_for('frontend.index') }}" data-route="/">Scenarios</a></li>
+                        <li><a href="{{ url_for('frontend.comparison') }}" data-route="/comparison">Comparison</a></li>
+                        <li><a href="{{ url_for('frontend.cost_analysis') }}" data-route="/cost-analysis">Cost Analysis</a></li>
+                        <li><a href="{{ url_for('frontend.create_scenario') }}" data-route="/create">Create New</a></li>
+                        <li><a href="{{ url_for('frontend.state_taxes') }}" data-route="/state-taxes">State Taxes</a></li>
         </ul>
     </nav>
     
-    <main class="container">
+        <main class="container" id="main" role="main">
         {% block content %}{% endblock %}
     </main>
     
+        <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+        <script>
+            // Active nav highlighting
+            (function() {
+                const path = window.location.pathname;
+                document.querySelectorAll('.nav-menu a[data-route]')
+                    .forEach(a => {
+                        const route = a.getAttribute('data-route');
+                        if (route === '/' ? path === '/' : path.startsWith(route)) {
+                            a.setAttribute('aria-current', 'page');
+                        }
+                    });
+            })();
+        </script>
 </body>
 </html>
