@@ -43,25 +43,32 @@ def create_scenario():
     try:
         scenario_data = request.json
         data_folder = current_app.config['DATA_FOLDER']
-        
-        # Save scenario
+
         scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
-        scenarios = {}
-        
+        data = {}
         if scenarios_file.exists():
             with open(scenarios_file, 'r') as f:
-                scenarios = json.load(f)
-        
-        scenarios[scenario_data['scenario_name']] = scenario_data
-        
+                data = json.load(f)
+
+        examples = data.get('examples', {})
+        name = scenario_data['scenario_name']
+        if name in examples:
+            return jsonify({'success': False, 'error': 'Scenario already exists'}), 409
+
+        # Remove external name field from stored payload if present
+        stored = {k: v for k, v in scenario_data.items() if k != 'scenario_name'}
+        examples[name] = stored
+        data['examples'] = examples
+
         os.makedirs(scenarios_file.parent, exist_ok=True)
         with open(scenarios_file, 'w') as f:
-            json.dump(scenarios, f, indent=4)
-        
+            json.dump(data, f, indent=4)
+
         return jsonify({
             'success': True,
             'message': 'Scenario created successfully',
-            'scenario': scenario_data
+            'scenario_name': name,
+            'scenario': stored
         }), 201
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
@@ -77,18 +84,64 @@ def delete_scenario(scenario_name):
             return jsonify({'success': False, 'error': 'Scenario not found'}), 404
 
         with open(scenarios_file, 'r') as f:
-            scenarios = json.load(f)
+            data = json.load(f)
 
-        if scenario_name not in scenarios:
+        examples = data.get('examples', {})
+        if scenario_name not in examples:
             return jsonify({'success': False, 'error': 'Scenario not found'}), 404
 
         # Remove the scenario
-        del scenarios[scenario_name]
+        del examples[scenario_name]
+        data['examples'] = examples
 
         with open(scenarios_file, 'w') as f:
-            json.dump(scenarios, f, indent=4)
+            json.dump(data, f, indent=4)
 
         return jsonify({'success': True, 'message': 'Scenario deleted'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@api_bp.route('/scenarios/<scenario_name>/duplicate', methods=['POST'])
+def duplicate_scenario(scenario_name):
+    """Duplicate an existing scenario under a new name ("_copy" with index)."""
+    try:
+        data_folder = current_app.config['DATA_FOLDER']
+        scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
+
+        if not scenarios_file.exists():
+            return jsonify({'success': False, 'error': 'Scenario not found'}), 404
+
+        with open(scenarios_file, 'r') as f:
+            data = json.load(f)
+
+        examples = data.get('examples', {})
+        if scenario_name not in examples:
+            return jsonify({'success': False, 'error': 'Scenario not found'}), 404
+
+        original = examples[scenario_name]
+
+        # Generate a new unique name
+        base = f"{scenario_name}_copy"
+        new_name = base
+        i = 1
+        while new_name in examples:
+            new_name = f"{base}{i}"
+            i += 1
+
+        # Clone the scenario
+        import copy as _copy
+        cloned = _copy.deepcopy(original)
+        # Optionally tweak description to indicate copy
+        desc = cloned.get('description') or scenario_name
+        cloned['description'] = f"{desc} (Copy)"
+
+        examples[new_name] = cloned
+        data['examples'] = examples
+
+        with open(scenarios_file, 'w') as f:
+            json.dump(data, f, indent=4)
+
+        return jsonify({'success': True, 'message': 'Scenario duplicated', 'scenario_name': new_name, 'scenario': cloned}), 201
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
@@ -110,25 +163,27 @@ def update_scenario(scenario_name):
         scenario_data = request.json
         data_folder = current_app.config['DATA_FOLDER']
         scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
-        
+
         if not scenarios_file.exists():
             return jsonify({'success': False, 'error': 'Scenario not found'}), 404
-            
+
         with open(scenarios_file, 'r') as f:
-            scenarios = json.load(f)
-            
-        if scenario_name not in scenarios:
+            data = json.load(f)
+
+        examples = data.get('examples', {})
+        if scenario_name not in examples:
             return jsonify({'success': False, 'error': 'Scenario not found'}), 404
-            
-        scenarios[scenario_name].update(scenario_data)
-        
+
+        examples[scenario_name].update(scenario_data)
+        data['examples'] = examples
+
         with open(scenarios_file, 'w') as f:
-            json.dump(scenarios, f, indent=4)
-            
+            json.dump(data, f, indent=4)
+
         return jsonify({
             'success': True,
             'message': 'Scenario updated successfully',
-            'scenario': scenarios[scenario_name]
+            'scenario': examples[scenario_name]
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400

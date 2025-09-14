@@ -200,3 +200,27 @@ def delete_scenario_action(scenario_name):
         resp = Response(status=500)
         resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error deleting scenario"}}'
         return resp
+
+@frontend_bp.route('/_scenarios/<scenario_name>/duplicate', methods=['POST'])
+def duplicate_scenario_action(scenario_name):
+    """Proxy duplication to API and return updated grid partial."""
+    try:
+        api_resp = current_app.api_client.post(f'/api/scenarios/{scenario_name}/duplicate')
+        payload = api_resp.json()
+        if payload.get('success'):
+            # Re-fetch scenarios to render the new grid
+            sc_response = current_app.api_client.get('/api/scenarios')
+            sc_data = sc_response.json()
+            scenarios = sc_data.get('scenarios', {})
+            html = render_template('components/scenarios_grid.html', scenarios=scenarios)
+            resp = make_response(html, 200)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"Scenario duplicated"}}'
+            return resp
+        else:
+            resp = Response(status=400)
+            resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Failed to duplicate scenario"}}'
+            return resp
+    except Exception as e:
+        resp = Response(status=500)
+        resp.headers['HX-Trigger'] = '{"toast":{"type":"error","message":"Error duplicating scenario"}}'
+        return resp

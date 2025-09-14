@@ -39,60 +39,7 @@
             <p>Click on any scenario to view detailed cost comparisons</p>
         </div>
         
-        <div class="scenarios-grid">
-            {% for scenario_name, scenario_data in scenarios.items() %}
-            <div class="scenario-card" data-scenario="{{ scenario_name }}">
-                <div class="card-header">
-                    <h3>{{ scenario_data.description }}</h3>
-                    <div class="scenario-badge">
-                        <span class="type {{ scenario_data.scenario.type }}">
-                            {{ scenario_data.scenario.type|title }}
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="scenario-meta">
-                    <div class="meta-item">
-                        <span class="meta-label">Vehicle:</span>
-                        <span class="vehicle">{{ scenario_data.scenario.vehicle.name }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">MSRP:</span>
-                        <span class="price">${{ "{:,.0f}".format(scenario_data.scenario.vehicle.msrp) }}</span>
-                    </div>
-                    {% if scenario_data.scenario.financing.monthly_payment %}
-                    <div class="meta-item">
-                        <span class="meta-label">Monthly Payment:</span>
-                        <span class="payment">${{ "{:,.0f}".format(scenario_data.scenario.financing.monthly_payment) }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <div class="scenario-actions">
-                    <a href="{{ url_for('frontend.view_scenario', scenario_name=scenario_name) }}" 
-                       class="btn btn-primary" data-tooltip="View detailed cost analysis">
-                        📊 View Results
-                    </a>
-                    <a href="{{ url_for('frontend.edit_scenario', scenario_name=scenario_name) }}" 
-                       class="btn btn-secondary" data-tooltip="Edit this scenario">
-                        ✏️ Edit
-                    </a>
-                    <button class="btn btn-info" onclick="duplicateScenario('{{ scenario_name }}')" 
-                            data-tooltip="Create a copy of this scenario">
-                        📋 Duplicate
-                    </button>
-                    <button class="btn btn-danger"
-                            hx-post="{{ url_for('frontend.delete_scenario_action', scenario_name=scenario_name) }}"
-                            hx-target="closest .scenario-card"
-                            hx-swap="outerHTML:remove"
-                            hx-confirm="Are you sure you want to delete &quot;{{ scenario_data.description }}&quot;? This cannot be undone."
-                            data-tooltip="Delete this scenario">
-                        🗑️ Delete
-                    </button>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+        {% include 'components/scenarios_grid.html' %}
     </div>
     
     <div class="actions">
