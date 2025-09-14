@@ -54,14 +54,54 @@ def view_scenario(scenario_name):
 def comparison():
     """Simple scenario comparison view."""
     try:
-        # Make API call to get comparison data
-        response = current_app.api_client.get('/api/comparison-results')
-        data = response.json()
-        
+        # Fetch scenarios metadata (baseline + examples)
+        sc_response = current_app.api_client.get('/api/scenarios')
+        sc_data = sc_response.json()
+        baseline_raw = sc_data.get('baseline', {})
+        scenarios_meta = sc_data.get('scenarios', {})
+
+        # Normalize baseline for template compatibility
+        baseline = {
+            'vehicle_name': baseline_raw.get('vehicle', {}).get('name', 'Current Vehicle'),
+            'current_value': baseline_raw.get('vehicle', {}).get('current_value', 0),
+            'monthly_payment': baseline_raw.get('current_loan', {}).get('monthly_payment', 0),
+            'state': baseline_raw.get('state', 'VA'),
+            'description': baseline_raw.get('description', '')
+        }
+
+        # Fetch comparison results (may return a flat mapping of scenario_name -> results)
+        comp_response = current_app.api_client.get('/api/comparison-results')
+        comp_data = comp_response.json()
+
+        # Determine comp_items
+        if isinstance(comp_data, dict) and 'scenarios' in comp_data:
+            comp_items = comp_data.get('scenarios', {})
+        else:
+            comp_items = comp_data if isinstance(comp_data, dict) else {}
+
+        scenarios_list = []
+        for name, comp_entry in comp_items.items():
+            meta = scenarios_meta.get(name, {})
+
+            # Build a normalized scenario payload the template expects
+            scenario_payload = {
+                'vehicle': meta.get('scenario', {}).get('vehicle', {}) if meta else (comp_entry.get('scenario', {}).get('vehicle', {}) if isinstance(comp_entry, dict) else {}),
+                'financing': meta.get('scenario', {}).get('financing', {}) if meta else (comp_entry.get('scenario', {}).get('financing', {}) if isinstance(comp_entry, dict) else {})
+            }
+
+            scenarios_list.append({
+                'scenario_name': name,
+                'description': meta.get('description') or (comp_entry.get('description') if isinstance(comp_entry, dict) else name),
+                'scenario': scenario_payload,
+                'state': meta.get('state') or (comp_entry.get('state') if isinstance(comp_entry, dict) else baseline.get('state', 'VA')),
+                'results': comp_entry.get('results') if isinstance(comp_entry, dict) else None
+            })
+
         return render_template('comparison.html', 
-                             scenarios=data.get('scenarios'), 
-                             baseline=data.get('baseline'))
+                             scenarios=scenarios_list, 
+                             baseline=baseline)
     except Exception as e:
+        current_app.logger.exception('Error rendering comparison page')
         return render_template('error.html', error=str(e)), 500
 
 @frontend_bp.route('/create')
@@ -131,8 +171,11 @@ def cost_analysis():
         # Make API call to get cost analysis data
         response = current_app.api_client.get('/api/cost-analysis')
         data = response.json()
-        
+
+        # API returns {'analysis': {...}} on success
+        analysis = data.get('analysis') if isinstance(data, dict) else None
+
         return render_template('cost_analysis.html', 
-                             analysis_data=data)
+                             analysis=analysis)
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
