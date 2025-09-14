@@ -151,6 +151,22 @@ We will keep the stack lightweight and maintainable:
 
     Note: Service separation, auth, and Docker-based multi-service setup are deferred. See Sections 6–7 for a future path.
 
+### 5.3. Deployment Decision (Render.com, Two Services)
+
+We will deploy two Render services (Option B):
+
+- Frontend (Flask + Jinja) at https://<frontend>.onrender.com
+- API (Flask) at https://<api>.onrender.com with the API blueprint under `/api`
+
+Implications for UI work:
+
+- Frontend calls the API server-side via `API_BASE_URL=https://<api>.onrender.com/api`.
+- Browser should not call the API directly; htmx interactions should target Frontend routes that render or swap HTML.
+- API must enable CORS for the Frontend origin (see `run_api.py`).
+- Always use HTTPS URLs to avoid mixed content.
+
+See `docs/DEPLOYMENT.md` for concrete steps and env vars.
+
 ## 6. Service Separation & Deployment Architecture
 
 Status: Deferred — we are keeping a single Flask app with server-rendered pages and an internal API under `/api`. The following outlines a future option if we choose to decouple later.
@@ -312,6 +328,8 @@ This plan modernizes the current Flask/Jinja UI while keeping the stack simple (
 * CSS architecture: small utility classes + component styles (`static/css/components/*.css`)
 * Global states: success/info/warn/error badges and toasts
 * Dark mode (prefers-color-scheme) with safe contrast
+
+Deployment constraint: All htmx requests should hit Frontend routes (same origin). The Frontend will orchestrate server-side API calls and return HTML partials for swaps. Avoid browser-to-API cross-origin calls to keep CORS simple.
 
 ### Global Layout & Navigation
 * Persistent top nav with active-state highlight; add quick status pill (total scenarios)

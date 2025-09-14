@@ -12,6 +12,8 @@ CarKeep intentionally stays lightweight and easy to maintain:
 
 See `docs/DEVELOPMENT.md` Section 8 for the UI Overhaul Plan focused on clarity, accessibility, and small, fast improvements.
 
+Deployment note: We’ll host the frontend and API as two Render.com services. The frontend calls the API server-side (no direct browser→API calls). See `docs/DEPLOYMENT.md`.
+
 ## 🚗 **Structure: Baseline + Scenarios**
 
 The system uses a **baseline + scenarios** approach that makes it easy to add new comparison scenarios:
