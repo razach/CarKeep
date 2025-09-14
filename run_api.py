@@ -12,20 +12,29 @@ def create_api_app(test_config=None):
     """Initialize the core API application."""
     app = Flask(__name__, instance_path=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance'))
     
-    # Enable CORS for development with specific settings for Safari
+    # Enable CORS with configurable origins
+    allowed_origins_env = os.environ.get('API_ALLOWED_ORIGINS')
+    default_origins = [
+        "http://localhost:5001",
+        "http://127.0.0.1:5001"
+    ]
+    if allowed_origins_env:
+        # Comma-separated list of origins
+        origins = [o.strip() for o in allowed_origins_env.split(',') if o.strip()]
+        default_origins.extend(origins)
     CORS(app, resources={r"/*": {
-        "origins": ["http://localhost:5001", "http://127.0.0.1:5001"],
+        "origins": default_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "Accept"],
         "supports_credentials": True,
         "expose_headers": ["Content-Range", "X-Content-Range"]
     }})
     
-    # Load configuration directly
+    # Load configuration (env overrides)
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
         DATA_FOLDER=Path(__file__).resolve().parent / 'data',
-        DEBUG=True
+        DEBUG=os.environ.get('FLASK_DEBUG', '1') == '1'
     )
     
     @app.before_request
@@ -53,4 +62,4 @@ if __name__ == '__main__':
     Path('data/exports').mkdir(parents=True, exist_ok=True)
     Path('data/configs').mkdir(parents=True, exist_ok=True)
     
-    app.run(host='localhost', port=5050)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', '5050')))

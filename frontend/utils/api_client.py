@@ -1,5 +1,9 @@
 """
 API client for communicating with the core API.
+
+Configuration:
+- API_BASE_URL should be set to the API origin (e.g., https://api.example.com) with no trailing /api.
+- Endpoints passed to this client should include the /api prefix (e.g., '/api/scenarios').
 """
 
 import requests

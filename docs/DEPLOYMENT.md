@@ -29,11 +29,11 @@ Option B (Recommended): Separate Frontend and API on Render.
 - Environment variables:
   - SECRET_KEY=change-me
   - FLASK_DEBUG=0
-  - API_BASE_URL=https://your-api.onrender.com/api
+  - API_BASE_URL=https://your-api.onrender.com  # Note: no trailing /api
 
 ## Key Constraints and Best Practices
 
-- API_BASE_URL must be absolute and HTTPS (e.g., https://your-api.onrender.com/api)
+- API_BASE_URL must be absolute and HTTPS (e.g., https://your-api.onrender.com) and should NOT include the trailing /api. Frontend routes include the /api prefix when calling the backend (e.g., client.get('/api/scenarios')).
 - CORS: The API should allow the Frontend’s Render origin. If you later add additional domains, add them to allowed origins.
 - Same-origin UX: All htmx/browser interactions should target Frontend routes that render HTML or trigger server-side API calls. Do not call the API directly from the browser to avoid CORS/auth issues.
 - Static assets: Served by the Frontend service under /static.
