@@ -1,0 +1,8 @@
+{% set total = scenarios|length %}
+{% set lease_count = scenarios.values() | selectattr('scenario.type', 'equalto', 'lease') | list | length %}
+{% set loan_count = scenarios.values() | selectattr('scenario.type', 'equalto', 'loan') | list | length %}
+
+<!-- OOB swaps to update counts without full page reload -->
+<div hx-swap-oob="outerHTML" id="total-scenarios-count">{{ total }}</div>
+<div hx-swap-oob="outerHTML" id="lease-options-count">{{ lease_count }}</div>
+<div hx-swap-oob="outerHTML" id="loan-options-count">{{ loan_count }}</div>

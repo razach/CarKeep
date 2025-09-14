@@ -54,15 +54,15 @@
     
     <div class="quick-stats">
         <div class="stat-card">
-            <div class="stat-number">{{ scenarios|length }}</div>
+            <div class="stat-number" id="total-scenarios-count">{{ scenarios|length }}</div>
             <div class="stat-label">Total Scenarios</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'lease') | list | length }}</div>
+            <div class="stat-number" id="lease-options-count">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'lease') | list | length }}</div>
             <div class="stat-label">Lease Options</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'loan') | list | length }}</div>
+            <div class="stat-number" id="loan-options-count">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'loan') | list | length }}</div>
             <div class="stat-label">Loan Options</div>
         </div>
     </div>

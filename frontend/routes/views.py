@@ -188,8 +188,12 @@ def delete_scenario_action(scenario_name):
         api_resp = current_app.api_client.delete(f'/api/scenarios/{scenario_name}')
         payload = api_resp.json()
         if payload.get('success'):
-            # Return 204 No Content with HX-Trigger to show a toast on client
-            resp = Response(status=204)
+            # Re-fetch scenarios and return OOB count updates so stats refresh
+            sc_response = current_app.api_client.get('/api/scenarios')
+            sc_data = sc_response.json()
+            scenarios = sc_data.get('scenarios', {})
+            counts_oob = render_template('components/scenario_counts_oob.html', scenarios=scenarios)
+            resp = make_response(counts_oob, 200)
             resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"Scenario deleted"}}'
             return resp
         else:
@@ -212,8 +216,10 @@ def duplicate_scenario_action(scenario_name):
             sc_response = current_app.api_client.get('/api/scenarios')
             sc_data = sc_response.json()
             scenarios = sc_data.get('scenarios', {})
-            html = render_template('components/scenarios_grid.html', scenarios=scenarios)
-            resp = make_response(html, 200)
+            grid_html = render_template('components/scenarios_grid.html', scenarios=scenarios)
+            counts_oob = render_template('components/scenario_counts_oob.html', scenarios=scenarios)
+            # Return grid + counts OOB together
+            resp = make_response(grid_html + counts_oob, 200)
             resp.headers['HX-Trigger'] = '{"toast":{"type":"success","message":"Scenario duplicated"}}'
             return resp
         else:
