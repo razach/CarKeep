@@ -8,7 +8,7 @@
         <h1>💰 Cost Analysis</h1>
         <p>3-year financial impact analysis to help you decide: Keep current car or upgrade?</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
@@ -203,9 +203,9 @@
         <div class="quick-actions">
             <h3>⚡ Next Steps</h3>
             <div class="action-buttons">
-                <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">➕ Add More Scenarios</a>
-                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-warning">✏️ Update Baseline</a>
-                <a href="{{ url_for('main.comparison') }}" class="btn btn-outline">📊 View Comparison</a>
+                <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">➕ Add More Scenarios</a>
+                <a href="{{ url_for('frontend.edit_baseline') }}" class="btn btn-warning">✏️ Update Baseline</a>
+                <a href="{{ url_for('frontend.comparison') }}" class="btn btn-outline">📊 View Comparison</a>
             </div>
         </div>
     </div>
@@ -215,7 +215,7 @@
         <div class="empty-state">
             <h3>📝 No Scenarios Yet</h3>
             <p>Create scenarios to see detailed cost analysis and make an informed decision.</p>
-            <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
+            <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
         </div>
     </div>
     {% endif %}

@@ -225,7 +225,7 @@
     {% if show_delete %}
     <button type="button" class="btn btn-danger" onclick="deleteScenario('{{ scenario_name }}')">Delete Scenario</button>
     {% endif %}
-    <a href="{{ url_for('main.index') }}" class="btn btn-outline">Cancel</a>
+    <a href="{{ url_for('frontend.index') }}" class="btn btn-outline">Cancel</a>
 </div>
 {% endmacro %}
 

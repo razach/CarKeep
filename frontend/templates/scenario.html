@@ -6,7 +6,7 @@
 <div class="scenario-view">
     <div class="scenario-header">
         <h1>{{ scenario_name|replace('_', ' ')|title }}</h1>
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+        <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
     </div>
     
     {% if results %}

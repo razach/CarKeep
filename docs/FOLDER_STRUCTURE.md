@@ -1,18 +1,96 @@
 # CarKeep Folder Structure
 
-## 🗂️ **Current Project Structure**
+## 🗂️ **Project Structure**
 
-### **Root Directory**
+### **Current Structure** (Updated with UI/API Separation)
 ```
 CarKeep/
-├── app/                    # Web application
-├── core/                   # Core business logic
-├── data/                   # Data storage and templates
-├── docs/                   # Project documentation
-├── instance/              # Flask instance configuration
-├── scripts/               # Utility scripts
-├── requirements.txt       # Python dependencies
-└── run.py                 # Application entry point
+├── app/                    # Legacy web application (being migrated)
+├── frontend/              # Frontend application (New)
+│   ├── app/
+│   │   ├── static/       # Frontend assets (CSS, JS, images)
+│   │   └── templates/    # Frontend templates
+│   ├── routes/           # Frontend-specific routes
+│   ├── utils/           # Frontend utilities
+│   └── __init__.py       # Frontend initialization
+├── core/                 # Backend + Business Logic
+│   ├── api/             # API Layer (New)
+│   │   ├── routes/      # API endpoints
+│   │   └── utils/       # API-specific utilities
+│   ├── calculators/     # Calculation engines
+│   ├── models/          # Shared data models
+│   └── utils/           # Core utilities
+├── data/                # Shared data storage
+│   ├── configs/         # Configuration files
+│   ├── templates/       # Data templates
+│   ├── scenarios/       # Scenario data
+│   └── exports/         # Generated exports
+├── tests/              # Test suites (New)
+│   ├── frontend/       # Frontend tests
+│   ├── core/          # Core logic tests
+│   └── api/           # API endpoint tests
+├── docs/              # Documentation
+├── instance/          # Environment-specific configs
+├── requirements/      # Dependencies by component (New)
+│   ├── core.txt      # Core requirements
+│   ├── frontend.txt  # Frontend-specific requirements
+│   └── dev.txt       # Development requirements
+└── run.py            # Application entry point
+
+Migration Status:
+✓ Directory structure created
+✓ Route separation implemented
+✓ Requirements split
+✓ API endpoints defined
+- Testing structure prepared
+- Configuration separation pending
+```
+
+### **Target Structure** (Final State)
+```
+CarKeep/
+├── frontend/              # Frontend application
+│   ├── app/
+│   │   ├── static/       # Frontend assets (CSS, JS, images)
+│   │   └── templates/    # Frontend templates
+│   ├── routes/           # Frontend-specific routes
+│   └── __init__.py       # Frontend initialization
+├── core/                 # Backend + Business Logic
+│   ├── api/             # API Layer
+│   │   ├── routes/      # API endpoints
+│   │   └── utils/       # API-specific utilities
+│   ├── calculators/     # Calculation engines
+│   │   ├── vehicle_cost_calculator.py
+│   │   ├── car_keep_runner.py
+│   │   ├── cost_analyzer.py
+│   │   └── run_scenarios.py
+│   ├── models/          # Shared data models
+│   └── utils/           # Core utilities
+├── data/                # Shared data storage
+│   ├── configs/         # Configuration files
+│   ├── templates/       # Data templates
+│   └── exports/         # Generated exports
+├── instance/           # Environment-specific configs
+│   ├── config.py      # Shared configuration
+│   └── api_config.py  # API-specific settings
+├── tests/             # Test suites
+│   ├── frontend/      # Frontend tests
+│   ├── core/          # Core logic tests
+│   └── api/           # API endpoint tests
+├── docs/              # Documentation
+├── requirements/      # Dependencies by component
+│   ├── core.txt      # Core requirements
+│   ├── frontend.txt  # Frontend-specific requirements
+│   └── dev.txt       # Development requirements
+└── run.py            # Application entry point
+├── data/                 # Shared data
+│   ├── configs/         # Configuration files
+│   ├── templates/       # Data templates
+│   └── exports/         # Generated exports
+├── instance/            # Instance configurations
+│   ├── frontend.cfg     # Frontend config
+│   └── backend.cfg      # Backend config
+└── run.py              # Application entry point
 ```
 
 ### **App Directory** (`/app`)
@@ -78,24 +156,60 @@ instance/
 └── config.py             # Instance-specific configuration
 ```
 
-## 🎯 **Design Principles**
+## 🎯 **Design Principles and Progress**
 
 ### **1. Separation of Concerns**
-- **App**: Web interface and API endpoints
-- **Core**: Business logic and calculations
-- **Data**: Storage, configuration, and templates
-- **Instance**: Environment-specific settings
+- **Frontend** ✓
+  - User interface and template rendering
+  - API client integration
+  - Route handling for views
+- **Core/API** ✓
+  - RESTful endpoints defined
+  - Request validation
+  - Response formatting
+- **Core/Calculators** ✓
+  - Business logic preserved
+  - Calculation engines isolated
+- **Data** ✓
+  - Shared storage structure
+  - Configuration management
+- **Instance** (In Progress)
+  - Environment-specific settings
+  - Configuration separation
 
 ### **2. Modular Architecture**
-- **Templates**: Reusable components in `templates/components/`
-- **Static Assets**: Organized by type (CSS, JS, images)
-- **Calculators**: Independent calculation modules
-- **Utils**: Shared utilities separated by domain (web vs core)
+- **Templates**: Reusable components in `frontend/templates/components/`
+- **Static Assets**: Organized by type in `frontend/static/`
+- **API Routes**: RESTful endpoints in `core/api/routes/`
+- **Calculators**: Business logic in `core/calculators/`
+- **Models**: Shared data models in `core/models/`
+- **Utils**: Domain-specific utilities in respective directories
 
 ### **3. Configuration Management**
-- **App Config**: Basic Flask configuration
-- **Instance Config**: Environment-specific settings
-- **Data Config**: Business logic configuration (state taxes, etc.)
+- **Frontend Config**: UI-specific settings
+- **API Config**: API-specific settings in instance/api_config.py
+- **Core Config**: Business logic configuration in data/configs
+- **Environment Config**: Environment-specific settings in instance/config.py
+
+### **4. Testing Strategy**
+- **Frontend Tests**: Template rendering and UI interaction
+- **Core Tests**: Business logic and calculations
+- **API Tests**: Endpoint behavior and data validation
+- **Integration Tests**: Cross-component functionality
+
+### **5. Development Workflow**
+- **Local Development**:
+  - Frontend serves templates and static assets
+  - Core/API handles data processing and calculations
+  - Shared data accessed through API endpoints
+- **Testing**:
+  - Component-specific test suites
+  - Integration tests for critical paths
+  - Shared test utilities and fixtures
+- **Deployment**:
+  - Single deployment for monolithic setup
+  - Option for separate deployment in future
+  - Environment-specific configurations
 
 ## 🔧 **Import Patterns**
 

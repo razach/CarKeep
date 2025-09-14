@@ -8,7 +8,7 @@
         <h1>📊 Scenario Comparison</h1>
         <p>Compare your baseline with alternative scenarios</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
@@ -54,8 +54,8 @@
                             <td>${{ "{:,.0f}".format(scenario.scenario.financing.monthly_payment) }}</td>
                             <td>{{ scenario.state or baseline.state or 'VA' }}</td>
                             <td>
-                                <a href="{{ url_for('main.view_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-outline">View</a>
-                                <a href="{{ url_for('main.edit_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ url_for('frontend.view_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-outline">View</a>
+                                <a href="{{ url_for('frontend.edit_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-sm btn-warning">Edit</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -68,9 +68,9 @@
         <div class="quick-actions">
             <h3>⚡ Quick Actions</h3>
             <div class="action-buttons">
-                <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">➕ Add New Scenario</a>
-                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-warning">✏️ Edit Baseline</a>
-                <a href="{{ url_for('main.state_taxes') }}" class="btn btn-info">🏛️ Manage State Taxes</a>
+                <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">➕ Add New Scenario</a>
+                <a href="{{ url_for('frontend.edit_baseline') }}" class="btn btn-warning">✏️ Edit Baseline</a>
+                <a href="{{ url_for('frontend.state_taxes') }}" class="btn btn-info">🏛️ Manage State Taxes</a>
             </div>
         </div>
     </div>
@@ -80,7 +80,7 @@
         <div class="empty-state">
             <h3>📝 No Scenarios Yet</h3>
             <p>Create your first scenario to start comparing vehicle costs.</p>
-            <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
+            <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">Create First Scenario</a>
         </div>
     </div>
     {% endif %}

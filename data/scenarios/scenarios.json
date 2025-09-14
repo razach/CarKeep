@@ -51,14 +51,14 @@
       }
     },
     "lucid_air_lease_tx": {
-      "description": "Acura RDX vs Lucid Air lease (Texas costs)",
-      "state": "TX",
+      "description": "Acura RDX vs Lucid Air lease (VA costs)",
+      "state": "VA",
       "scenario": {
         "type": "lease",
         "vehicle": {
           "name": "Lucid Air",
-          "msrp": 72800,
-          "current_value": 0,
+          "msrp": 72800.0,
+          "current_value": 0.0,
           "values_3yr": [
             71400,
             55100,
@@ -67,20 +67,16 @@
           ]
         },
         "financing": {
-          "monthly_payment": 368,
+          "monthly_payment": 368.0,
           "lease_terms": 36,
-          "msrp": 72800,
-          "incentives": {
-            "air_credit": 15000,
-            "ev_credit": 7500,
-            "onsite_credit": 2000
-          }
+          "msrp": 72800.0,
+          "incentives": {}
         }
       },
       "trade_in": {
-        "trade_in_value": 18000,
+        "trade_in_value": 18000.0,
         "loan_balance": 9909.95,
-        "incentives": 2000
+        "incentives": 2000.0
       },
       "cost_overrides": {
         "insurance_monthly": {
@@ -95,6 +91,12 @@
           "Acura RDX": 150,
           "Lucid Air": 45
         }
+      },
+      "cost_config": {
+        "monthly_insurance": 100.0,
+        "monthly_maintenance": 50.0,
+        "monthly_fuel": 150.0,
+        "investment_return_rate": 0.06
       }
     },
     "cpo_bmw_x3_custom_costs": {

@@ -25,7 +25,7 @@
                 </span>
             </div>
             <div class="baseline-actions">
-                <a href="{{ url_for('main.edit_baseline') }}" class="btn btn-secondary">
+                <a href="{{ url_for('frontend.edit_baseline') }}" class="btn btn-secondary">
                     ✏️ Edit Baseline
                 </a>
             </div>
@@ -69,11 +69,11 @@
                 </div>
                 
                 <div class="scenario-actions">
-                    <a href="{{ url_for('main.view_scenario', scenario_name=scenario_name) }}" 
+                    <a href="{{ url_for('frontend.view_scenario', scenario_name=scenario_name) }}" 
                        class="btn btn-primary" data-tooltip="View detailed cost analysis">
                         📊 View Results
                     </a>
-                    <a href="{{ url_for('main.edit_scenario', scenario_name=scenario_name) }}" 
+                    <a href="{{ url_for('frontend.edit_scenario', scenario_name=scenario_name) }}" 
                        class="btn btn-secondary" data-tooltip="Edit this scenario">
                         ✏️ Edit
                     </a>
@@ -92,10 +92,10 @@
     </div>
     
     <div class="actions">
-        <a href="{{ url_for('main.create_scenario') }}" class="btn btn-success">
+        <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">
             ➕ Create New Scenario
         </a>
-        <a href="{{ url_for('main.comparison') }}" class="btn btn-info">
+        <a href="{{ url_for('frontend.comparison') }}" class="btn btn-info">
             <i class="fas fa-chart-bar"></i>
             Compare Scenarios
         </a>

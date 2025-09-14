@@ -15,7 +15,14 @@ def list_scenarios(data_folder=None):
     if data_folder is None:
         data_folder = Path.cwd()
     
+    # Ensure data_folder is a Path object
+    data_folder = Path(data_folder)
+    
+    # Try to find the scenarios file
     scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
+    if not scenarios_file.exists():
+        raise FileNotFoundError(f"Scenarios file not found at {scenarios_file}")
+    
     with open(scenarios_file, 'r') as f:
         data = json.load(f)
     
@@ -29,9 +36,17 @@ def list_scenarios(data_folder=None):
 def run_scenario(scenario_name: str, export_csv: bool = False, data_folder=None):
     """Run a specific scenario by name."""
     if data_folder is None:
-        data_folder = Path.cwd()
+        # If no data_folder provided, use the one from app config
+        from flask import current_app
+        data_folder = current_app.config['DATA_FOLDER']
+    
+    # Ensure data_folder is a Path object
+    data_folder = Path(data_folder)
     
     scenarios_file = data_folder / 'scenarios' / 'scenarios.json'
+    if not scenarios_file.exists():
+        raise FileNotFoundError(f"Scenarios file not found at {scenarios_file}")
+    
     with open(scenarios_file, 'r') as f:
         data = json.load(f)
     

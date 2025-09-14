@@ -22,26 +22,40 @@ class StateTaxRegistry:
     """Registry of state tax configurations."""
     
     def __init__(self):
-        self.states = {
-            'VA': StateTaxConfig(
-                property_tax_rate=0.0457,  # $4.57 per $100 of assessed value
-                pptra_relief=0.51,         # 51% relief on first $20k
-                relief_cap=20000,          # $20k cap for relief
-                state_name='Virginia (Fairfax County)'
-            ),
-            'TX': StateTaxConfig(
-                property_tax_rate=0.0625,  # $6.25 per $100 of assessed value
-                pptra_relief=0.0,          # No relief
-                relief_cap=0,              # No cap
-                state_name='Texas'
-            ),
-            'CA': StateTaxConfig(
-                property_tax_rate=0.0065,  # $0.65 per $100 of assessed value
-                pptra_relief=0.0,          # No relief
-                relief_cap=0,              # No cap
-                state_name='California'
-            )
-        }
+        """Initialize the registry by loading from the JSON config file."""
+        import json
+        import os
+        
+        # Get the absolute path to the config file
+        config_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            'data', 'configs', 'state_tax_configs.json'
+        )
+        
+        try:
+            with open(config_path, 'r') as f:
+                config_data = json.load(f)
+            
+            self.states = {
+                state: StateTaxConfig(
+                    property_tax_rate=data['property_tax_rate'],
+                    pptra_relief=data['pptra_relief'],
+                    relief_cap=data['relief_cap'],
+                    state_name=data['state_name']
+                )
+                for state, data in config_data.items()
+            }
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Warning: Could not load state tax config file: {e}")
+            # Fallback to default VA configuration
+            self.states = {
+                'VA': StateTaxConfig(
+                    property_tax_rate=0.0457,
+                    pptra_relief=0.51,
+                    relief_cap=20000,
+                    state_name='Virginia (Fairfax County)'
+                )
+            }
     
     def get_state_config(self, state: str) -> StateTaxConfig:
         """Get tax configuration for a state, defaulting to VA if not found."""

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-CarKeep Web Application Entry Point
-Flask-based web interface for vehicle cost comparison scenarios.
+Entry point for the CarKeep frontend application.
 """
 
-from app import create_app
+from frontend import create_app
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(host='localhost', port=5001)
+    
+    # Run the application
+    app.run(debug=True, port=5000)

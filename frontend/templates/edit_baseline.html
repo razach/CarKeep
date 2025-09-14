@@ -10,12 +10,12 @@
         <h1>✏️ Edit Baseline Scenario</h1>
         <p>Modify your baseline vehicle and loan information</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
     <div class="edit-form">
-        <form method="POST" action="{{ url_for('main.edit_baseline') }}" id="baselineForm">
+        <form method="POST" action="{{ url_for('frontend.edit_baseline') }}" id="baselineForm">
             {{ basic_info_section(
                 description=baseline_data.get('description', ''),
                 readonly=false

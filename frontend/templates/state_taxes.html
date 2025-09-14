@@ -8,7 +8,7 @@
         <h1>🏛️ State Tax Configuration</h1>
         <p>Manage property tax rates and relief programs for different states</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
@@ -223,7 +223,7 @@ document.getElementById('addStateForm').addEventListener('submit', function(e) {
         formData.append('action', 'add_state');
     }
     
-    fetch('{{ url_for("main.state_taxes") }}', {
+    fetch('{{ url_for("frontend.state_taxes") }}', {
         method: 'POST',
         body: formData
     })
@@ -297,7 +297,7 @@ function deleteState(stateCode) {
         formData.append('action', 'delete_state');
         formData.append('state_code', stateCode);
         
-        fetch('{{ url_for("main.state_taxes") }}', {
+        fetch('{{ url_for("frontend.state_taxes") }}', {
             method: 'POST',
             body: formData
         })

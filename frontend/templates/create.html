@@ -10,12 +10,12 @@
         <h1>➕ Create New Scenario</h1>
         <p>Add a new vehicle cost comparison scenario to your analysis</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-secondary">← Back to Scenarios</a>
         </div>
     </div>
     
     <div class="create-form">
-        <form method="POST" action="{{ url_for('main.create_scenario') }}" id="scenarioForm">
+        <form method="POST" action="{{ url_for('frontend.create_scenario') }}" id="scenarioForm">
             {{ basic_info_section() }}
             {{ vehicle_details_section() }}
             {{ financing_section() }}

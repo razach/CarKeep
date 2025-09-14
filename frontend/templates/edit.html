@@ -10,13 +10,13 @@
         <h1>✏️ Edit Scenario: {{ scenario_name }}</h1>
         <p>Modify the details of your vehicle cost comparison scenario</p>
         <div class="header-actions">
-            <a href="{{ url_for('main.view_scenario', scenario_name=scenario_name) }}" class="btn btn-secondary">← Back to Scenario</a>
-            <a href="{{ url_for('main.index') }}" class="btn btn-outline">← Back to Scenarios</a>
+            <a href="{{ url_for('frontend.view_scenario', scenario_name=scenario_name) }}" class="btn btn-secondary">← Back to Scenario</a>
+            <a href="{{ url_for('frontend.index') }}" class="btn btn-outline">← Back to Scenarios</a>
         </div>
     </div>
     
     <div class="edit-form">
-        <form method="POST" action="{{ url_for('main.edit_scenario', scenario_name=scenario_name) }}" id="editForm">
+        <form method="POST" action="{{ url_for('frontend.edit_scenario', scenario_name=scenario_name) }}" id="editForm">
             {{ basic_info_section(
                 scenario_name=scenario_name,
                 description=scenario_data.description,

@@ -48,6 +48,46 @@ All scenarios are compared against the baseline, providing a clear and consisten
 
 A detailed explanation of the file structure can be found in [FOLDER_STRUCTURE.md](FOLDER_STRUCTURE.md).
 
+### 3.3. Application Structure
+
+The application is split into two main components:
+
+1. **API Server (run_api.py)**
+   - Runs on port 5050
+   - Handles all data processing and storage
+   - Uses Blueprint with prefix `/api`
+   - Key endpoints:
+     - `/api/scenarios` - CRUD operations for scenarios
+     - `/api/comparison-results` - Cost comparison calculations
+     - `/api/cost-analysis` - Detailed cost analysis
+     - `/api/state-taxes` - State tax configuration management
+
+2. **Frontend Server (run.py)**
+   - Runs on port 5001
+   - Handles UI rendering and user interactions
+   - Uses Blueprint named 'frontend'
+   - Key routes:
+     - `/` - Homepage with scenario list
+     - `/scenario/<name>` - Individual scenario view
+     - `/comparison` - Side-by-side comparison
+     - `/cost-analysis` - Detailed cost analysis
+     - `/state-taxes` - Tax configuration management
+     - `/create` - Create new scenario
+     - `/edit-baseline` - Edit baseline scenario
+     - `/scenario/<name>/edit` - Edit existing scenario
+
+### 3.4. Data Management
+
+1. **File Locations**
+   - Scenarios: `data/scenarios/scenarios.json`
+   - State Taxes: `data/configs/state_tax_configs.json`
+   - Exports: `data/exports/` (various CSV files)
+
+2. **Path Resolution**
+   - All file paths are resolved relative to the application root
+   - The `DATA_FOLDER` configuration points to the root data directory
+   - Both API and Frontend servers use consistent path resolution
+
 ### 3.3. Core Components
 
 *   **`app/`**: The Flask web application, including routes, templates, and static files.
