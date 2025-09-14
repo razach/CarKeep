@@ -210,10 +210,10 @@ def create_state_tax():
             relief_cap=float(data['relief_cap']),
             state_name=data['state_name']
         )
-        
         tax_registry = StateTaxRegistry()
         tax_registry.add_state(data['state_code'], tax_config)
-        
+        tax_registry.save()
+
         return jsonify({
             'success': True,
             'message': 'State tax configuration created successfully',

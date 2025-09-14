@@ -17,9 +17,7 @@
             <h3>📊 Current State Configurations</h3>
             <div class="states-grid" id="states-grid">
                 {% for state_code, config in states.items() %}
-                <div id="state-{{ state_code }}">
-                    {% include 'components/state_tax_row.html' %}
-                </div>
+                {% include 'components/state_tax_row.html' %}
                 {% endfor %}
             </div>
         </div>
@@ -37,7 +35,10 @@
                 </ul>
             </div>
             
-            <form id="addStateForm" class="add-state-form">
+        <form id="addStateForm" class="add-state-form"
+            hx-post="/_state-taxes/create"
+            hx-target="#states-grid"
+            hx-swap="beforeend">
                 <input type="hidden" id="edit_mode" name="edit_mode" value="false">
                 <input type="hidden" id="original_state_code" name="original_state_code" value="">
                 
