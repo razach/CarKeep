@@ -90,10 +90,11 @@ The application is split into two main components:
 
 ### 3.3. Core Components
 
-*   **`app/`**: The Flask web application, including routes, templates, and static files.
+*   **`frontend/`**: The Flask web application, including routes, templates, and static files.
 *   **`core/`**: The core business logic and calculation engine.
 *   **`data/`**: Data files, including scenarios and configurations.
-*   **`run.py`**: The entry point for running the Flask application.
+*   **`run.py`**: The frontend application entry point.
+*   **`run_api.py`**: The API server entry point.
 
 ## 4. Database Design
 

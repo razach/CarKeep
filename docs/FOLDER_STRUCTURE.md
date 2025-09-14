@@ -2,17 +2,20 @@
 
 ## 🗂️ **Project Structure**
 
-### **Current Structure** (Updated with UI/API Separation)
+### **Current Structure** (Frontend/API Separation Complete)
 ```
 CarKeep/
-├── app/                    # Legacy web application (being migrated)
-├── frontend/              # Frontend application (New)
-│   ├── app/
-│   │   ├── static/       # Frontend assets (CSS, JS, images)
-│   │   └── templates/    # Frontend templates
-│   ├── routes/           # Frontend-specific routes
+├── frontend/              # Frontend application
+│   ├── static/           # Frontend assets (CSS, JS, images)
+│   │   ├── css/         # Stylesheets
+│   │   ├── js/          # JavaScript modules
+│   │   └── img/         # Images and icons
+│   ├── templates/        # Frontend templates
+│   │   ├── base.html    # Base template
+│   │   └── components/  # Reusable components
+│   ├── routes/          # Frontend-specific routes
 │   ├── utils/           # Frontend utilities
-│   └── __init__.py       # Frontend initialization
+│   └── __init__.py      # Frontend initialization
 ├── core/                 # Backend + Business Logic
 │   ├── api/             # API Layer (New)
 │   │   ├── routes/      # API endpoints
@@ -42,6 +45,8 @@ Migration Status:
 ✓ Route separation implemented
 ✓ Requirements split
 ✓ API endpoints defined
+✓ Legacy app/ directory removed
+✓ Frontend structure organized
 - Testing structure prepared
 - Configuration separation pending
 ```
