@@ -228,80 +228,114 @@ carkeep-backend/
   - Independent scaling
   - Proper monitoring and logging
 
-## 7. Frontend-Backend Decoupling Plan
+## 7. Frontend-Backend Separation for iOS Development
 
-Status: Deferred — keeping Flask + Jinja + htmx for now. This section remains as a reference roadmap if/when we migrate toward a SPA or separate frontend service.
+**Updated Goal**: Complete frontend/backend separation to enable iOS app development while maintaining current web application functionality.
 
-To achieve the service separation, we are implementing a phased approach:
+**Current Status**: 95% complete - API-first architecture implemented with comprehensive endpoints. Frontend consumes API via HTTP requests. Ready for iOS development with minimal additional work.
 
-### Stage 1: API Expansion (Current Focus)
+To achieve complete separation for mobile development, we are focusing on:
 
-*   **Goal**: Expose all application functionality through a comprehensive REST API.
+### Stage 1: API Completion (Current Focus - iOS Ready)
+
+*   **Goal**: Ensure 100% API coverage for all application functionality.
+*   **Status**: Nearly complete - comprehensive REST API implemented
 *   **Checklist** (Backend - Flask):
-    *   [x] **Review existing API endpoints**: Basic CRUD operations identified for scenarios and state tax configurations.
-    *   [✓] **Initial JSON API Routes**: JSON response routes implemented for:
-        *   [x] Scenario listing and individual retrieval
-        *   [x] State tax configuration management
-        *   [x] Cost analysis and comparison data
-    *   [ ] **Implement missing API endpoints**: Need to develop endpoints for:
-        *   [x] Detailed scenario comparison matrices
-        *   [ ] Bulk operations
-        *   [ ] Configuration backup/restore
-    *   [~] **Standardize API responses**: Partially complete
-        *   [x] Basic success/error message structure
-        *   [ ] Comprehensive error handling
-        *   [ ] Response schema documentation
-    *   [ ] **Implement API authentication/authorization**: (Future consideration, if user accounts are introduced).
-    *   [ ] **Document API endpoints**: Use tools like Swagger/OpenAPI to generate interactive API documentation.
+    *   [x] **Core API endpoints implemented**:
+        *   [x] Scenarios: GET, POST, PUT, DELETE (full CRUD)
+        *   [x] Scenario operations: duplicate, detailed view
+        *   [x] State tax management: full CRUD operations
+        *   [x] Comparison and cost analysis endpoints
+    *   [x] **API Infrastructure**:
+        *   [x] CORS properly configured for cross-origin requests
+        *   [x] JSON request/response handling
+        *   [x] Error handling and validation
+        *   [x] Request decorators and middleware
+    *   [ ] **Missing endpoints for complete coverage**:
+        *   [ ] GET/PUT `/api/baseline` - Baseline scenario management
+        *   [ ] GET `/api/config` - Application configuration (optional)
+    *   [x] **API Response Standardization**:
+        *   [x] Consistent success/error message structure
+        *   [x] Proper HTTP status codes
+        *   [x] JSON schema validation
+    *   [ ] **API Documentation**:
+        *   [ ] OpenAPI/Swagger specification
+        *   [ ] Interactive API documentation for iOS developers
+        *   [ ] Endpoint examples and schemas
 
-### Stage 2: Frontend Scaffolding
+### Stage 2: Web Frontend Enhancement (Maintaining Current Architecture)
 
-*   **Goal**: Set up the foundation for the new frontend application.
-*   **Current Status**: Initial frontend improvements in place with vanilla JavaScript
-*   **Checklist** (Frontend - React/Vue/Svelte):
-    *   [~] **Modern JavaScript Foundation**: 
-        *   [x] Modular JavaScript structure
-        *   [x] Client-side form validation
-        *   [x] Dynamic UI updates
-        *   [ ] Framework selection pending
-    *   [ ] **Initialize new frontend project**: Use the framework's CLI (e.g., Create React App, Vue CLI) to set up the `frontend/` directory. (Deferred; continuing with Flask + Jinja + vanilla JS.)
-    *   [~] **Development Environment**: 
-        *   [x] Basic asset pipeline
-        *   [x] Static file organization
-        *   [ ] Hot-reloading setup pending
-    *   [x] **Basic API Integration**: 
-        *   [x] AJAX requests for state tax management
-        *   [x] JSON data handling
-        *   [x] Dynamic form submission
-    *   [ ] **Framework Migration**: Pending framework selection
+*   **Goal**: Enhance web frontend while maintaining separation from backend.
+*   **Current Status**: Well-separated Flask frontend consuming API
+*   **Approach**: Keep Flask + Jinja + htmx for web, focus on iOS-ready backend
+*   **Checklist** (Frontend):
+    *   [x] **API Integration Complete**:
+        *   [x] APIClient class for all backend communication
+        *   [x] No direct file system access from frontend
+        *   [x] All data via HTTP requests to API
+    *   [x] **Dynamic UI Components**:
+        *   [x] State taxes: full CRUD via AJAX
+        *   [x] Real-time UI updates with htmx
+        *   [x] Form validation and error handling
+    *   [ ] **Frontend Polish**:
+        *   [ ] Update frontend to use new baseline endpoints
+        *   [ ] Enhanced error handling and user feedback
+        *   [ ] Improved loading states and transitions
+    *   [x] **No Framework Lock-in**: Current vanilla JS + htmx approach ensures easy future migration if needed
 
-### Stage 3: Gradual Component Migration
+### Stage 3: iOS Development Readiness
 
-*   **Goal**: Incrementally replace server-rendered pages with client-side components.
-*   **Checklist** (Frontend & Backend):
-    *   [x] **State Taxes Management**:
-        *   [x] Dynamic frontend component implemented
-        *   [x] CRUD operations via API endpoints
-        *   [x] Real-time UI updates
-        *   [ ] Complete SPA conversion pending
-    *   [ ] **Migrate "Scenario List" and "Scenario View" pages**:
-        *   [ ] Create frontend components for displaying and viewing scenarios.
-        *   [ ] Implement data fetching and display from the API.
-    *   [ ] **Migrate "Create/Edit Scenario" forms**:
-        *   [ ] Create frontend components for scenario creation and editing.
-        *   [ ] Implement form validation and submission to the API.
-    *   [ ] **Migrate "Comparison" and "Cost Analysis" pages**:
-        *   [ ] Create frontend components for displaying comparison matrices and cost analysis results.
-        *   [ ] Implement data fetching and visualization.
+*   **Goal**: Ensure backend API is fully iOS-ready and well-documented.
+*   **Status**: Ready for iOS development - comprehensive API available
+*   **Checklist**:
+    *   [x] **API Architecture**:
+        *   [x] RESTful endpoints with proper HTTP methods
+        *   [x] JSON request/response format
+        *   [x] CORS enabled for cross-origin requests
+        *   [x] Comprehensive error handling
+    *   [ ] **iOS Development Support**:
+        *   [ ] OpenAPI 3.0 specification document
+        *   [ ] Postman/Insomnia collection for testing
+        *   [ ] API endpoint documentation with examples
+        *   [ ] Authentication strategy (future consideration)
+    *   [ ] **Deployment for Mobile Backend**:
+        *   [ ] Backend API deployed independently to Render
+        *   [ ] Environment configuration for production
+        *   [ ] Proper CORS policies for mobile apps
+        *   [ ] API versioning strategy (future consideration)
 
-### Stage 4: Finalization and Cleanup
+### Stage 4: Production Deployment Architecture
 
-*   **Goal**: Complete the migration and remove legacy code.
-*   **Checklist** (Backend & Frontend):
-    *   [ ] **Remove old Jinja2 templates**: Delete all server-rendered HTML templates.
-    *   [ ] **Refactor Flask routes**: Remove rendering logic and keep only API endpoint definitions.
-    *   [ ] **Update deployment strategy**: Configure the server to serve the SPA and the Flask API separately.
-    *   [ ] **Update project's documentation**: Ensure all documentation reflects the new, decoupled architecture.
+*   **Goal**: Deploy frontend and backend independently for scalability and iOS support.
+*   **Architecture**: Separate deployments optimized for different needs
+*   **Checklist**:
+    *   [ ] **Backend API Deployment** (Render Web Service):
+        *   [ ] Deploy `run_api.py` as independent web service
+        *   [ ] Configure environment variables for production
+        *   [ ] Set up proper CORS for web and mobile clients  
+        *   [ ] Monitor API performance and errors
+    *   [ ] **Frontend Web Deployment** (Render Web Service):
+        *   [ ] Deploy `run.py` as separate web service
+        *   [ ] Configure API_BASE_URL for production backend
+        *   [ ] Set up static file serving
+        *   [ ] Optimize for web performance
+    *   [ ] **Documentation and Monitoring**:
+        *   [ ] API health checks and monitoring
+        *   [ ] Error tracking and logging
+        *   [ ] Performance metrics
+        *   [ ] API usage analytics
+
+### Future: iOS App Development
+
+*   **Goal**: Develop native iOS app using the CarKeep API.
+*   **Prerequisites**: Stages 1-3 complete (API ready)
+*   **Approach**: Native iOS app consuming REST API
+*   **Key Features for iOS**:
+    *   [ ] Native iOS UI for scenario management
+    *   [ ] Core calculation features via API
+    *   [ ] Offline capability (future consideration)
+    *   [ ] Push notifications for updates (future)
+    *   [ ] iOS-specific UX optimizations
 
 ### Future Consideration: Database Backend Integration
 

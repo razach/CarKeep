@@ -32,7 +32,7 @@
             {{ financing_section(
                 financing_type='loan',
                 monthly_payment=baseline_data.get('monthly_payment', 0),
-                interest_rate=(baseline_data.get('interest_rate', 0.055) * 100) | round(1)
+                interest_rate=baseline_data.get('interest_rate', 5.5)
             ) }}
             
             {{ trade_in_section(

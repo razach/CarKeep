@@ -102,3 +102,132 @@ th { text-align: left; color: var(--color-muted); font-weight: 600; }
   outline: 2px solid var(--color-primary-600);
   outline-offset: 2px;
 }
+
+/* Form Styling - Improved Readability */
+.form-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-section h3 {
+  margin: 0 0 var(--space-4) 0;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-primary-600);
+  display: inline-block;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-primary-600);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.form-group small {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  margin-top: var(--space-1);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-6) 0 var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-6);
+}
+
+/* Single column layout for long forms */
+.form-section .form-row.single {
+  grid-template-columns: 1fr;
+}
+
+/* Form responsive design */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-section {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+}
+
+/* Edit form specific styling */
+.edit-baseline,
+.edit-scenario,
+.create-scenario {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.edit-header,
+.create-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.edit-header h1,
+.create-header h1 {
+  margin: 0 0 var(--space-2) 0;
+  color: var(--color-text);
+  font-size: var(--text-2xl);
+}
+
+.edit-header p,
+.create-header p {
+  margin: 0 0 var(--space-4) 0;
+  color: var(--color-muted);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}

@@ -5,7 +5,7 @@ Handles template rendering and user interface.
 
 from flask import (
     Blueprint, render_template, request, make_response, 
-    current_app, redirect, url_for
+    current_app, redirect, url_for, jsonify
 )
 from pathlib import Path
 import time
@@ -115,20 +115,78 @@ def edit_baseline():
     """Edit baseline scenario."""
     try:
         if request.method == 'POST':
+            # Convert form data to JSON format expected by API
+            form_data = request.form.to_dict()
+            
+            # Convert numeric fields
+            numeric_fields = ['current_value', 'msrp', 'monthly_payment', 'principal_balance', 
+                            'interest_rate', 'extra_payment', 'impairment']
+            for field in numeric_fields:
+                if field in form_data and form_data[field]:
+                    try:
+                        form_data[field] = float(form_data[field])
+                    except (ValueError, TypeError):
+                        form_data[field] = 0
+            
+            # Convert percentage fields
+            if 'interest_rate' in form_data:
+                form_data['interest_rate'] = form_data['interest_rate'] / 100  # Convert to decimal
+            
+            # Convert boolean fields
+            form_data['impairment_affects_taxes'] = form_data.get('impairment_affects_taxes') == 'on'
+            
             # Make API call to update baseline
-            response = current_app.api_client.put('/api/baseline', data=request.form)
+            response = current_app.api_client.put('/api/baseline', json=form_data)
+            
             if response.status_code == 200:
-                return redirect(url_for('frontend.index'))
+                data = response.json()
+                return jsonify({
+                    'success': True,
+                    'message': 'Baseline updated successfully'
+                })
             else:
-                raise Exception(response.json().get('error', 'Unknown error'))
+                error_data = response.json()
+                return jsonify({
+                    'success': False, 
+                    'message': error_data.get('error', 'Unknown error')
+                }), response.status_code
         
-        # GET request - show form
-        response = current_app.api_client.get('/api/scenarios')
-        data = response.json()
-        return render_template('edit_baseline.html', baseline=data.get('baseline'))
+        # GET request - show form with current baseline data
+        response = current_app.api_client.get('/api/baseline')
+        if response.status_code == 200:
+            data = response.json()
+            baseline = data.get('baseline', {})
+            
+            # Flatten baseline data for form rendering
+            baseline_data = {
+                'description': baseline.get('description', ''),
+                'state': baseline.get('state', 'VA'),
+                'vehicle_name': baseline.get('vehicle', {}).get('name', ''),
+                'msrp': baseline.get('vehicle', {}).get('msrp', 0),
+                'current_value': baseline.get('vehicle', {}).get('current_value', 0),
+                'impairment': baseline.get('vehicle', {}).get('impairment', 0),
+                'impairment_affects_taxes': baseline.get('vehicle', {}).get('impairment_affects_taxes', False),
+                'monthly_payment': baseline.get('current_loan', {}).get('monthly_payment', 0),
+                'principal_balance': baseline.get('current_loan', {}).get('principal_balance', 0),
+                'extra_payment': baseline.get('current_loan', {}).get('extra_payment', 0),
+            }
+            
+            # Handle interest rate conversion carefully - debug the value
+            interest_rate_decimal = baseline.get('current_loan', {}).get('interest_rate', 0.055)
+            current_app.logger.debug(f"Raw interest rate from API: {interest_rate_decimal}")
+            baseline_data['interest_rate'] = round(interest_rate_decimal * 100, 2)  # Convert decimal to percentage
+            current_app.logger.debug(f"Converted interest rate for form: {baseline_data['interest_rate']}")
+            
+            
+            return render_template('edit_baseline.html', baseline_data=baseline_data)
+        else:
+            error_data = response.json()
+            raise Exception(error_data.get('error', 'Failed to fetch baseline data'))
         
     except Exception as e:
-        return render_template('error.html', error=str(e)), 400
+        if request.method == 'POST':
+            return jsonify({'success': False, 'message': str(e)}), 500
+        return render_template('error.html', error=str(e)), 500
 
 @frontend_bp.route('/state-taxes', methods=['GET'])
 def state_taxes():

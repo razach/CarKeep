@@ -4,22 +4,22 @@
         "state": "VA",
         "vehicle": {
             "name": "Acura RDX",
-            "msrp": 0,
-            "current_value": 21000,
+            "msrp": 0.0,
+            "current_value": 21000.0,
             "values_3yr": [
                 21000,
                 18900,
                 17000,
                 15300
             ],
-            "impairment": 3000,
+            "impairment": 3000.0,
             "impairment_affects_taxes": false
         },
         "current_loan": {
             "principal_balance": 9909.95,
             "monthly_payment": 564.1,
-            "extra_payment": 85.9,
-            "interest_rate": 0.0439
+            "extra_payment": 0.0,
+            "interest_rate": 0.055
         }
     },
     "examples": {
