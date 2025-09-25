@@ -3,8 +3,7 @@
 {% block title %}CarKeep - Vehicle Cost Scenarios{% endblock %}
 
 {% block content %}
-<!-- Cache busting: {{ timestamp }} -->
-<div class="scenarios-container fade-in">
+<div class="fade-in">
     <div class="hero-section">
         <h1>🚗 Vehicle Cost Scenarios</h1>
         <p class="hero-subtitle">Compare your current car costs with potential alternatives</p>
@@ -13,60 +12,80 @@
     <div class="baseline-info">
         <div class="baseline-header">
             <h2>📊 Your Baseline: {{ baseline.vehicle.name }}</h2>
-            <div class="baseline-stats">
-                <span class="stat-item">
-                    <strong>State:</strong> {{ baseline.state }}
-                </span>
-                <span class="stat-item">
-                    <strong>Current Value:</strong> ${{ "{:,.0f}".format(baseline.vehicle.current_value) }}
-                </span>
-                <span class="stat-item">
-                    <strong>Loan Balance:</strong> ${{ "{:,.0f}".format(baseline.current_loan.principal_balance) }}
-                </span>
-            </div>
-            <div class="baseline-actions">
-                <a href="{{ url_for('frontend.edit_baseline') }}" class="btn btn-secondary">
-                    ✏️ Edit Baseline
-                </a>
-            </div>
+            <a href="{{ url_for('frontend.edit_baseline') }}" class="btn btn-secondary">
+                ✏️ Edit Baseline
+            </a>
         </div>
-        <p class="baseline-description">{{ baseline.description }}</p>
+        <div class="baseline-stats">
+            <span class="stat-item">
+                <strong>State:</strong> {{ baseline.state }}
+            </span>
+            <span class="stat-item">
+                <strong>Current Value:</strong> ${{ "{:,.0f}".format(baseline.vehicle.current_value) }}
+            </span>
+            <span class="stat-item">
+                <strong>Loan Balance:</strong> ${{ "{:,.0f}".format(baseline.current_loan.principal_balance) }}
+            </span>
+        </div>
+        <p>{{ baseline.description }}</p>
     </div>
     
     <div class="scenarios-section">
-        <div class="section-header">
-            <h2>🔄 Available Scenarios</h2>
-            <p>Click on any scenario to view detailed cost comparisons</p>
-        </div>
+        <h2>🔄 Available Scenarios</h2>
+        <p class="text-muted mb-4">Click on any scenario to view detailed cost comparisons</p>
         
-        {% include 'components/scenarios_grid.html' %}
+        {% for scenario in scenarios %}
+        <div class="scenario-card">
+            <div class="scenario-header">
+                <h3>{{ scenario.description }}</h3>
+                <div class="scenario-meta">
+                    {{ scenario.financing_type|title }} • 
+                    Vehicle: {{ scenario.vehicle_name }} • 
+                    MSRP: ${{ "{:,.0f}".format(scenario.msrp) }} • 
+                    Monthly Payment: ${{ "{:,.0f}".format(scenario.monthly_payment) }}
+                </div>
+            </div>
+            <div class="scenario-actions">
+                <a href="{{ url_for('frontend.view_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-primary">
+                    📊 View Results
+                </a>
+                <a href="{{ url_for('frontend.edit_scenario', scenario_name=scenario.scenario_name) }}" class="btn btn-secondary">
+                    ✏️ Edit
+                </a>
+                <button class="btn btn-secondary" 
+                        hx-post="/api/scenarios/{{ scenario.scenario_name }}/duplicate"
+                        hx-target="#scenario-counts"
+                        hx-swap="outerHTML">
+                    📋 Duplicate
+                </button>
+                <button class="btn btn-danger" 
+                        hx-delete="/api/scenarios/{{ scenario.scenario_name }}"
+                        hx-confirm="Are you sure you want to delete this scenario?"
+                        hx-target="closest .scenario-card"
+                        hx-swap="outerHTML swap:1s">
+                    🗑️ Delete
+                </button>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     
-    <div class="actions">
+    <div class="main-actions">
         <a href="{{ url_for('frontend.create_scenario') }}" class="btn btn-success">
             ➕ Create New Scenario
         </a>
-        <a href="{{ url_for('frontend.comparison') }}" class="btn btn-info">
-            <i class="fas fa-chart-bar"></i>
-            Compare Scenarios
+        <a href="{{ url_for('frontend.comparison') }}" class="btn btn-primary">
+            📊 Compare Scenarios
+        </a>
+        <a href="{{ url_for('frontend.cost_analysis') }}" class="btn btn-primary">
+            💰 Cost Analysis
         </a>
     </div>
     
-    <div class="quick-stats">
-        <div class="stat-card">
-            <div class="stat-number" id="total-scenarios-count">{{ scenarios|length }}</div>
-            <div class="stat-label">Total Scenarios</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" id="lease-options-count">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'lease') | list | length }}</div>
-            <div class="stat-label">Lease Options</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" id="loan-options-count">{{ scenarios.values() | selectattr('scenario.type', 'equalto', 'loan') | list | length }}</div>
-            <div class="stat-label">Loan Options</div>
-        </div>
+    <div id="scenario-counts" class="scenario-summary">
+        {{ scenarios|length }} Total Scenarios • 
+        {{ scenarios|selectattr('financing_type', 'equalto', 'lease')|list|length }} Lease Options • 
+        {{ scenarios|selectattr('financing_type', 'equalto', 'loan')|list|length }} Loan Options
     </div>
 </div>
-
-<!-- JavaScript functions are now in app.js -->
 {% endblock %}

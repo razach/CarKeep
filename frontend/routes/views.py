@@ -23,9 +23,22 @@ def index():
         current_app.logger.debug(f"API Response: {response.text}")
         data = response.json()
         
+        # Transform scenarios data to match template expectations
+        scenarios_list = []
+        for scenario_name, scenario_data in data['scenarios'].items():
+            scenario_info = {
+                'scenario_name': scenario_name,
+                'description': scenario_data.get('description', 'Unknown'),
+                'financing_type': scenario_data.get('scenario', {}).get('type', 'unknown'),
+                'vehicle_name': scenario_data.get('scenario', {}).get('vehicle', {}).get('name', 'Unknown'),
+                'msrp': scenario_data.get('scenario', {}).get('vehicle', {}).get('msrp', 0),
+                'monthly_payment': scenario_data.get('scenario', {}).get('financing', {}).get('monthly_payment', 0)
+            }
+            scenarios_list.append(scenario_info)
+        
         response = make_response(render_template('index.html', 
                              baseline=data['baseline'], 
-                             scenarios=data['scenarios'],
+                             scenarios=scenarios_list,
                              timestamp=int(time.time())))
         
         # Add cache control headers to prevent browser caching
