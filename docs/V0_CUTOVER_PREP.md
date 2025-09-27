@@ -50,8 +50,8 @@ if __name__ == '__main__':
 ### 4. Environment Variables for v0 Frontend
 Create `v0-frontend/.env.local`:
 ```
-NEXT_PUBLIC_API_URL=http://localhost:5050
-API_BASE_URL=http://localhost:5050/api
+NEXT_PUBLIC_API_URL=https://carkeep.onrender.com
+API_BASE_URL=https://carkeep.onrender.com/api
 
 # For production (Render):
 # NEXT_PUBLIC_API_URL=https://carkeep-api.onrender.com
@@ -91,7 +91,7 @@ Ensure v0 output includes these scripts:
 
 ### Development Setup
 - [ ] Generate v0 frontend in `v0-frontend/` directory
-- [ ] Configure v0 to point to `http://localhost:5050` for API calls
+- [ ] Configure v0 to point to `https://carkeep.onrender.com/api` for API calls
 - [ ] Test two-terminal workflow: `python run_api.py` + `npm run dev`
 - [ ] Verify all API endpoints work with v0 frontend on port 5001
 

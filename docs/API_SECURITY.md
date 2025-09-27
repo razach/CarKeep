@@ -9,8 +9,9 @@
 
 ### 2. CORS Protection
 - **Allowed Origins**: 
-  - `localhost:5001` (local frontend)
-  - `https://v0.dev` and `https://*.v0.dev` (v0 builder)
+  - `localhost:5001` (local frontend development)
+  - `https://v0.app` and `https://*.v0.app` (v0 builder)
+  - `localhost:3000` (common v0 dev port)
   - Additional origins via `API_ALLOWED_ORIGINS` environment variable
 - **Headers**: Restricts which domains can call the API
 

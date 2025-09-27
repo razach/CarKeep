@@ -17,15 +17,23 @@ def create_api_app(test_config=None):
     default_origins = [
         "http://localhost:5001",
         "http://127.0.0.1:5001",
-        "https://v0.dev",
-        "https://*.v0.dev"
+        "https://v0.app",
+        "https://*.v0.app",
+        "http://localhost:3000"  # Common v0 dev port
     ]
     if allowed_origins_env:
         # Comma-separated list of origins
         origins = [o.strip() for o in allowed_origins_env.split(',') if o.strip()]
         default_origins.extend(origins)
+    
+    # For production, allow all origins temporarily for v0 integration
+    if os.environ.get('FLASK_ENV') == 'production':
+        cors_origins = "*"  # Allow all for v0 integration
+    else:
+        cors_origins = default_origins
+        
     CORS(app, resources={r"/*": {
-        "origins": default_origins,
+        "origins": cors_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "Accept", "X-API-Key"],
         "supports_credentials": True,

@@ -81,10 +81,10 @@ CarKeep/
 python run_api.py
 
 # 2. Test API
-curl http://localhost:5050/api/scenarios
+curl https://carkeep.onrender.com/api/scenarios
 
 # 3. Should return JSON with baseline + scenarios
-# 4. All v0 API calls should work against localhost:5050
+# 4. All v0 API calls should work against the production API
 ```
 
 ## Key UI Pages Needed

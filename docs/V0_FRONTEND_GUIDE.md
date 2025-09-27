@@ -28,14 +28,14 @@ CarKeep/
 ### Backend API (Port 5050)
 **File**: `run_api.py`
 **Status**: Ready for v0 integration - no changes needed
-**CORS**: Already configured for localhost development
+**CORS**: Already configured for v0.app integration
 **Endpoints**: All documented below with real response structures
 
 ### Development Workflow
 1. **Start Backend**: `python run_api.py` (port 5050)
-2. **Verify API**: `curl http://localhost:5050/api/scenarios`
-3. **Generate v0 Frontend**: Point to `http://localhost:5050` as API base
-4. **Test Integration**: Frontend makes calls to localhost:5050/api/*
+2. **Verify API**: `curl https://carkeep.onrender.com/api/scenarios`
+3. **Generate v0 Frontend**: Point to `https://carkeep.onrender.com/api` as API base
+4. **Test Integration**: Frontend makes calls to carkeep.onrender.com/api/*
 
 ## Essential API Endpoints for v0
 
@@ -313,7 +313,7 @@ CarKeep/
 ```typescript
 // useApi hook example
 const useApi = () => {
-  const baseUrl = 'http://localhost:5050/api';
+  const baseUrl = 'https://carkeep.onrender.com/api';
   
   const get = async (endpoint: string) => {
     const response = await fetch(`${baseUrl}${endpoint}`);
@@ -461,7 +461,7 @@ const DataTable = ({ columns, data, className = "" }) => {
 ### Verify Backend Connection
 ```bash
 # Test if backend is running
-curl http://localhost:5050/api/scenarios
+curl https://carkeep.onrender.com/api/scenarios
 
 # Expected: JSON response with baseline and scenarios data
 # If 404 or connection refused: Backend not running
@@ -485,7 +485,7 @@ curl http://localhost:5050/api/scenarios
 
 2. **Verify API Connection**:
    ```bash
-   curl http://localhost:5050/api/scenarios
+   curl https://carkeep.onrender.com/api/scenarios
    ```
 
 3. **Build Frontend Components**:
