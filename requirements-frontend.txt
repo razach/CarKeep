@@ -1,0 +1,15 @@
+# CarKeep Frontend Server Dependencies
+# Core Flask dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+
+# Development tools (for local frontend development)
+Flask-DebugToolbar==0.13.1
+
+# Testing (optional)
+pytest==7.4.2
+pytest-flask==1.2.0
