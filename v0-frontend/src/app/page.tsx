@@ -398,17 +398,13 @@ export default function ScenariosOverview() {
             <CardDescription>Analyze, compare, and manage your vehicle scenarios</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Link href="/compare">
                 <Button className="w-full h-12 flex items-center justify-center gap-2">
                   <TrendingDown className="h-5 w-5" />
                   Compare All Scenarios
                 </Button>
               </Link>
-              <Button variant="outline" className="w-full h-12 flex items-center justify-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Export Analysis
-              </Button>
               <Link href="/state-taxes">
                 <Button variant="outline" className="w-full h-12 flex items-center justify-center gap-2">
                   <DollarSign className="h-5 w-5" />
