@@ -4,7 +4,11 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Car, DollarSign, TrendingUp, TrendingDown, AlertCircle } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Car, DollarSign, TrendingUp, TrendingDown, AlertCircle, Edit3, Pencil } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { formatCurrency } from "@/lib/formatters"
 import { useApi } from "@/hooks/use-api"
@@ -14,6 +18,8 @@ interface Vehicle {
   current_value: number
   msrp: number
   values_3yr: number[]
+  impairment?: number
+  impairment_affects_taxes?: boolean
 }
 
 interface Financing {
@@ -33,6 +39,7 @@ interface Scenario {
   trade_in?: {
     trade_in_value: number
     loan_balance: number
+    incentives?: number
   }
 }
 
@@ -43,6 +50,8 @@ interface BaselineData {
   current_loan: {
     monthly_payment: number
     principal_balance: number
+    interest_rate?: number
+    extra_payment?: number
   }
 }
 
@@ -55,7 +64,147 @@ export default function ScenariosOverview() {
   const [data, setData] = useState<ScenariosData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { get } = useApi()
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [editLoading, setEditLoading] = useState(false)
+  const [editScenarioDialogOpen, setEditScenarioDialogOpen] = useState(false)
+  const [editingScenario, setEditingScenario] = useState<string | null>(null)
+  const { get, put } = useApi()
+
+  // Form state for editing baseline
+  const [baselineForm, setBaselineForm] = useState({
+    vehicle_name: '',
+    current_value: '',
+    monthly_payment: '',
+    principal_balance: '',
+    impairment: '',
+    interest_rate: ''
+  })
+
+  // Initialize form with current baseline data
+  useEffect(() => {
+    if (data?.baseline) {
+      setBaselineForm({
+        vehicle_name: data.baseline.vehicle.name || '',
+        current_value: data.baseline.vehicle.current_value?.toString() || '',
+        monthly_payment: data.baseline.current_loan.monthly_payment?.toString() || '',
+        principal_balance: data.baseline.current_loan.principal_balance?.toString() || '',
+        impairment: data.baseline.vehicle.impairment?.toString() || '0',
+        interest_rate: ((data.baseline.current_loan.interest_rate || 0) * 100)?.toString() || ''
+      })
+    }
+  }, [data])
+
+  // Form state for editing scenarios
+  const [scenarioForm, setScenarioForm] = useState({
+    description: '',
+    vehicle_name: '',
+    msrp: '',
+    financing_type: 'loan' as 'loan' | 'lease',
+    monthly_payment: '',
+    loan_term: '',
+    lease_terms: '',
+    principal_balance: '',
+    trade_in_value: '',
+    loan_balance: '',
+    incentives: ''
+  })
+
+  // Initialize scenario form when editing
+  const initializeScenarioForm = (scenarioKey: string, scenario: Scenario) => {
+    setScenarioForm({
+      description: scenario.description,
+      vehicle_name: scenario.scenario.vehicle.name,
+      msrp: scenario.scenario.vehicle.msrp?.toString() || '',
+      financing_type: scenario.scenario.type,
+      monthly_payment: scenario.scenario.financing.monthly_payment?.toString() || '',
+      loan_term: scenario.scenario.financing.loan_term?.toString() || '',
+      lease_terms: scenario.scenario.financing.lease_terms?.toString() || '',
+      principal_balance: scenario.scenario.financing.principal_balance?.toString() || '',
+      trade_in_value: scenario.trade_in?.trade_in_value?.toString() || '',
+      loan_balance: scenario.trade_in?.loan_balance?.toString() || '',
+      incentives: scenario.trade_in?.incentives?.toString() || '0'
+    })
+    setEditingScenario(scenarioKey)
+    setEditScenarioDialogOpen(true)
+  }
+
+  const handleScenarioSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingScenario) return
+    
+    setEditLoading(true)
+
+    try {
+      const updatedScenario = {
+        description: scenarioForm.description,
+        vehicle_name: scenarioForm.vehicle_name,
+        msrp: parseFloat(scenarioForm.msrp),
+        financing_type: scenarioForm.financing_type,
+        monthly_payment: parseFloat(scenarioForm.monthly_payment),
+        loan_term: scenarioForm.loan_term ? parseInt(scenarioForm.loan_term) : undefined,
+        lease_terms: scenarioForm.lease_terms ? parseInt(scenarioForm.lease_terms) : undefined,
+        principal_balance: scenarioForm.principal_balance ? parseFloat(scenarioForm.principal_balance) : undefined,
+        trade_in_value: scenarioForm.trade_in_value ? parseFloat(scenarioForm.trade_in_value) : undefined,
+        loan_balance: scenarioForm.loan_balance ? parseFloat(scenarioForm.loan_balance) : undefined,
+        incentives: scenarioForm.incentives ? parseFloat(scenarioForm.incentives) : 0
+      }
+
+      await put(`/scenario/${editingScenario}`, updatedScenario)
+      
+      // Refresh the data
+      const response = await get("/scenarios")
+      setData(response)
+      setEditScenarioDialogOpen(false)
+      setEditingScenario(null)
+    } catch (err) {
+      console.error("Failed to update scenario:", err)
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const handleBaselineSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEditLoading(true)
+
+    try {
+      const updatedBaseline = {
+        // Required fields per API validation
+        vehicle_name: baselineForm.vehicle_name,
+        current_value: parseFloat(baselineForm.current_value),
+        description: `${baselineForm.vehicle_name} - Keep current car (baseline)`,
+        state: data?.baseline.state || 'VA',
+        
+        // Optional fields
+        monthly_payment: parseFloat(baselineForm.monthly_payment),
+        principal_balance: parseFloat(baselineForm.principal_balance),
+        impairment: parseFloat(baselineForm.impairment) || 0,
+        interest_rate: parseFloat(baselineForm.interest_rate) || 0,
+        extra_payment: data?.baseline.current_loan.extra_payment || 0,
+        msrp: data?.baseline.vehicle.msrp || 0,
+        impairment_affects_taxes: false
+      }
+
+      await put('/baseline', updatedBaseline)
+      
+      // Refresh the data
+      const response = await get("/scenarios")
+      setData(response)
+      setEditDialogOpen(false)
+    } catch (err) {
+      console.error("Failed to update baseline:", err)
+      // Handle error - maybe show a toast or alert
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const handleEditScenario = (scenarioName: string, scenario: any) => {
+    console.log("[v0] Editing scenario:", scenarioName)
+    initializeScenarioForm(scenarioName, scenario)
+    setEditingScenario(scenarioName)
+    setEditScenarioDialogOpen(true)
+  }
 
   useEffect(() => {
     const fetchScenarios = async () => {
@@ -218,9 +367,263 @@ export default function ScenariosOverview() {
                   </CardTitle>
                   <CardDescription className="mt-1">{data.baseline.description}</CardDescription>
                 </div>
-                <Badge variant="outline" className="bg-primary/10">
-                  Baseline
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-primary/10">
+                    Baseline
+                  </Badge>
+                  <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <Edit3 className="h-4 w-4" />
+                        Edit
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Edit Baseline Vehicle</DialogTitle>
+                        <DialogDescription>
+                          Update your current vehicle information and loan details.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleBaselineSubmit} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="vehicle_name">Vehicle Name</Label>
+                            <Input
+                              id="vehicle_name"
+                              value={baselineForm.vehicle_name}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, vehicle_name: e.target.value }))}
+                              placeholder="e.g., Acura RDX"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="current_value">Current Value ($)</Label>
+                            <Input
+                              id="current_value"
+                              type="number"
+                              step="100"
+                              value={baselineForm.current_value}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, current_value: e.target.value }))}
+                              placeholder="21000"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="monthly_payment">Monthly Payment ($)</Label>
+                            <Input
+                              id="monthly_payment"
+                              type="number"
+                              step="0.01"
+                              value={baselineForm.monthly_payment}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, monthly_payment: e.target.value }))}
+                              placeholder="564.10"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="principal_balance">Loan Balance ($)</Label>
+                            <Input
+                              id="principal_balance"
+                              type="number"
+                              step="0.01"
+                              value={baselineForm.principal_balance}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, principal_balance: e.target.value }))}
+                              placeholder="9909.95"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="interest_rate">Interest Rate (%)</Label>
+                            <Input
+                              id="interest_rate"
+                              type="number"
+                              step="0.01"
+                              value={baselineForm.interest_rate}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, interest_rate: e.target.value }))}
+                              placeholder="5.50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="impairment">Impairment/Damage ($)</Label>
+                            <Input
+                              id="impairment"
+                              type="number"
+                              step="100"
+                              value={baselineForm.impairment}
+                              onChange={(e) => setBaselineForm(prev => ({ ...prev, impairment: e.target.value }))}
+                              placeholder="3000"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-4">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setEditDialogOpen(false)}
+                            disabled={editLoading}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" disabled={editLoading}>
+                            {editLoading ? 'Saving...' : 'Save Changes'}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Scenario Edit Dialog */}
+                  <Dialog open={editScenarioDialogOpen} onOpenChange={setEditScenarioDialogOpen}>
+                    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Edit Scenario</DialogTitle>
+                        <DialogDescription>
+                          Modify the details of this vehicle scenario
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleScenarioSubmit}>
+                        <div className="grid gap-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="scenario_description">Description</Label>
+                            <Input
+                              id="scenario_description"
+                              value={scenarioForm.description}
+                              onChange={(e) => setScenarioForm(prev => ({ ...prev, description: e.target.value }))}
+                              placeholder="Enter scenario description"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="vehicle_name">Vehicle Name</Label>
+                              <Input
+                                id="vehicle_name"
+                                value={scenarioForm.vehicle_name}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, vehicle_name: e.target.value }))}
+                                placeholder="2024 Honda Accord"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="msrp">MSRP ($)</Label>
+                              <Input
+                                id="msrp"
+                                type="number"
+                                step="100"
+                                value={scenarioForm.msrp}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, msrp: e.target.value }))}
+                                placeholder="35000"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="financing_type">Financing Type</Label>
+                              <Select 
+                                value={scenarioForm.financing_type} 
+                                onValueChange={(value) => setScenarioForm(prev => ({ ...prev, financing_type: value as "lease" | "loan" }))}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select financing type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lease">Lease</SelectItem>
+                                  <SelectItem value="loan">Loan</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="monthly_payment">Monthly Payment ($)</Label>
+                              <Input
+                                id="monthly_payment"
+                                type="number"
+                                step="10"
+                                value={scenarioForm.monthly_payment}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, monthly_payment: e.target.value }))}
+                                placeholder="450"
+                              />
+                            </div>
+                          </div>
+                          {scenarioForm.financing_type === 'loan' && (
+                            <div className="space-y-2">
+                              <Label htmlFor="loan_term">Loan Term (months)</Label>
+                              <Input
+                                id="loan_term"
+                                type="number"
+                                value={scenarioForm.loan_term}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, loan_term: e.target.value }))}
+                                placeholder="60"
+                              />
+                            </div>
+                          )}
+                          {scenarioForm.financing_type === 'lease' && (
+                            <div className="space-y-2">
+                              <Label htmlFor="lease_terms">Lease Terms (months)</Label>
+                              <Input
+                                id="lease_terms"
+                                type="number"
+                                value={scenarioForm.lease_terms}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, lease_terms: e.target.value }))}
+                                placeholder="36"
+                              />
+                            </div>
+                          )}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="trade_in_value">Trade-in Value ($)</Label>
+                              <Input
+                                id="trade_in_value"
+                                type="number"
+                                step="100"
+                                value={scenarioForm.trade_in_value}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, trade_in_value: e.target.value }))}
+                                placeholder="18000"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="loan_balance">Current Loan Balance ($)</Label>
+                              <Input
+                                id="loan_balance"
+                                type="number"
+                                step="100"
+                                value={scenarioForm.loan_balance}
+                                onChange={(e) => setScenarioForm(prev => ({ ...prev, loan_balance: e.target.value }))}
+                                placeholder="15000"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="incentives">Incentives/Rebates ($)</Label>
+                            <Input
+                              id="incentives"
+                              type="number"
+                              step="100"
+                              value={scenarioForm.incentives}
+                              onChange={(e) => setScenarioForm(prev => ({ ...prev, incentives: e.target.value }))}
+                              placeholder="2000"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-4">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setEditScenarioDialogOpen(false)}
+                            disabled={editLoading}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" disabled={editLoading}>
+                            {editLoading ? 'Saving...' : 'Save Changes'}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -280,6 +683,14 @@ export default function ScenariosOverview() {
                     )}
                   </div>
                   <div className="flex gap-2 mt-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleEditScenario(scenarioName, scenario)}
+                      className="bg-transparent"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                     <Button variant="outline" size="sm" className="flex-1 bg-transparent">
                       View Details
                     </Button>

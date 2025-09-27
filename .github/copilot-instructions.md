@@ -74,6 +74,36 @@ npm run dev        # → http://localhost:3000
 
 **Note**: The API server at localhost:5050 is required for both frontend options. The v0 frontend consumes the same REST API that the Flask frontend uses.
 
+### Development → Production Workflow
+
+**Philosophy**: Make changes → test locally → deploy to production
+
+#### Local Development Setup
+1. **Start local API server**: `python run_api.py` (port 5050)
+2. **Configure v0 frontend for local API**: 
+   ```bash
+   # In v0-frontend/.env.local
+   NEXT_PUBLIC_API_URL=http://localhost:5050
+   ```
+3. **Start v0 frontend**: `cd v0-frontend && npm run dev` (port 3000)
+4. **Test changes locally** with both API and UI running
+
+#### Production Deployment
+1. **Test locally first** - ensure all functionality works with local setup
+2. **Commit and push changes** to GitHub main branch
+3. **Render auto-deploys** API from GitHub (https://carkeep.onrender.com)
+4. **Switch v0 frontend to production API**:
+   ```bash
+   # In v0-frontend/.env.local  
+   NEXT_PUBLIC_API_URL=https://carkeep.onrender.com
+   ```
+5. **Test against production API** - verify deployment successful
+
+#### Environment Configuration
+- **Local Development**: `NEXT_PUBLIC_API_URL=http://localhost:5050`
+- **Production Testing**: `NEXT_PUBLIC_API_URL=https://carkeep.onrender.com`
+- **Note**: No production UI server yet - v0 frontend runs locally against production API
+
 ### Command-Line Tools
 ```bash
 # List all scenarios

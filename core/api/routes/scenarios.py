@@ -176,7 +176,62 @@ def update_scenario(scenario_name):
         if scenario_name not in examples:
             return jsonify({'success': False, 'error': 'Scenario not found'}), 404
 
+        # Update flat fields
         examples[scenario_name].update(scenario_data)
+        
+        # Also update nested scenario structure to keep consistency
+        scenario_obj = examples[scenario_name].get('scenario', {})
+        
+        # Update vehicle fields in nested structure
+        if 'vehicle_name' in scenario_data:
+            if 'vehicle' not in scenario_obj:
+                scenario_obj['vehicle'] = {}
+            scenario_obj['vehicle']['name'] = scenario_data['vehicle_name']
+        
+        if 'msrp' in scenario_data:
+            if 'vehicle' not in scenario_obj:
+                scenario_obj['vehicle'] = {}
+            scenario_obj['vehicle']['msrp'] = int(scenario_data['msrp'])
+        
+        # Update financing fields in nested structure
+        if 'monthly_payment' in scenario_data:
+            if 'financing' not in scenario_obj:
+                scenario_obj['financing'] = {}
+            scenario_obj['financing']['monthly_payment'] = float(scenario_data['monthly_payment'])
+        
+        if 'loan_term' in scenario_data and scenario_data.get('financing_type') == 'loan':
+            if 'financing' not in scenario_obj:
+                scenario_obj['financing'] = {}
+            scenario_obj['financing']['loan_term'] = int(scenario_data['loan_term'])
+        
+        if 'lease_terms' in scenario_data and scenario_data.get('financing_type') == 'lease':
+            if 'financing' not in scenario_obj:
+                scenario_obj['financing'] = {}
+            scenario_obj['financing']['lease_terms'] = int(scenario_data['lease_terms'])
+        
+        if 'principal_balance' in scenario_data and scenario_data.get('financing_type') == 'loan':
+            if 'financing' not in scenario_obj:
+                scenario_obj['financing'] = {}
+            scenario_obj['financing']['principal_balance'] = float(scenario_data['principal_balance'])
+        
+        # Update financing type
+        if 'financing_type' in scenario_data:
+            scenario_obj['type'] = scenario_data['financing_type']
+        
+        # Update trade_in fields
+        if any(field in scenario_data for field in ['trade_in_value', 'loan_balance', 'incentives']):
+            if 'trade_in' not in examples[scenario_name]:
+                examples[scenario_name]['trade_in'] = {}
+            
+            if 'trade_in_value' in scenario_data:
+                examples[scenario_name]['trade_in']['trade_in_value'] = float(scenario_data['trade_in_value'])
+            if 'loan_balance' in scenario_data:
+                examples[scenario_name]['trade_in']['loan_balance'] = float(scenario_data['loan_balance'])
+            if 'incentives' in scenario_data:
+                examples[scenario_name]['trade_in']['incentives'] = float(scenario_data['incentives'])
+        
+        # Save back the updated scenario object
+        examples[scenario_name]['scenario'] = scenario_obj
         data['examples'] = examples
 
         with open(scenarios_file, 'w') as f:

@@ -24,12 +24,12 @@
     },
     "examples": {
         "cpo_acura_mdx_loan": {
-            "description": "Acura RDX vs CPO Acura MDX with loan financing",
+            "description": "LOCAL API TEST",
             "scenario": {
                 "type": "loan",
                 "vehicle": {
-                    "name": "CPO Acura MDX",
-                    "msrp": 45000,
+                    "name": "CPO Acura MDX - UI TEST COMPLETE",
+                    "msrp": 48000,
                     "current_value": 0,
                     "values_3yr": [
                         35000,
@@ -39,16 +39,25 @@
                     ]
                 },
                 "financing": {
-                    "monthly_payment": 1073.47,
+                    "monthly_payment": 1300.0,
                     "loan_term": 36,
-                    "principal_balance": 35000
+                    "principal_balance": 37000.0
                 }
             },
             "trade_in": {
-                "trade_in_value": 18000,
+                "trade_in_value": 20000.0,
                 "loan_balance": 9909.95,
-                "incentives": 0
-            }
+                "incentives": 1500.0
+            },
+            "vehicle_name": "CPO Acura MDX - UI TEST COMPLETE",
+            "msrp": 48000,
+            "financing_type": "loan",
+            "monthly_payment": 1300,
+            "loan_term": 36,
+            "principal_balance": 37000,
+            "trade_in_value": 20000,
+            "loan_balance": 9909.95,
+            "incentives": 1500
         },
         "lucid_air_lease_tx": {
             "description": "Acura RDX vs Lucid Air lease (VA costs)",
