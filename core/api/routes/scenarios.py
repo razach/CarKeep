@@ -9,6 +9,7 @@ import json
 import os
 
 from ..utils.decorators import require_auth, validate_request
+from ..security import rate_limit, check_api_key
 from core.calculators.car_keep_runner import run_comparison_from_json
 from core.calculators.run_scenarios import list_scenarios, run_scenario
 from core.main import StateTaxRegistry, StateTaxConfig
@@ -16,6 +17,7 @@ from core.main import StateTaxRegistry, StateTaxConfig
 from . import api_bp  # Import the blueprint from __init__.py
 
 @api_bp.route('/scenarios', methods=['GET'])
+@rate_limit
 def get_scenarios():
     """Get all scenarios."""
     try:

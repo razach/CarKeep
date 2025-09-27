@@ -9,14 +9,20 @@
 - All data and business logic is in `core/` and `data/` (no changes needed)
 
 ### Integration Steps
-1. **Keep Backend Running**: `python run_api.py` (port 5050)
-2. **Generate v0 Frontend**: Point to `http://localhost:5050` as API base
-3. **Replace Frontend**: Put v0 output in `v0-frontend/` or replace `frontend/` 
-4. **Update run.py**: Either remove or update to serve static v0 files
+1. **Use Public API**: Point v0 to `https://carkeep.onrender.com/api` 
+2. **Generate v0 Frontend**: Create new frontend components
+3. **Deploy Frontend**: Host v0 frontend separately from API
+4. **Update Documentation**: This replaces the Flask frontend entirely
 
 ## API Endpoints (Essential for v0)
 
-**Base URL**: `http://localhost:5050/api`
+**Base URL**: `https://carkeep.onrender.com/api`
+
+**Security**: 
+- Rate limited to 100 requests/minute per IP
+- CORS enabled for v0.dev domains
+- No API key required currently (easy integration)
+- See `docs/API_SECURITY.md` for production security options
 
 ### Primary Data Sources
 - `GET /scenarios` - All scenarios + baseline data

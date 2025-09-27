@@ -16,7 +16,9 @@ def create_api_app(test_config=None):
     allowed_origins_env = os.environ.get('API_ALLOWED_ORIGINS')
     default_origins = [
         "http://localhost:5001",
-        "http://127.0.0.1:5001"
+        "http://127.0.0.1:5001",
+        "https://v0.dev",
+        "https://*.v0.dev"
     ]
     if allowed_origins_env:
         # Comma-separated list of origins
@@ -25,7 +27,7 @@ def create_api_app(test_config=None):
     CORS(app, resources={r"/*": {
         "origins": default_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization", "Accept"],
+        "allow_headers": ["Content-Type", "Authorization", "Accept", "X-API-Key"],
         "supports_credentials": True,
         "expose_headers": ["Content-Range", "X-Content-Range"]
     }})
@@ -36,6 +38,10 @@ def create_api_app(test_config=None):
         DATA_FOLDER=Path(__file__).resolve().parent / 'data',
         DEBUG=os.environ.get('FLASK_DEBUG', '1') == '1'
     )
+    
+    # Apply security middleware
+    from core.api.security import apply_security
+    apply_security(app)
     
     @app.before_request
     def log_request_info():
