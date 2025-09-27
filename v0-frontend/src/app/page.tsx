@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,26 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Car, DollarSign, TrendingUp, TrendingDown, AlertCircle, Edit3, Pencil } from "lucide-react"
+import { StateSelect, StateOption } from "@/components/StateSelect"
+const stateOptions: StateOption[] = [
+  { code: "AL", name: "Alabama" }, { code: "AK", name: "Alaska" }, { code: "AZ", name: "Arizona" },
+  { code: "AR", name: "Arkansas" }, { code: "CA", name: "California" }, { code: "CO", name: "Colorado" },
+  { code: "CT", name: "Connecticut" }, { code: "DE", name: "Delaware" }, { code: "FL", name: "Florida" },
+  { code: "GA", name: "Georgia" }, { code: "HI", name: "Hawaii" }, { code: "ID", name: "Idaho" },
+  { code: "IL", name: "Illinois" }, { code: "IN", name: "Indiana" }, { code: "IA", name: "Iowa" },
+  { code: "KS", name: "Kansas" }, { code: "KY", name: "Kentucky" }, { code: "LA", name: "Louisiana" },
+  { code: "ME", name: "Maine" }, { code: "MD", name: "Maryland" }, { code: "MA", name: "Massachusetts" },
+  { code: "MI", name: "Michigan" }, { code: "MN", name: "Minnesota" }, { code: "MS", name: "Mississippi" },
+  { code: "MO", name: "Missouri" }, { code: "MT", name: "Montana" }, { code: "NE", name: "Nebraska" },
+  { code: "NV", name: "Nevada" }, { code: "NH", name: "New Hampshire" }, { code: "NJ", name: "New Jersey" },
+  { code: "NM", name: "New Mexico" }, { code: "NY", name: "New York" }, { code: "NC", name: "North Carolina" },
+  { code: "ND", name: "North Dakota" }, { code: "OH", name: "Ohio" }, { code: "OK", name: "Oklahoma" },
+  { code: "OR", name: "Oregon" }, { code: "PA", name: "Pennsylvania" }, { code: "RI", name: "Rhode Island" },
+  { code: "SC", name: "South Carolina" }, { code: "SD", name: "South Dakota" }, { code: "TN", name: "Tennessee" },
+  { code: "TX", name: "Texas" }, { code: "UT", name: "Utah" }, { code: "VT", name: "Vermont" },
+  { code: "VA", name: "Virginia" }, { code: "WA", name: "Washington" }, { code: "WV", name: "West Virginia" },
+  { code: "WI", name: "Wisconsin" }, { code: "WY", name: "Wyoming" }
+]
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { formatCurrency } from "@/lib/formatters"
 import { useApi } from "@/hooks/use-api"
@@ -69,15 +90,18 @@ export default function ScenariosOverview() {
   const [editScenarioDialogOpen, setEditScenarioDialogOpen] = useState(false)
   const [editingScenario, setEditingScenario] = useState<string | null>(null)
   const { get, put } = useApi()
+  // Dynamically loaded state tax scenarios (from /state-taxes)
+  const [stateTaxOptions, setStateTaxOptions] = useState<StateOption[]>([])
 
   // Form state for editing baseline
   const [baselineForm, setBaselineForm] = useState({
-    vehicle_name: '',
-    current_value: '',
-    monthly_payment: '',
-    principal_balance: '',
-    impairment: '',
-    interest_rate: ''
+    vehicle_name: "",
+    current_value: "",
+    monthly_payment: "",
+    principal_balance: "",
+    impairment: "",
+    interest_rate: "",
+    state: ""
   })
 
   // Initialize form with current baseline data
@@ -89,24 +113,26 @@ export default function ScenariosOverview() {
         monthly_payment: data.baseline.current_loan.monthly_payment?.toString() || '',
         principal_balance: data.baseline.current_loan.principal_balance?.toString() || '',
         impairment: data.baseline.vehicle.impairment?.toString() || '0',
-        interest_rate: ((data.baseline.current_loan.interest_rate || 0) * 100)?.toString() || ''
+        interest_rate: ((data.baseline.current_loan.interest_rate || 0) * 100)?.toString() || '',
+        state: data.baseline.state || ''
       })
     }
   }, [data])
 
   // Form state for editing scenarios
   const [scenarioForm, setScenarioForm] = useState({
-    description: '',
-    vehicle_name: '',
-    msrp: '',
-    financing_type: 'loan' as 'loan' | 'lease',
-    monthly_payment: '',
-    loan_term: '',
-    lease_terms: '',
-    principal_balance: '',
-    trade_in_value: '',
-    loan_balance: '',
-    incentives: ''
+    description: "",
+    vehicle_name: "",
+    msrp: "",
+    financing_type: "loan" as "lease" | "loan",
+    monthly_payment: "",
+    loan_term: "",
+    lease_terms: "",
+    principal_balance: "",
+    trade_in_value: "",
+    loan_balance: "",
+    incentives: "",
+    state: ""
   })
 
   // Initialize scenario form when editing
@@ -122,7 +148,8 @@ export default function ScenariosOverview() {
       principal_balance: scenario.scenario.financing.principal_balance?.toString() || '',
       trade_in_value: scenario.trade_in?.trade_in_value?.toString() || '',
       loan_balance: scenario.trade_in?.loan_balance?.toString() || '',
-      incentives: scenario.trade_in?.incentives?.toString() || '0'
+      incentives: scenario.trade_in?.incentives?.toString() || '0',
+      state: (scenario as any).state || ''
     })
     setEditingScenario(scenarioKey)
     setEditScenarioDialogOpen(true)
@@ -140,6 +167,7 @@ export default function ScenariosOverview() {
         vehicle_name: scenarioForm.vehicle_name,
         msrp: parseFloat(scenarioForm.msrp),
         financing_type: scenarioForm.financing_type,
+        state: scenarioForm.state || undefined,
         monthly_payment: parseFloat(scenarioForm.monthly_payment),
         loan_term: scenarioForm.loan_term ? parseInt(scenarioForm.loan_term) : undefined,
         lease_terms: scenarioForm.lease_terms ? parseInt(scenarioForm.lease_terms) : undefined,
@@ -173,7 +201,7 @@ export default function ScenariosOverview() {
         vehicle_name: baselineForm.vehicle_name,
         current_value: parseFloat(baselineForm.current_value),
         description: `${baselineForm.vehicle_name} - Keep current car (baseline)`,
-        state: data?.baseline.state || 'VA',
+  state: baselineForm.state || data?.baseline.state || 'VA',
         
         // Optional fields
         monthly_payment: parseFloat(baselineForm.monthly_payment),
@@ -210,9 +238,22 @@ export default function ScenariosOverview() {
     const fetchScenarios = async () => {
       try {
         console.log("[v0] Starting to fetch scenarios...")
-        const response = await get("/scenarios")
+        const [scenariosRes, stateTaxes] = await Promise.all([
+          get("/scenarios"),
+          // Load configured state tax scenarios; if it fails we'll fall back to the static 50-state list
+          get("/state-taxes").catch(() => ({} as Record<string, any>))
+        ])
         console.log("[v0] Successfully loaded scenarios data")
-        setData(response)
+        setData(scenariosRes)
+        // Map state tax configs into options: [{ code, name }]
+        if (stateTaxes && typeof stateTaxes === 'object') {
+          const options: StateOption[] = Object.entries(stateTaxes).map(([code, cfg]: any) => ({
+            code,
+            name: cfg?.state_name || code
+          }))
+          // Only set if we have at least one configured state
+          if (options.length) setStateTaxOptions(options)
+        }
         setError(null)
       } catch (err) {
         console.error("[v0] Failed to load scenarios:", err)
@@ -307,10 +348,6 @@ export default function ScenariosOverview() {
               <h1 className="text-3xl font-bold text-foreground">CarKeep</h1>
               <p className="text-muted-foreground mt-1">Vehicle cost comparison and financial analysis</p>
             </div>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Scenario
-            </Button>
           </div>
         </div>
       </header>
@@ -378,7 +415,7 @@ export default function ScenariosOverview() {
                         Edit
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px]">
+                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Edit Baseline Vehicle</DialogTitle>
                         <DialogDescription>
@@ -389,6 +426,7 @@ export default function ScenariosOverview() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="vehicle_name">Vehicle Name</Label>
+                            <p className="text-xs text-muted-foreground mb-1">e.g., Acura RDX, Tesla Model Y</p>
                             <Input
                               id="vehicle_name"
                               value={baselineForm.vehicle_name}
@@ -398,21 +436,23 @@ export default function ScenariosOverview() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="current_value">Current Value ($)</Label>
-                            <Input
-                              id="current_value"
-                              type="number"
-                              step="100"
-                              value={baselineForm.current_value}
-                              onChange={(e) => setBaselineForm(prev => ({ ...prev, current_value: e.target.value }))}
-                              placeholder="21000"
-                              required
+                            <Label htmlFor="state">State Tax Scenario</Label>
+                            <div className="text-xs text-muted-foreground mb-1 space-y-1">
+                              <p>Select the state scenario to use for this vehicle.</p>
+                              <p>This determines which tax rates and relief rules apply.</p>
+                              <p><Link href="/state-taxes" className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); if (confirm('You have unsaved changes. Navigating away will discard them. Continue to State Tax Settings?')) { window.location.href = '/state-taxes'; } }}>Configured in State Tax Settings</Link></p>
+                            </div>
+                            <StateSelect
+                              value={baselineForm.state}
+                              onChange={code => setBaselineForm(prev => ({ ...prev, state: code }))}
+                              options={stateTaxOptions.length ? stateTaxOptions : stateOptions}
                             />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="monthly_payment">Monthly Payment ($)</Label>
+                            <p className="text-xs text-muted-foreground mb-1">Your current monthly loan or lease payment</p>
                             <Input
                               id="monthly_payment"
                               type="number"
@@ -425,6 +465,7 @@ export default function ScenariosOverview() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="principal_balance">Loan Balance ($)</Label>
+                            <p className="text-xs text-muted-foreground mb-1">Remaining principal on your current auto loan</p>
                             <Input
                               id="principal_balance"
                               type="number"
@@ -439,6 +480,7 @@ export default function ScenariosOverview() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="interest_rate">Interest Rate (%)</Label>
+                            <p className="text-xs text-muted-foreground mb-1">Annual interest rate (APR) for your loan</p>
                             <Input
                               id="interest_rate"
                               type="number"
@@ -450,6 +492,7 @@ export default function ScenariosOverview() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="impairment">Impairment/Damage ($)</Label>
+                            <p className="text-xs text-muted-foreground mb-1">Estimated cost of any major damage or impairment</p>
                             <Input
                               id="impairment"
                               type="number"
@@ -479,7 +522,7 @@ export default function ScenariosOverview() {
 
                   {/* Scenario Edit Dialog */}
                   <Dialog open={editScenarioDialogOpen} onOpenChange={setEditScenarioDialogOpen}>
-                    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Edit Scenario</DialogTitle>
                         <DialogDescription>
@@ -508,7 +551,21 @@ export default function ScenariosOverview() {
                               />
                             </div>
                             <div className="space-y-2">
+                              <Label htmlFor="state">State Tax Scenario</Label>
+                              <div className="text-xs text-muted-foreground mb-1 space-y-1">
+                                <p>Select the state scenario to use for this vehicle.</p>
+                                <p>This determines which tax rates and relief rules apply.</p>
+                                <p><Link href="/state-taxes" className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); if (confirm('You have unsaved changes. Navigating away will discard them. Continue to State Tax Settings?')) { window.location.href = '/state-taxes'; } }}>Configured in State Tax Settings</Link></p>
+                              </div>
+                              <StateSelect
+                                value={scenarioForm.state}
+                                onChange={code => setScenarioForm(prev => ({ ...prev, state: code }))}
+                                options={stateTaxOptions.length ? stateTaxOptions : stateOptions}
+                              />
+                            </div>
+                            <div className="space-y-2">
                               <Label htmlFor="msrp">MSRP ($)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Manufacturer's Suggested Retail Price</p>
                               <Input
                                 id="msrp"
                                 type="number"
@@ -522,6 +579,8 @@ export default function ScenariosOverview() {
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <Label htmlFor="financing_type">Financing Type</Label>
+            <p className="text-xs text-muted-foreground mb-1">Choose 'Lease' or 'Loan' for this scenario</p>
+            <p className="text-xs text-muted-foreground mb-1">Expected monthly payment for this vehicle</p>
                               <Select 
                                 value={scenarioForm.financing_type} 
                                 onValueChange={(value) => setScenarioForm(prev => ({ ...prev, financing_type: value as "lease" | "loan" }))}
@@ -550,6 +609,7 @@ export default function ScenariosOverview() {
                           {scenarioForm.financing_type === 'loan' && (
                             <div className="space-y-2">
                               <Label htmlFor="loan_term">Loan Term (months)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Total number of months for the loan</p>
                               <Input
                                 id="loan_term"
                                 type="number"
@@ -562,6 +622,8 @@ export default function ScenariosOverview() {
                           {scenarioForm.financing_type === 'lease' && (
                             <div className="space-y-2">
                               <Label htmlFor="lease_terms">Lease Terms (months)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Total number of months for the lease</p>
+            <p className="text-xs text-muted-foreground mb-1">Remaining principal if trading in a financed vehicle</p>
                               <Input
                                 id="lease_terms"
                                 type="number"
@@ -574,6 +636,7 @@ export default function ScenariosOverview() {
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <Label htmlFor="trade_in_value">Trade-in Value ($)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Estimated value of your trade-in vehicle</p>
                               <Input
                                 id="trade_in_value"
                                 type="number"
@@ -585,6 +648,7 @@ export default function ScenariosOverview() {
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="loan_balance">Current Loan Balance ($)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Outstanding loan balance on trade-in</p>
                               <Input
                                 id="loan_balance"
                                 type="number"
@@ -597,6 +661,7 @@ export default function ScenariosOverview() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="incentives">Incentives/Rebates ($)</Label>
+            <p className="text-xs text-muted-foreground mb-1">Any cash incentives, rebates, or discounts</p>
                             <Input
                               id="incentives"
                               type="number"
@@ -651,6 +716,27 @@ export default function ScenariosOverview() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-foreground">Alternative Scenarios</h2>
+            <Button className="flex items-center gap-2" onClick={() => {
+              setScenarioForm({
+                description: "",
+                vehicle_name: "",
+                msrp: "",
+                financing_type: "loan",
+                monthly_payment: "",
+                loan_term: "",
+                lease_terms: "",
+                principal_balance: "",
+                trade_in_value: "",
+                loan_balance: "",
+                incentives: "",
+                state: ""
+              });
+              setEditingScenario(null);
+              setEditScenarioDialogOpen(true);
+            }}>
+              <Plus className="h-4 w-4" />
+              Add Scenario
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -691,42 +777,22 @@ export default function ScenariosOverview() {
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                      View Details
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                      Compare
-                    </Button>
+                    <Link href={`/scenario/${scenarioName}`}>
+                      <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                        View Details
+                      </Button>
+                    </Link>
+                    <Link href={`/compare/${scenarioName}`}>
+                      <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                        Compare
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Analyze and compare your scenarios</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="outline">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                View Cost Analysis
-              </Button>
-              <Button variant="outline">
-                <TrendingDown className="h-4 w-4 mr-2" />
-                Compare All Scenarios
-              </Button>
-              <Button variant="outline">
-                <DollarSign className="h-4 w-4 mr-2" />
-                Manage State Taxes
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   )
