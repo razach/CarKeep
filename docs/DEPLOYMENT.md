@@ -1,58 +1,159 @@
 # Deployment Guide
 
-This project follows the “Keep It Simple” approach with server-rendered Flask + Jinja and incremental htmx. For hosting, we’ll use two services on Render.com:
+CarKeep uses a modern **Next.js React frontend + Flask API backend** architecture deployed on Render.com as two separate services.
 
-Option B (Recommended): Separate Frontend and API on Render.
+## 🌐 Production URLs
 
-## Overview
+- **Frontend**: https://carkeep-frontend.onrender.com (Next.js React UI)
+- **API Server**: https://carkeep.onrender.com (Flask API)
 
-- Frontend: Flask app serving HTML (Jinja templates) at https://your-frontend.onrender.com
-- API: Flask app serving JSON under /api at https://your-api.onrender.com
-- Browser -> Frontend -> (server-side) API pattern: All browser requests go to the Frontend. The Frontend calls the API using the server-side API client (no browser-to-API calls). This keeps CORS simple and avoids mixed-content/auth pitfalls.
+## 🏗️ Architecture Overview
 
-## Render Setup
+- **Frontend**: Next.js 15 + React 19 + TypeScript serving static assets
+- **API**: Flask server providing REST endpoints under `/api/*`
+- **Communication**: Frontend makes direct API calls from browser to backend
+- **Deployment**: Both services auto-deploy from GitHub main branch
 
-1) API Service (Flask)
-- Root: repository root
-- Start command (basic): python run_api.py
-- Environment variables:
-  - SECRET_KEY=change-me
-  - FLASK_DEBUG=0
-  - (Optional) API_ALLOWED_ORIGINS=https://your-frontend.onrender.com
-- Networking:
-  - Ensure CORS allows your Frontend origin (update run_api.py CORS list).
-  - HTTPS is provided by Render; use https URLs.
+## 🚀 Render.com Setup
 
-2) Frontend Service (Flask)
-- Root: repository root
-- Start command (basic): python run.py
-- Environment variables:
-  - SECRET_KEY=change-me
-  - FLASK_DEBUG=0
-  - API_BASE_URL=https://your-api.onrender.com  # Note: no trailing /api
+### 1) API Server (Flask) - **ALREADY DEPLOYED**
 
-## Key Constraints and Best Practices
+**Service Name**: `carkeep`  
+**URL**: https://carkeep.onrender.com  
+**Status**: ✅ Active and auto-deploying
 
-- API_BASE_URL must be absolute and HTTPS (e.g., https://your-api.onrender.com) and should NOT include the trailing /api. Frontend routes include the /api prefix when calling the backend (e.g., client.get('/api/scenarios')).
-- CORS: The API should allow the Frontend’s Render origin. If you later add additional domains, add them to allowed origins.
-- Same-origin UX: All htmx/browser interactions should target Frontend routes that render HTML or trigger server-side API calls. Do not call the API directly from the browser to avoid CORS/auth issues.
-- Static assets: Served by the Frontend service under /static.
-- Error handling: Standardize API error payloads (JSON) and surface human-friendly messages in templates.
+- **Root Directory**: `/` (repository root)
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `python run_api.py`
+- **Environment Variables**:
+  ```
+  SECRET_KEY=production-secret-key-here
+  FLASK_DEBUG=0
+  FLASK_ENV=production
+  ```
 
-## Optional Hardening (Future)
+### 2) Frontend Service (Next.js) - **NEW DEPLOYMENT**
 
-- Use Gunicorn for production serving (e.g., gunicorn -w 2 -k gthread run:app)
-- Make CORS origins environment-driven (e.g., API_ALLOWED_ORIGINS) in run_api.py
-- Authentication: Prefer token-based (Bearer) if you add accounts; cross-origin cookies require SameSite=None; Secure.
+**Service Name**: `carkeep-frontend` (to be created)  
+**URL**: https://carkeep-frontend.onrender.com  
+**Type**: Static Site
 
-## Pre-Deploy Checklist (TODO)
+**Configuration**:
+- **Root Directory**: `/v0-frontend`
+- **Build Command**: `npm ci && npm run build`
+- **Publish Directory**: `out` (Next.js static export)
+- **Environment Variables**:
+  ```
+  NEXT_PUBLIC_API_URL=https://carkeep.onrender.com
+  ```
 
-- [ ] Add lightweight /health endpoints on Frontend and API services for Render health checks
-- [ ] Add a Procfile with gunicorn commands for both services
-- [ ] Verify environment variables are set in Render Dashboard (SECRET_KEY, API_BASE_URL, API_ALLOWED_ORIGINS, FLASK_DEBUG=0)
+### 3) Render Deployment Steps
 
-## Troubleshooting
+#### **Step 1: Configure Next.js for Static Export**
+Add to `v0-frontend/next.config.js`:
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  }
+}
 
-- Mixed content errors: Ensure API_BASE_URL uses https.
-- CORS blocked: Confirm API CORS origins include your frontend URL and methods/headers align with requests.
-- 404s on /api: Verify API_BASE_URL includes /api suffix and the API blueprint is mounted at /api.
+module.exports = nextConfig
+```
+
+#### **Step 2: Create Render Static Site**
+1. Go to Render Dashboard
+2. Click "New" → "Static Site"
+3. Connect your GitHub repository
+4. Configure:
+   - **Name**: `carkeep-frontend`
+   - **Root Directory**: `v0-frontend`
+   - **Build Command**: `npm ci && npm run build`
+   - **Publish Directory**: `out`
+   - **Environment Variables**: 
+     - `NEXT_PUBLIC_API_URL` = `https://carkeep.onrender.com`
+
+#### **Step 3: Configure Auto-Deploy**
+- **Branch**: `main`
+- **Auto-Deploy**: `Yes`
+- **Build Filter**: `v0-frontend/**` (optional - deploy only on frontend changes)
+
+## 🛠️ Development Workflow
+
+### **Local Development**
+```bash
+# Terminal 1: Start API server
+python run_api.py  # → http://localhost:5050
+
+# Terminal 2: Start frontend
+cd v0-frontend
+npm run dev        # → http://localhost:3000
+```
+
+### **Environment Configuration**
+Create `v0-frontend/.env.local`:
+```bash
+# For local development:
+NEXT_PUBLIC_API_URL=http://localhost:5050
+
+# For production testing:
+# NEXT_PUBLIC_API_URL=https://carkeep.onrender.com
+```
+
+### **Deployment Process**
+1. **Develop locally** with API server + frontend
+2. **Test changes** thoroughly
+3. **Commit and push** to GitHub main branch
+4. **Render auto-deploys** both services
+5. **Verify production** deployment
+
+## 🔧 Technical Configuration
+
+### **CORS Setup**
+The Flask API (`run_api.py`) is configured to allow cross-origin requests from the frontend:
+```python
+CORS(app, origins=[
+    "http://localhost:3000",  # Local development
+    "https://carkeep-frontend.onrender.com"  # Production
+])
+```
+
+### **API Integration**
+Frontend uses a custom `useApi` hook (`src/hooks/use-api.ts`) for API communication:
+- Automatic API URL resolution via `NEXT_PUBLIC_API_URL`
+- Error handling and loading states
+- TypeScript integration
+
+### **Build Configuration**
+Next.js is configured for static export to work with Render's static site hosting:
+- Output mode: `export`
+- Optimized for static hosting
+- Environment variables injected at build time
+
+## 📋 Pre-Deploy Checklist
+
+- [x] API server deployed and running
+- [ ] Create Next.js static site on Render
+- [ ] Configure environment variables
+- [ ] Test production deployment
+- [ ] Update DNS/domain settings (optional)
+
+## 🐛 Troubleshooting
+
+### **API Connection Issues**
+- Verify `NEXT_PUBLIC_API_URL` is set correctly
+- Check CORS configuration in `run_api.py`
+- Ensure API server is accessible
+
+### **Build Failures**
+- Check Node.js version compatibility
+- Verify all dependencies are installed
+- Review build logs in Render dashboard
+
+### **Static Export Issues**
+- Ensure `next.config.js` has proper export configuration
+- Check for dynamic features that don't work with static export
+- Verify environment variables are available at build time

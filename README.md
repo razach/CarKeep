@@ -2,6 +2,34 @@
 
 A comprehensive tool for comparing the total cost of ownership between keeping your current vehicle and getting a new one (lease or loan).
 
+## 🌐 Live Applications
+
+### **Production (Render.com)**
+- **Frontend**: https://carkeep-frontend.onrender.com (Next.js React UI)
+- **API Server**: https://carkeep.onrender.com (Flask API)
+
+### **Development**
+- **Frontend**: http://localhost:3000 (Next.js dev server)
+- **API Server**: http://localhost:5050 (Flask dev server)
+
+## 🏗️ Architecture Overview
+
+CarKeep uses a **modern React frontend + Flask API backend** architecture:
+
+#### **Frontend (Next.js + React)**
+- **v0 Next.js Frontend** (`v0-frontend/` → port 3000): Modern React UI with shadcn/ui components
+- **Technology**: Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui
+- **Deployment**: Static site generation on Render.com
+
+#### **Backend (Flask API)**
+- **API Server** (`run_api.py` → port 5050): Core calculations, data management, `/api/*` endpoints
+- **Technology**: Flask, pandas, numpy for financial calculations
+- **Deployment**: Auto-deploys from GitHub to Render.com
+
+The system uses a **baseline + scenarios** approach where all vehicle options are compared against keeping the current car (baseline).icle Cost Comparison Tool
+
+A comprehensive tool for comparing the total cost of ownership between keeping your current vehicle and getting a new one (lease or loan).
+
 ## ✅ Project Direction: Keep It Simple (Sep 2025)
 
 CarKeep intentionally stays lightweight and easy to maintain:

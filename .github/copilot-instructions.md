@@ -91,18 +91,16 @@ npm run dev        # → http://localhost:3000
 #### Production Deployment
 1. **Test locally first** - ensure all functionality works with local setup
 2. **Commit and push changes** to GitHub main branch
-3. **Render auto-deploys** API from GitHub (https://carkeep.onrender.com)
-4. **Switch v0 frontend to production API**:
-   ```bash
-   # In v0-frontend/.env.local  
-   NEXT_PUBLIC_API_URL=https://carkeep.onrender.com
-   ```
-5. **Test against production API** - verify deployment successful
+3. **Render auto-deploys** both services:
+   - API: https://carkeep.onrender.com (Flask backend)
+   - Frontend: https://carkeep-frontend.onrender.com (Next.js static site)
+4. **Frontend automatically configured** for production API via `NEXT_PUBLIC_API_URL`
+5. **Test production deployment** - verify both frontend and API working
 
 #### Environment Configuration
-- **Local Development**: `NEXT_PUBLIC_API_URL=http://localhost:5050`
-- **Production Testing**: `NEXT_PUBLIC_API_URL=https://carkeep.onrender.com`
-- **Note**: No production UI server yet - v0 frontend runs locally against production API
+- **Local Development**: `NEXT_PUBLIC_API_URL=http://localhost:5050` (in `v0-frontend/.env.local`)
+- **Production**: `NEXT_PUBLIC_API_URL=https://carkeep.onrender.com` (set in Render dashboard)
+- **Note**: Both frontend and backend auto-deploy from GitHub main branch
 
 ### Command-Line Tools
 ```bash

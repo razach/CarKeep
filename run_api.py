@@ -24,7 +24,9 @@ def create_api_app(test_config=None):
         # v0.app subdomains - common patterns
         "https://chat.v0.app",
         "https://preview.v0.app",
-        "https://www.v0.app"
+        "https://www.v0.app",
+        # Production frontend URL
+        "https://carkeep-frontend.onrender.com"
     ]
     
     if allowed_origins_env:
