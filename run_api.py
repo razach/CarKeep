@@ -12,28 +12,28 @@ def create_api_app(test_config=None):
     """Initialize the core API application."""
     app = Flask(__name__, instance_path=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance'))
     
-    # Enable CORS with configurable origins
+    # Enable CORS with specific allowed origins
     allowed_origins_env = os.environ.get('API_ALLOWED_ORIGINS')
     default_origins = [
         "http://localhost:5001",
         "http://127.0.0.1:5001",
+        "http://localhost:3000",
+        "http://localhost:3001", 
         "https://v0.app",
-        "https://*.v0.app",
-        "http://localhost:3000"  # Common v0 dev port
+        "https://v0.dev",
+        # v0.app subdomains - common patterns
+        "https://chat.v0.app",
+        "https://preview.v0.app",
+        "https://www.v0.app"
     ]
-    if allowed_origins_env:
-        # Comma-separated list of origins
-        origins = [o.strip() for o in allowed_origins_env.split(',') if o.strip()]
-        default_origins.extend(origins)
     
-    # For production, allow all origins temporarily for v0 integration
-    if os.environ.get('FLASK_ENV') == 'production':
-        cors_origins = "*"  # Allow all for v0 integration
-    else:
-        cors_origins = default_origins
+    if allowed_origins_env:
+        # Add additional origins from environment
+        additional_origins = [o.strip() for o in allowed_origins_env.split(',') if o.strip()]
+        default_origins.extend(additional_origins)
         
     CORS(app, resources={r"/*": {
-        "origins": cors_origins,
+        "origins": default_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "Accept", "X-API-Key"],
         "supports_credentials": True,

@@ -147,8 +147,7 @@ temp/
 prototype_results/
 *.csv
 
-# v0 Integration
-v0-frontend/
+# v0 Integration - ignore build artifacts but track source
 .next/
 node_modules/
 npm-debug.log*

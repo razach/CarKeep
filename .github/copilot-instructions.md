@@ -2,9 +2,15 @@
 
 ## Architecture Overview
 
-CarKeep is a **dual-server Flask application** for vehicle cost comparison:
+CarKeep is a **backend + frontend application** for vehicle cost comparison with two frontend options:
+
+#### API Server (Core)
 - **API Server** (`run_api.py` → port 5050): Core calculations, data management, `/api/*` endpoints
-- **Frontend Server** (`run.py` → port 5001): UI rendering, server-side API calls to localhost:5050
+- **Deployed at**: https://carkeep.onrender.com (production API)
+
+#### Frontend Options
+- **Flask Frontend** (`run.py` → port 5001): Original server-rendered UI with Jinja templates
+- **v0 Next.js Frontend** (`v0-frontend/` → port 3000): Modern React frontend generated from v0.app
 
 The system uses a **baseline + scenarios** approach where all vehicle options are compared against keeping the current car (baseline).
 
@@ -46,6 +52,8 @@ Scenarios can override default costs with `cost_overrides` structure:
 
 ### Running the Application
 **Always start servers manually in separate terminals** (no automated startup tools):
+
+#### Option 1: Flask Frontend (Legacy)
 ```bash
 # Start API server (terminal 1)
 python run_api.py  # → http://localhost:5050
@@ -53,6 +61,18 @@ python run_api.py  # → http://localhost:5050
 # Start frontend (terminal 2) 
 python run.py      # → http://localhost:5001
 ```
+
+#### Option 2: v0 Next.js Frontend (Current)
+```bash
+# Start API server (terminal 1) - REQUIRED for both options
+python run_api.py  # → http://localhost:5050
+
+# Start v0 Next.js frontend (terminal 2)
+cd v0-frontend
+npm run dev        # → http://localhost:3000
+```
+
+**Note**: The API server at localhost:5050 is required for both frontend options. The v0 frontend consumes the same REST API that the Flask frontend uses.
 
 ### Command-Line Tools
 ```bash
@@ -89,9 +109,17 @@ Templates expect specific data shapes. Key transformations in `frontend/routes/v
 
 ### File Organization
 - `core/` = Business logic, calculations, API
-- `frontend/` = UI, templates, client code  
+- `frontend/` = Flask UI, templates, server-side client code  
+- `v0-frontend/` = Next.js React frontend with shadcn/ui components
 - `data/` = JSON configs, scenarios, exports
 - `scripts/` = Standalone utilities, matrix generation
+
+### v0 Frontend Architecture
+- **Built with**: Next.js 15, React, TypeScript, Tailwind CSS, shadcn/ui
+- **API Integration**: Custom `useApi` hook in `src/hooks/use-api.ts`
+- **Environment**: Uses `.env.local` for API URL configuration
+- **Components**: shadcn/ui components in `src/components/ui/`
+- **Common Issue**: Avoid `useEffect` dependency arrays with non-memoized functions (causes infinite API calls)
 
 ### Error Handling
 - API returns structured JSON errors

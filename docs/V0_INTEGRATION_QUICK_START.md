@@ -75,6 +75,25 @@ CarKeep/
 └── ...
 ```
 
+## Development Workflow
+
+### 1. Start the API server (required):
+```bash
+python run_api.py  # → http://localhost:5050
+```
+API will be available at: https://carkeep.onrender.com
+
+### 2. Start the v0 frontend:
+```bash
+cd v0-frontend
+npm run dev        # → http://localhost:3000
+```
+
+### 3. Adding v0 components:
+```bash
+V0_API_KEY="your-api-key" npx shadcn@latest add "https://v0.app/chat/YOUR_CHAT_ID?token=YOUR_TOKEN"
+```
+
 ## Testing Integration
 ```bash
 # 1. Start backend
@@ -86,6 +105,14 @@ curl https://carkeep.onrender.com/api/scenarios
 # 3. Should return JSON with baseline + scenarios
 # 4. All v0 API calls should work against the production API
 ```
+
+## Troubleshooting
+
+### Common Issues
+- **404 errors**: Restart Next.js dev server if pages aren't compiling properly
+- **Rate limiting (429 errors)**: API has 100 req/min limit - wait or check for infinite loops
+- **Infinite API calls**: Check `useEffect` dependency arrays - avoid non-memoized functions
+- **Build errors**: Font loaders must be assigned to constants in module scope
 
 ## Key UI Pages Needed
 1. **Scenarios List** - Cards showing all scenarios
