@@ -169,11 +169,6 @@ export default function SingleScenarioComparePage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Link href={`/scenario/${scenarioName}`}>
-            <Button variant="outline" size="sm">
-              View Full Details
-            </Button>
-          </Link>
           <Link href="/compare">
             <Button variant="default" size="sm">
               Compare All Scenarios
