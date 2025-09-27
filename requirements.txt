@@ -1,15 +1,4 @@
-# CarKeep Dependencies
-# Install all components with: pip install -r requirements.txt
-
-# Install core requirements
--r requirements/core.txt
-
-# Install frontend requirements
--r requirements/frontend.txt
-
-# Install development tools
--r requirements/dev.txt
-
+# CarKeep API Server Dependencies
 # Core Flask dependencies
 Flask==2.3.3
 Werkzeug==2.3.7
@@ -26,6 +15,7 @@ Flask-DebugToolbar==0.13.1
 pytest==7.4.2
 pytest-flask==1.2.0
 
-# Production (optional)
+# Production (required for API server)
 gunicorn==21.2.0
 flask-cors==4.0.0
+requests==2.31.0
