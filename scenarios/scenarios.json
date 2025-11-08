@@ -1,0 +1,36 @@
+{
+  "assumptions": {
+    "investment_return_rate": 0.07
+  },
+  "baseline": {
+    "name": "Acura RDX",
+    "loan_principal_balance": 8000.00,
+    "monthly_payment": 564.10,
+    "extra_payment": 35.90,
+    "interest_rate": 0.0437,
+    "current_value": 18000,
+    "values_3yr": [18000, 14400, 12672, 11658],
+    "impairment": 0,
+    "impairment_affects_taxes": false,
+    "insurance_monthly": 84.02,
+    "maintenance_annual": [942, 1231, 1362],
+    "fuel_monthly": 151.38
+  },
+  "examples": {
+    "BMW_iX_CPO_Purchase": {
+      "type": "purchase",
+      "name": "BMW iX",
+      "msrp": 46995,
+      "values_3yr": [46995, 32896, 26317, 22370],
+      "loan_term": 72,
+      "interest_rate": 0.0619,
+      "trade_in_incentives": 0,
+      "down_payment": 10000.00,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [400, 600, 800],
+      "fuel_monthly": 57.60,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.30
+    }
+  }
+}

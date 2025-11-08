@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+
+# Excel and CSV (generated files)
+*.xlsx
+*.csv
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Personal/sensitive files
+Actuals/
+Insurance/
+bmw_loan.md
+bmw_loan_gray.md
