@@ -1,6 +1,8 @@
-# Car Ownership Cost Analysis
+# CarKeep v2
 
 A financial modeling tool to analyze and compare the total cost of ownership between different vehicle scenarios - keeping your current vehicle vs. purchasing or leasing a new one.
+
+> **Note:** This is version 2 - a complete rewrite with an AI-first, data-driven approach. The original version (with web frontend) is preserved in the [`v1-archive`](https://github.com/razach/CarKeep/tree/v1-archive) branch.
 
 ## Features
 
