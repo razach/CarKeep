@@ -9,11 +9,20 @@
     "extra_payment": 35.90,
     "interest_rate": 0.0437,
     "current_value": 18000,
-    "values_3yr": [18000, 14400, 12672, 11658],
+    "values_3yr": [
+      18000,
+      14400,
+      12672,
+      11658
+    ],
     "impairment": 0,
     "impairment_affects_taxes": false,
     "insurance_monthly": 84.02,
-    "maintenance_annual": [942, 1231, 1362],
+    "maintenance_annual": [
+      942,
+      1231,
+      1362
+    ],
     "fuel_monthly": 151.38
   },
   "examples": {
@@ -21,14 +30,49 @@
       "type": "purchase",
       "name": "BMW iX",
       "msrp": 46995,
-      "values_3yr": [46995, 32896, 26317, 22370],
+      "values_3yr": [
+        46995,
+        32896,
+        26317,
+        22370
+      ],
       "loan_term": 72,
       "interest_rate": 0.0619,
       "trade_in_incentives": 0,
       "down_payment": 10000.00,
       "insurance_monthly": 168.04,
-      "maintenance_annual": [400, 600, 800],
+      "maintenance_annual": [
+        400,
+        600,
+        800
+      ],
       "fuel_monthly": 57.60,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.30
+    },
+    "Polestar_3_Lease": {
+      "type": "lease",
+      "name": "Polestar 3",
+      "msrp": 76600,
+      "values_3yr": [
+        76600,
+        61280,
+        52088,
+        44428
+      ],
+      "down_payment": 5530.00,
+      "refundable_msd": 3500.00,
+      "monthly_payment": 312.00,
+      "lease_term_months": 27,
+      "money_factor": 0.00045,
+      "residual_value": 40598,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        0,
+        0,
+        0
+      ],
+      "fuel_monthly": 45.00,
       "property_tax_rate": 0.0457,
       "pptra_relief": 0.30
     }

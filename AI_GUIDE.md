@@ -67,8 +67,35 @@ To extend the analysis to a new vehicle, you do **not** need to modify any Pytho
 }
 ```
 
+### New Lease Template
+
+```json
+"Your_Lease_Name": {
+  "type": "lease",
+  "name": "Polestar 3",
+  "msrp": 76600,
+  "values_3yr": [76600, 61280, 52088, 44428],
+  "down_payment": 5530.00,
+  "refundable_msd": 3500.00,
+  "monthly_payment": 312.00,
+  "lease_term_months": 27,
+  "money_factor": 0.00045,
+  "residual_value": 40598,
+  "insurance_monthly": 168.04,
+  "maintenance_annual": [0, 0, 0],
+  "fuel_monthly": 45.00,
+  "property_tax_rate": 0.0457,
+  "pptra_relief": 0.30
+}
+```
+
 ### Field Explanations:
 
+*   `type`: "purchase" or "lease".
+*   `refundable_msd` (Lease only): Refundable Security Deposits. This is modeled as an upfront cash outflow that is returned as "Equity" at the end of the analysis.
+*   `money_factor` (Lease only): Used to calculate implicit financing costs (Rent Charge).
+*   `lease_term_months`: Length of the lease. If less than 36 months, the model will simulate a pro-rata extension to allow for a fair 3-year comparison.
+*   `residual_value`: The buy-back price at lease end. Used for rent charge calculations.
 *   `name`: The display name of the car.
 *   `msrp`: The purchase price of the vehicle.
 *   `values_3yr`: A 4-element array representing the vehicle's value at Year 0, Year 1, Year 2, and Year 3. The first value should be the same as `msrp`. Use the `calculate_depreciation.py` script to generate this based on research.
