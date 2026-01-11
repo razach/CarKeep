@@ -75,6 +75,33 @@
       "fuel_monthly": 45.00,
       "property_tax_rate": 0.0457,
       "pptra_relief": 0.30
+    },
+    "BMW_iX_Lease": {
+      "type": "lease",
+      "name": "BMW iX xDrive45",
+      "msrp": 81000,
+      "values_3yr": [
+        81000,
+        60750,
+        49815,
+        43740
+      ],
+      "down_payment": 6044.00,
+      "refundable_msd": 0.00,
+      "disposition_fee": 495.00,
+      "monthly_payment": 621.00,
+      "lease_term_months": 36,
+      "money_factor": 0.0008,
+      "residual_value": 43740,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        0,
+        0,
+        0
+      ],
+      "fuel_monthly": 57.60,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.30
     }
   }
 }

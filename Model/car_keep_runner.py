@@ -159,7 +159,9 @@ def calculate_vehicle_costs(rdx_data, scenario_data, assumptions):
     if is_lease:
         # MSD Logic: You pay it upfront, you get it back at the end.
         refundable_msd = scenario_data.get('refundable_msd', 0)
-        vehicle2_equity_end = refundable_msd
+        disposition_fee = scenario_data.get('disposition_fee', 0)
+        # Equity at end is MSD return MINUS disposition fee
+        vehicle2_equity_end = refundable_msd - disposition_fee
         
         # Interest (Rent Charge) Calculation
         # Rent Charge = Total Payments - Depreciation

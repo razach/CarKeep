@@ -10,6 +10,13 @@ A financial modeling tool to analyze and compare the total cost of ownership bet
 - **Comprehensive cost modeling** including depreciation, financing, insurance, maintenance, and opportunity costs
 - **Multiple output formats**: Excel reports, CSV matrices, and markdown summaries
 - **Easy scenario comparison** - add new vehicles and instantly see the financial impact
+- **Supported Models**: Lease vs. Purchase, Loan Amortization, Lease Extensions, Lost Opportunity Cost
+
+## Current Scenarios
+- **Baseline**: Keep Acura RDX
+- **Purchase**: BMW iX xDrive50 (CPO)
+- **Lease**: Polestar 3
+- **Lease**: BMW iX xDrive45
 
 ## Quick Start
 
