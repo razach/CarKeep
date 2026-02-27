@@ -102,6 +102,30 @@
       "fuel_monthly": 57.60,
       "property_tax_rate": 0.0457,
       "pptra_relief": 0.30
+    },
+    "2024_BMW_iX_Fairfax": {
+      "type": "purchase",
+      "name": "2024 BMW iX xDrive50",
+      "msrp": 47999,
+      "values_3yr": [
+        47999,
+        33599,
+        26879,
+        22559
+      ],
+      "loan_term": 72,
+      "interest_rate": 0.0619,
+      "trade_in_incentives": 0,
+      "down_payment": 10000.00,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        400,
+        600,
+        800
+      ],
+      "fuel_monthly": 57.60,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.30
     }
   }
 }
