@@ -49,12 +49,13 @@ The model is data-driven, using a `scenarios.json` file to define the financial 
 *   **Libraries:** `pandas`, `xlsxwriter`.
 
 **Architecture:**
-*   **Data:** All input parameters are defined in `scenarios/scenarios.json`. This file contains a "baseline" vehicle and a list of "example" vehicles to compare against.
+*   **Data:** All input parameters are defined in `scenarios/scenarios.json`. Unstructured research data and notes are in `ResearchData/`.
 *   **Core Logic:** `Model/car_keep_runner.py` contains the main financial calculation engine. It reads the scenario data and produces a structured result.
-*   **Reporting:**
+*   **Reporting/Execution:**
     *   `run_analysis.py`: The main entry point to run all reports.
-    *   `Model/generate_comparison_matrix.py`: Generates summary CSV files comparing all scenarios.
-    *   `Model/generate_excel_report.py`: Generates a detailed Excel workbook with step-by-step calculations.
+    *   `Model/generate_comparison_matrix.py`: Generates summary CSV files.
+    *   `Model/generate_excel_report.py`: Generates a detailed Excel workbook.
+*   **Scripts:** `Scripts/` contains standalone helper utilities (e.g., depreciation and loan calculators).
 *   **Documentation:**
     *   `car_comparison.md`: A human-readable summary of the analysis.
     *   `AI_GUIDE.md`: A guide for AI agents on how to extend the model.

@@ -33,6 +33,12 @@ The project consists of the following key components:
 *   `Model/generate_excel_report.py`:
     *   **Role:** A reporting script that takes the results from the core runner and generates the `car_ownership_analysis.xlsx` file.
 
+*   `Scripts/`:
+    *   **Role:** Helper scripts (like `calculate_depreciation.py` and `calculate_loan.py`) used to generate data for `scenarios.json`.
+
+*   `ResearchData/`:
+    *   **Role:** Stores unstructured car-specific notes, PDFs, and background research.
+
 *   `car_comparison.md`:
     *   **Role:** A human-readable summary and analysis of the final results. This file is updated manually after the model is run to provide interpretation and recommendations.
 
@@ -98,7 +104,7 @@ To extend the analysis to a new vehicle, you do **not** need to modify any Pytho
 *   `residual_value`: The buy-back price at lease end. Used for rent charge calculations.
 *   `name`: The display name of the car.
 *   `msrp`: The purchase price of the vehicle.
-*   `values_3yr`: A 4-element array representing the vehicle's value at Year 0, Year 1, Year 2, and Year 3. The first value should be the same as `msrp`. Use the `calculate_depreciation.py` script to generate this based on research.
+*   `values_3yr`: A 4-element array representing the vehicle's value at Year 0, Year 1, Year 2, and Year 3. The first value should be the same as `msrp`. Use the `Scripts/calculate_depreciation.py` script to generate this based on research.
 *   `loan_term`: The loan term in months.
 *   `interest_rate`: The annual interest rate as a decimal (e.g., 5.5% is `0.055`).
 *   `down_payment`: The total down payment amount.

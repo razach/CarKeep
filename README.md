@@ -35,8 +35,9 @@ python3 run_analysis.py
 ## Project Structure
 
 - `scenarios/scenarios.json` - Define vehicle parameters and scenarios
-- `Model/car_keep_runner.py` - Core financial calculation engine
-- `Model/verify_manual_check.py` - Independent verification script for manual auditing
+- `Model/` - Core financial calculation engine and reporting modules
+- `Scripts/` - Helper scripts and standalone tools
+- `ResearchData/` - Research notes, actuals, and reference materials
 - `run_analysis.py` - Main entry point to generate all reports
 - `car_comparison.md` - Human-readable analysis summary
 - `AI_GUIDE.md` - Guide for extending the model
