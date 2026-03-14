@@ -60,15 +60,22 @@ The project consists of the following key components:
 *   `methodology.md`:
     *   **Role:** Detailed explanation of the financial methodology used in the model — how each cost category is calculated, what assumptions are made, and why. Read this before making changes to the core calculation logic in `car_keep_runner.py`.
 
-## 3. How to Add a New Vehicle for Comparison
+## 3. How to Evaluate and Add a New Prospect
 
-To extend the analysis to a new vehicle, you do **not** need to modify any Python code. You only need to add a new entry to the `scenarios/scenarios.json` file.
+When evaluating a new acquisition target, follow this two-part workflow to maintain the vehicle library and run the financial model.
 
-**Step-by-step instructions:**
+### Part 1: Vehicle Library (Research & Specs)
+1. **Create Prospect Folder:** Create a new folder for the vehicle in `ResearchData/Prospects/` (e.g., `2024_BMW_iX_Sterling/`).
+2. **Draft Research Report:** Copy the `ResearchData/Prospects/_TEMPLATE.md` file into the new folder and populate it with the vehicle's pricing, options, market position, and CARFAX details.
+3. **Save Source Documents:** Save the CARFAX PDF or dealer window sticker into the new prospect folder.
+4. **Update Library Index:** Add a new JSON object to `ResearchData/Prospects/vehicle_library.json` so the vehicle can be compared programmatically against other prospects.
+
+### Part 2: Financial Model (Scenarios)
+To calculate the total cost of ownership against the RDX baseline, you must add an entry to the `scenarios.json` file. You do **not** need to modify any Python code.
 
 1.  **Open `scenarios/scenarios.json`**.
 2.  Navigate to the `"examples"` object.
-3.  Add a new vehicle object inside `"examples"`. Use a descriptive key for the new vehicle (e.g., `"Tesla_Model_Y_Purchase"`).
+3.  Add a new vehicle object inside `"examples"`. Use a descriptive key for the new vehicle (e.g., `"2024_BMW_iX_Sterling"`).
 4.  Populate the new vehicle object using the template below. **It is critical to research and provide data-driven values for each field.**
 
 ### New Vehicle Template
