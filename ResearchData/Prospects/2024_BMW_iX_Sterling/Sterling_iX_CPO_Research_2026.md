@@ -17,7 +17,7 @@
 | **Mileage** | 35,197 miles *(last reported Jan 29, 2026)* |
 | **Prior Use** | Personal Lease Vehicle |
 | **Owners** | 1 (CARFAX confirmed) |
-| **Accident History** | None reported to CARFAX |
+| **Accident History** | **1 Minor Damage report** (09/08/2025, left rear) |
 | **Service Records** | 3 on file |
 
 ---
@@ -125,18 +125,16 @@ This vehicle is **heavily optioned** off a $95,095 original sticker. Key additio
 
 ### ✅ Strengths
 - Exceptional depreciation: 53% off new MSRP in ~2 years
-- Clean 1-owner CARFAX, no accidents
-- Personal lease origin (typically garaged, low abuse)
+- 1-owner personal lease origin
 - BMW CPO coverage extends protection timeline significantly
-- Market-competitive pricing relative to similar CPO listings
 - Fully loaded spec — Highway Assist, Sky Lounge, HUD, ventilated seats
 
-### ⚠️ Watch Points
-- **22" wheels** are the largest option — expect slightly reduced range and higher tire replacement cost (~$350–$500/tire)
-- **35,197 miles** — approaching the 50k original warranty ceiling; CPO extension becomes active near that point
-- **Dealer processing fee of $995** is additional to asking price — factor into true cost
-- Sterling Price may be contingent on BMW Financial Services financing — negotiate if paying cash or outside financing
-- **EV recall check recommended** — dealer notice on-site that some pre-owned vehicles may have unrepaired safety recalls. Check VIN at [safercar.gov](https://vinrcl.safercar.gov/vin/)
+### ⚠️ Watch Points (CARFAX & Value)
+- **Minor Damage on CARFAX:** Reported 09/08/2025 to the left rear. While "minor" (cosmetic), a dirty Carfax on a luxury EV typically invokes a **10% to 20% diminished value penalty** at trade-in.
+- **Future Equity Impact:** If the vehicle is worth ~$21,500 in 3 years, a 15% trade-in penalty means you could lose an additional **~$3,225** in equity compared to a clean-title car.
+- **Current Pricing vs. Damage:** At $44,698, this car is priced alongside *clean* CARFAX CPOs. The price does not reflect a sufficient discount for the diminished value you assume by taking on the accident history.
+- **22" wheels:** Largest option — expect slightly reduced range and higher tire replacement cost (~$350–$500/tire)
+- **Dealer processing fee:** $995 is additional to asking price
 
 ---
 
@@ -154,17 +152,15 @@ Based on your electricity rate of **$0.1987/kWh** and **8,000 miles/year**:
 
 ## 9. Recommendation Summary
 
-This is **a strong listing** for the following reasons:
-1. The price is **at or below market** for comparable certified inventory
-2. The CARFAX history (1 owner, no accidents, lease origin) is as clean as it gets
-3. The CPO warranty provides a meaningful safety net
-4. The option load is exceptional — this is a ~$95k car for ~$45k
+This listing has a massive caveat. While highly optioned and CPO-certified, the CARFAX reveals minor damage.
+
+**The verdict: Caution / Watchlist**
+The current asking price ($44k) is what a *clean* CPO iX with these miles sells for. By buying a car with an accident brand on the Carfax, you immediately assume the "diminished value" penalty when you eventually trade it in or sell it. You would need to negotiate the dealer down into the low $40k or high $39k range to offset the guaranteed equity loss you'll face in 3 years.
 
 **Next steps if pursuing:**
-- Run the full TCO model (add as a scenario in `scenarios.json`)
-- Pull the actual CARFAX report (free link on listing page) to review full service records
-- Check for open recalls: https://vinrcl.safercar.gov/vin/ using VIN `WB523CF06RCN79804`
-- Negotiate the $995 dealer processing fee and clarify financing requirement
+- Physically inspect the left rear for mismatched paint or alignment issues
+- Demand a discount specifically referencing the Carfax hit
+- Run the full TCO model and subtract an additional $3,200 from the Year 3 residual equity to see the true cost.
 
 ---
 *Sources: BMW of Sterling listing (scraped March 14, 2026), CARFAX badge on listing, KBB March 2026 valuations, market comparables from Cars.com / CarGurus / iSeeCars / Edmunds.*

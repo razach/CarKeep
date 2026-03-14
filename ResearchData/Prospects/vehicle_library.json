@@ -25,7 +25,7 @@
       "certified_pre_owned": true,
       "cpo_warranty_additional": "12 months / unlimited miles after factory",
       "carfax_owners": 1,
-      "carfax_accidents": 0,
+      "carfax_accidents": 1,
       "carfax_service_records": 3,
       "prior_use": "Personal Lease",
       "dealer": "BMW of Sterling",
@@ -61,7 +61,7 @@
       },
       "fuel_cost_annual_est": 667,
       "fuel_cost_basis": "8,000 mi/yr @ $0.2138/kWh blended",
-      "notes": "Top-spec build. Clean 1-owner lease origin. At/below market relative to comparable CPO listings. 22-inch wheels reduce range to lower end of EPA estimate."
+      "notes": "Top-spec build. 1-owner lease, but CARFAX shows 'Minor Damage' to left rear on 9/8/2025. This dirty Carfax dictates a 10-15% diminished value on future resale/trade-in. Current asking price ($44.6k) does not fully discount for this bad Carfax; it is priced similarly to clean-Carfax CPOs."
     }
   ]
 }
