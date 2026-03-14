@@ -1,0 +1,35 @@
+{
+  "_description": "Fuel cost comparison inputs — standalone calculator, separate from TCO model in scenarios.json",
+  "_last_updated": "2026-03-14",
+  "electricity": {
+    "_note": "From actual March 2026 electric bill",
+    "monthly_kwh": 318,
+    "monthly_bill_usd": 63.18,
+    "rate_per_kwh": 0.1987
+  },
+  "odometer": {
+    "_note": "Actual RDX odometer readings",
+    "readings": [
+      { "date": "2021-06-06", "miles": 19715 },
+      { "date": "2025-09-27", "miles": 55098 },
+      { "date": "2026-03-14", "miles": 56794 }
+    ],
+    "projected_annual_miles": 8000,
+    "_projected_basis": "Long-term average from 2021-2025 odometer data (~8,200 mi/yr), rounded to 8,000"
+  },
+  "gas_vehicle": {
+    "name": "Acura RDX",
+    "mpg_combined": 24,
+    "fuel_type": "regular_87",
+    "gas_price_per_gallon": 3.53,
+    "gas_price_source": "AAA NJ average, March 13 2026",
+    "_note": "24 MPG = EPA FWD combined; use 23 MPG if SH-AWD"
+  },
+  "ev_vehicle": {
+    "name": "BMW iX xDrive50",
+    "kwh_per_mile_epa": 0.39,
+    "home_charging_fraction": 0.90,
+    "public_charging_rate_per_kwh": 0.35,
+    "_note": "0.39 kWh/mi = EPA rating (39 kWh/100mi). Real-world Edmunds test = 0.32 kWh/mi"
+  }
+}
