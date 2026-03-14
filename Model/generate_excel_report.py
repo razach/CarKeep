@@ -1,5 +1,6 @@
 import json
 import xlsxwriter
+from pathlib import Path
 from car_keep_runner import run_comparison_from_json
 
 def generate_excel_report():
@@ -7,8 +8,15 @@ def generate_excel_report():
     Generate an Excel report by running the core calculation engine and
     writing the inputs and results to separate sheets.
     """
+    # Resolve project root relative to this script's location
+    project_root = Path(__file__).parent.parent
+    scenarios_path = project_root / 'scenarios' / 'scenarios.json'
+    output_dir = project_root / 'outputs'
+    output_dir.mkdir(exist_ok=True)
+    output_path = output_dir / 'car_ownership_analysis.xlsx'
+
     # Load data from scenarios.json
-    with open('scenarios/scenarios.json', 'r') as f:
+    with open(scenarios_path, 'r') as f:
         scenarios = json.load(f)
 
     # Run the core calculation engine to get definitive results
@@ -19,7 +27,7 @@ def generate_excel_report():
     cost_difference_data = results[scenario_name]['results']['cost_difference']
 
     # Create a new Excel workbook
-    workbook = xlsxwriter.Workbook('car_ownership_analysis.xlsx')
+    workbook = xlsxwriter.Workbook(str(output_path))
     
     # Add formats
     header_format = workbook.add_format({'bold': True, 'bg_color': '#F0F0F0', 'border': 1})
@@ -34,7 +42,7 @@ def generate_excel_report():
 
     # Close the workbook
     workbook.close()
-    print("Excel report 'car_ownership_analysis.xlsx' generated successfully.")
+    print(f"Excel report saved to '{output_path}'.")
 
 def write_inputs_sheet(sheet, scenarios, header_format):
     """Write the raw input data from scenarios.json to the 'Inputs' worksheet."""

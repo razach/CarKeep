@@ -8,12 +8,17 @@ __pycache__/
 env/
 venv/
 
+# Generated output files
+outputs/
+prototype_results/
+
 # Excel and CSV (generated files)
 *.xlsx
 *.csv
 
 # macOS
 .DS_Store
+**/.DS_Store
 
 # IDE
 .vscode/

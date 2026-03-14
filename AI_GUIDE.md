@@ -17,30 +17,48 @@ The project consists of the following key components:
     *   **Action:** Execute this script (`python3 run_analysis.py`) to run the complete analysis and generate all output files. It orchestrates the other scripts.
 
 *   `scenarios/scenarios.json`:
-    *   **Role:** The single source of truth for all input data. This is the heart of the model.
+    *   **Role:** The single source of truth for all TCO (Total Cost of Ownership) input data. This is the heart of the model.
     *   **Structure:**
         *   `"assumptions"`: Contains global variables that affect all calculations (e.g., `investment_return_rate`).
         *   `"baseline"`: An object containing all data for the current vehicle (the "keep" scenario).
         *   `"examples"`: An object containing one or more nested objects, where each nested object represents a new vehicle to be compared.
+
+*   `scenarios/fuel_inputs.json`:
+    *   **Role:** A standalone inputs file for the fuel-only cost comparison (separate from the TCO model).
+    *   **Contains:** Actual electricity rate (from bill), odometer readings, gas price, and EV efficiency specs.
+    *   **Used by:** `Scripts/calculate_fuel_cost.py`
 
 *   `Model/car_keep_runner.py`:
     *   **Role:** The core calculation engine. It reads the data from `scenarios.json`, performs all the financial calculations (depreciation, maintenance, opportunity cost, etc.), and returns the final results.
     *   **Note:** If the fundamental financial logic needs to be changed, this is the primary file to modify.
 
 *   `Model/generate_comparison_matrix.py`:
-    *   **Role:** A reporting script that takes the results from the core runner and generates the summary `cost_difference_matrix.csv`.
+    *   **Role:** A reporting script that takes the results from the core runner and generates `outputs/cost_difference_matrix.csv`.
 
 *   `Model/generate_excel_report.py`:
-    *   **Role:** A reporting script that takes the results from the core runner and generates the `car_ownership_analysis.xlsx` file.
+    *   **Role:** A reporting script that takes the results from the core runner and generates `outputs/car_ownership_analysis.xlsx`.
+
+*   `outputs/`:
+    *   **Role:** All generated report files land here (CSV, Excel). This directory is gitignored.
 
 *   `Scripts/`:
-    *   **Role:** Helper scripts (like `calculate_depreciation.py` and `calculate_loan.py`) used to generate data for `scenarios.json`.
+    *   **Role:** Standalone helper scripts. Run independently to research or calculate specific inputs for `scenarios.json`.
+    *   `calculate_depreciation.py` — generates `values_3yr` arrays
+    *   `calculate_loan.py` — calculates loan amortization
+    *   `calculate_fuel_cost.py` — fuel-only cost comparison (gas vs. EV); reads `scenarios/fuel_inputs.json`
 
 *   `ResearchData/`:
-    *   **Role:** Stores unstructured car-specific notes, PDFs, and background research.
+    *   **Role:** Stores vehicle-specific notes, PDFs, and background research. All subfolders use `TitleCase` naming with no spaces.
+    *   Key subfolders: `BMWiX/`, `Polestar3/`, `Fuel/`, `Insurance/`, `Maintenance/`, `LoanInfo/`, `Actuals/`, `GarageFit/`, `Reference/`
+
+*   `Archive/`:
+    *   **Role:** Retired scripts kept for historical reference. `prototype_lucid_air.py` contains the original hardcoded Lucid Air analysis that preceded the current data-driven model.
 
 *   `car_comparison.md`:
     *   **Role:** A human-readable summary and analysis of the final results. This file is updated manually after the model is run to provide interpretation and recommendations.
+
+*   `methodology.md`:
+    *   **Role:** Detailed explanation of the financial methodology used in the model — how each cost category is calculated, what assumptions are made, and why. Read this before making changes to the core calculation logic in `car_keep_runner.py`.
 
 ## 3. How to Add a New Vehicle for Comparison
 

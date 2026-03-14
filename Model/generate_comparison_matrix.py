@@ -29,9 +29,12 @@ def generate_comparison_matrix(data_folder=None):
     # Generate consolidated matrix
     cost_diff_matrix = create_cost_difference_matrix(all_results)
     
-    # Save to CSV
-    cost_diff_matrix.to_csv('cost_difference_matrix.csv', index=False)
-    print("  Saved: cost_difference_matrix.csv")
+    # Save to outputs/ directory
+    output_dir = data_folder / 'outputs'
+    output_dir.mkdir(exist_ok=True)
+    output_path = output_dir / 'cost_difference_matrix.csv'
+    cost_diff_matrix.to_csv(output_path, index=False)
+    print(f"  Saved: {output_path}")
     
     print("\nComparison matrix complete! All scenarios are now in consolidated CSV files.")
 
