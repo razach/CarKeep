@@ -25,29 +25,30 @@ A financial modeling tool to analyze and compare the total cost of ownership bet
 pip install pandas xlsxwriter
 ```
 
-2. Configure your scenarios in `scenarios/scenarios.json`
+2. Configure your scenarios in `Module1_TCO_Analysis/scenarios/scenarios.json`
 
-3. Run the analysis:
+3. Run the TCO analysis:
 ```bash
-python3 run_analysis.py
+cd Module1_TCO_Analysis && python3 run_analysis.py
 ```
 
 ## Project Structure
 
-- `scenarios/scenarios.json` - Define vehicle parameters and scenarios
-- `Model/` - Core financial calculation engine and reporting modules
-- `Scripts/` - Helper scripts and standalone tools
-- `ResearchData/` - Research notes, actuals, and reference materials
-- `run_analysis.py` - Main entry point to generate all reports
-- `car_comparison.md` - Human-readable analysis summary
+- **Module1_TCO_Analysis/** - Answers "What should I buy?"
+  - `scenarios/scenarios.json` - Define vehicle parameters and scenarios
+  - `Model/` - Core financial calculation engine and reporting modules
+  - `Scripts/` - Helper scripts and standalone tools
+  - `ResearchData/` - General research notes, actuals, and reference materials
+  - `run_analysis.py` - Main entry point to generate all reports
+  - `car_comparison.md` - Human-readable analysis summary
+- **Module2_Prospecting/** - Answers "Which specific iX is the best deal?"
+  - `data/` - Vehicle library and individual CPO listing details
+  - `scrapers/` - Tracking scripts
 - `AI_GUIDE.md` - Guide for extending the model
 
 ## Output Files
 
-- `car_ownership_analysis.xlsx` - Detailed Excel report with step-by-step calculations
-- `cost_difference_matrix.csv` - Summary comparison of all scenarios
-- `monthly_payment_matrix.csv` - Monthly payment breakdowns
-- `summary_matrix.csv` - High-level cost overview
+- **Module 1 Outputs**: `car_ownership_analysis.xlsx`, `cost_difference_matrix.csv`, `monthly_payment_matrix.csv`, `summary_matrix.csv`
 
 ## Documentation
 

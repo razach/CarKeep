@@ -12,52 +12,52 @@ The entire project is data-driven and modular. The core principle is to **separa
 
 The project consists of the following key components:
 
-*   `run_analysis.py`:
-    *   **Role:** The main entry point for the entire project.
-    *   **Action:** Execute this script (`python3 run_analysis.py`) to run the complete analysis and generate all output files. It orchestrates the other scripts.
+*   `Module1_TCO_Analysis/run_analysis.py`:
+    *   **Role:** The main entry point for the TCO analysis project.
+    *   **Action:** Execute this script (`cd Module1_TCO_Analysis && python3 run_analysis.py`) to run the complete analysis and generate all output files. It orchestrates the other scripts.
 
-*   `scenarios/scenarios.json`:
+*   `Module1_TCO_Analysis/scenarios/scenarios.json`:
     *   **Role:** The single source of truth for all TCO (Total Cost of Ownership) input data. This is the heart of the model.
     *   **Structure:**
         *   `"assumptions"`: Contains global variables that affect all calculations (e.g., `investment_return_rate`).
         *   `"baseline"`: An object containing all data for the current vehicle (the "keep" scenario).
         *   `"examples"`: An object containing one or more nested objects, where each nested object represents a new vehicle to be compared.
 
-*   `scenarios/fuel_inputs.json`:
+*   `Module1_TCO_Analysis/scenarios/fuel_inputs.json`:
     *   **Role:** A standalone inputs file for the fuel-only cost comparison (separate from the TCO model).
     *   **Contains:** Actual electricity rate (from bill), odometer readings, gas price, and EV efficiency specs.
-    *   **Used by:** `Scripts/calculate_fuel_cost.py`
+    *   **Used by:** `Module1_TCO_Analysis/Scripts/calculate_fuel_cost.py`
 
-*   `Model/car_keep_runner.py`:
+*   `Module1_TCO_Analysis/Model/car_keep_runner.py`:
     *   **Role:** The core calculation engine. It reads the data from `scenarios.json`, performs all the financial calculations (depreciation, maintenance, opportunity cost, etc.), and returns the final results.
     *   **Note:** If the fundamental financial logic needs to be changed, this is the primary file to modify.
 
-*   `Model/generate_comparison_matrix.py`:
-    *   **Role:** A reporting script that takes the results from the core runner and generates `outputs/cost_difference_matrix.csv`.
+*   `Module1_TCO_Analysis/Model/generate_comparison_matrix.py`:
+    *   **Role:** A reporting script that takes the results from the core runner and generates `Module1_TCO_Analysis/outputs/cost_difference_matrix.csv`.
 
-*   `Model/generate_excel_report.py`:
-    *   **Role:** A reporting script that takes the results from the core runner and generates `outputs/car_ownership_analysis.xlsx`.
+*   `Module1_TCO_Analysis/Model/generate_excel_report.py`:
+    *   **Role:** A reporting script that takes the results from the core runner and generates `Module1_TCO_Analysis/outputs/car_ownership_analysis.xlsx`.
 
-*   `outputs/`:
+*   `Module1_TCO_Analysis/outputs/`:
     *   **Role:** All generated report files land here (CSV, Excel). This directory is gitignored.
 
-*   `Scripts/`:
+*   `Module1_TCO_Analysis/Scripts/`:
     *   **Role:** Standalone helper scripts. Run independently to research or calculate specific inputs for `scenarios.json`.
     *   `calculate_depreciation.py` — generates `values_3yr` arrays
     *   `calculate_loan.py` — calculates loan amortization
-    *   `calculate_fuel_cost.py` — fuel-only cost comparison (gas vs. EV); reads `scenarios/fuel_inputs.json`
+    *   `calculate_fuel_cost.py` — fuel-only cost comparison (gas vs. EV); reads `Module1_TCO_Analysis/scenarios/fuel_inputs.json`
 
-*   `ResearchData/`:
+*   `Module1_TCO_Analysis/ResearchData/`:
     *   **Role:** Stores vehicle-specific notes, PDFs, and background research. All subfolders use `TitleCase` naming with no spaces.
     *   Key subfolders: `BMWiX/`, `Polestar3/`, `Fuel/`, `Insurance/`, `Maintenance/`, `LoanInfo/`, `Actuals/`, `GarageFit/`, `Reference/`
 
 *   `Archive/`:
     *   **Role:** Retired scripts kept for historical reference. `prototype_lucid_air.py` contains the original hardcoded Lucid Air analysis that preceded the current data-driven model.
 
-*   `car_comparison.md`:
+*   `Module1_TCO_Analysis/car_comparison.md`:
     *   **Role:** A human-readable summary and analysis of the final results. This file is updated manually after the model is run to provide interpretation and recommendations.
 
-*   `methodology.md`:
+*   `Module1_TCO_Analysis/methodology.md`:
     *   **Role:** Detailed explanation of the financial methodology used in the model — how each cost category is calculated, what assumptions are made, and why. Read this before making changes to the core calculation logic in `car_keep_runner.py`.
 
 ## 3. How to Evaluate and Add a New Prospect
@@ -65,15 +65,15 @@ The project consists of the following key components:
 When evaluating a new acquisition target, follow this two-part workflow to maintain the vehicle library and run the financial model.
 
 ### Part 1: Vehicle Library (Research & Specs)
-1. **Create Prospect Folder:** Create a new folder for the vehicle in `ResearchData/Prospects/` (e.g., `2024_BMW_iX_Sterling/`).
-2. **Draft Research Report:** Copy the `ResearchData/Prospects/_TEMPLATE.md` file into the new folder and populate it with the vehicle's pricing, options, market position, and CARFAX details.
+1. **Create Prospect Folder:** Create a new folder for the vehicle in `Module2_Prospecting/data/listings/` (e.g., `2024_BMW_iX_Sterling/`).
+2. **Draft Research Report:** Copy the `Module2_Prospecting/data/listings/_TEMPLATE.md` file into the new folder and populate it with the vehicle's pricing, options, market position, and CARFAX details.
 3. **Save Source Documents:** Save the CARFAX PDF or dealer window sticker into the new prospect folder.
-4. **Update Library Index:** Add a new JSON object to `ResearchData/Prospects/vehicle_library.json` so the vehicle can be compared programmatically against other prospects.
+4. **Update Library Index:** Add a new JSON object to `Module2_Prospecting/data/vehicle_library.json` so the vehicle can be compared programmatically against other prospects.
 
 ### Part 2: Financial Model (Scenarios)
-To calculate the total cost of ownership against the RDX baseline, you must add an entry to the `scenarios.json` file. You do **not** need to modify any Python code.
+To calculate the total cost of ownership against the RDX baseline, you must add an entry to the `Module1_TCO_Analysis/scenarios/scenarios.json` file. You do **not** need to modify any Python code.
 
-1.  **Open `scenarios/scenarios.json`**.
+1.  **Open `Module1_TCO_Analysis/scenarios/scenarios.json`**.
 2.  Navigate to the `"examples"` object.
 3.  Add a new vehicle object inside `"examples"`. Use a descriptive key for the new vehicle (e.g., `"2024_BMW_iX_Sterling"`).
 4.  Populate the new vehicle object using the template below. **It is critical to research and provide data-driven values for each field.**
@@ -129,7 +129,7 @@ To calculate the total cost of ownership against the RDX baseline, you must add 
 *   `residual_value`: The buy-back price at lease end. Used for rent charge calculations.
 *   `name`: The display name of the car.
 *   `msrp`: The purchase price of the vehicle.
-*   `values_3yr`: A 4-element array representing the vehicle's value at Year 0, Year 1, Year 2, and Year 3. The first value should be the same as `msrp`. Use the `Scripts/calculate_depreciation.py` script to generate this based on research.
+*   `values_3yr`: A 4-element array representing the vehicle's value at Year 0, Year 1, Year 2, and Year 3. The first value should be the same as `msrp`. Use the `Module1_TCO_Analysis/Scripts/calculate_depreciation.py` script to generate this based on research.
 *   `loan_term`: The loan term in months.
 *   `interest_rate`: The annual interest rate as a decimal (e.g., 5.5% is `0.055`).
 *   `down_payment`: The total down payment amount.
@@ -137,10 +137,10 @@ To calculate the total cost of ownership against the RDX baseline, you must add 
 *   `maintenance_annual`: A 3-element array representing the total maintenance cost for Year 1, Year 2, and Year 3.
 *   `fuel_monthly`: The estimated monthly cost for fuel or electricity.
 
-5.  **Save the `scenarios/scenarios.json` file.**
-6.  **Execute the main analysis script** from the root directory:
+5.  **Save the `Module1_TCO_Analysis/scenarios/scenarios.json` file.**
+6.  **Execute the main analysis script** from the `Module1_TCO_Analysis` directory:
     ```bash
-    python3 run_analysis.py
+    cd Module1_TCO_Analysis && python3 run_analysis.py
     ```
 
 The script will automatically detect the new vehicle scenario and include it in all generated reports. You can then review the updated `cost_difference_matrix.csv` and `car_ownership_analysis.xlsx` files.

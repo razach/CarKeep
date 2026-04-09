@@ -12,7 +12,7 @@ from car_keep_runner import run_comparison_from_json
 def generate_comparison_matrix(data_folder=None):
     """Generate a consolidated cost difference CSV file."""
     if data_folder is None:
-        data_folder = Path.cwd()
+        data_folder = Path(__file__).parent.parent
     
     print("Running all scenarios to generate comparison matrix...")
     
