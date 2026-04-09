@@ -1,0 +1,371 @@
+{
+  "_description": "Automated inventory database tracking all previously and currently scraped prospects.",
+  "last_updated": "2026-04-09T00:43:38.305569",
+  "stats": {
+    "total_tracked": 18,
+    "active_listings": 18,
+    "sold_or_removed": 0
+  },
+  "prospects": {
+    "WB523CF05RCN76523": {
+      "vin": "WB523CF05RCN76523",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 44598,
+      "miles": 47710,
+      "dealer": "BMW of Sterling",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF05RCN76523",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$44,598\n47,710\nBMW of Sterling - 17.9 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 44598,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 44598
+        }
+      ]
+    },
+    "Unknown": {
+      "vin": "Unknown",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 44598,
+      "miles": 47710,
+      "dealer": "BMW of Sterling",
+      "url": "",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$44,598\n47,710\nBMW of Sterling - 17.9 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 44598,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 44598
+        }
+      ]
+    },
+    "WB523CF03RCN34772": {
+      "vin": "WB523CF03RCN34772",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 46598,
+      "miles": 29629,
+      "dealer": "BMW of Sterling",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN34772",
+      "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,598\n29,629\nBMW of Sterling - 17.9 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 46598,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 46598
+        }
+      ]
+    },
+    "WB523CF02RCN03917": {
+      "vin": "WB523CF02RCN03917",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 48974,
+      "miles": 43309,
+      "dealer": "BMW of Silver Spring",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN03917",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$48,974\n43,309\nBMW of Silver Spring - 27.1 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 48974,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 48974
+        }
+      ]
+    },
+    "WB523CF00RCR00364": {
+      "vin": "WB523CF00RCR00364",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 48981,
+      "miles": 40033,
+      "dealer": "BMW of Fort Washington",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF00RCR00364",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$48,981\n40,033\nBMW of Fort Washington - 144.8 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 48981,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 48981
+        }
+      ]
+    },
+    "WB523CF06RCN75087": {
+      "vin": "WB523CF06RCN75087",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 51279,
+      "miles": 21843,
+      "dealer": "BMW of Mt. Laurel",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF06RCN75087",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$51,279\n21,843\nBMW of Mt. Laurel - 147.4 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 51279,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 51279
+        }
+      ]
+    },
+    "WB523CF02RCN16148": {
+      "vin": "WB523CF02RCN16148",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 50754,
+      "miles": 32533,
+      "dealer": "BMW of Mt. Laurel",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN16148",
+      "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$50,754\n32,533\nBMW of Mt. Laurel - 147.4 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 50754,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 50754
+        }
+      ]
+    },
+    "WB523CF02RCN03934": {
+      "vin": "WB523CF02RCN03934",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 51409,
+      "miles": 32893,
+      "dealer": "BMW of Mt. Laurel",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN03934",
+      "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$51,409\n32,893\nBMW of Mt. Laurel - 147.4 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 51409,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 51409
+        }
+      ]
+    },
+    "WB523CF00RCN69950": {
+      "vin": "WB523CF00RCN69950",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 47798,
+      "miles": 46489,
+      "dealer": "BMW of Mt. Laurel",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF00RCN69950",
+      "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$47,798\n46,489\nBMW of Mt. Laurel - 147.4 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 47798,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 47798
+        }
+      ]
+    },
+    "WB523CF08RCN66097": {
+      "vin": "WB523CF08RCN66097",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 52794,
+      "miles": 30327,
+      "dealer": "BMW of Atlantic City",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF08RCN66097",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$52,794\n30,327\nBMW of Atlantic City - 150 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 52794,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 52794
+        }
+      ]
+    },
+    "WB523CF03RCN15266": {
+      "vin": "WB523CF03RCN15266",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 41999,
+      "miles": 47555,
+      "dealer": "BMW of Bridgewater",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN15266",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$41,999\n47,555\nBMW of Bridgewater - 189.1 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 41999,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 41999
+        }
+      ]
+    },
+    "WB523CF04RCN12280": {
+      "vin": "WB523CF04RCN12280",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 53976,
+      "miles": 35708,
+      "dealer": "BMW of Morristown",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF04RCN12280",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$53,976\n35,708\nBMW of Morristown - 204.6 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 53976,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 53976
+        }
+      ]
+    },
+    "WB523CF08RCN53964": {
+      "vin": "WB523CF08RCN53964",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 46280,
+      "miles": 37514,
+      "dealer": "BMW of Ramsey",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF08RCN53964",
+      "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,280\n37,514\nBMW of Ramsey - 229.6 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 46280,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 46280
+        }
+      ]
+    },
+    "WB523CF02RCN27036": {
+      "vin": "WB523CF02RCN27036",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 45646,
+      "miles": 40164,
+      "dealer": "BMW of Ramsey",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN27036",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$45,646\n40,164\nBMW of Ramsey - 229.6 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 45646,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 45646
+        }
+      ]
+    },
+    "WB523CF07RCN68620": {
+      "vin": "WB523CF07RCN68620",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 48477,
+      "miles": 35111,
+      "dealer": "Hendrick BMW Northlake",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF07RCN68620",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$48,477\n35,111\nHendrick BMW Northlake - 306.9 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 48477,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 48477
+        }
+      ]
+    },
+    "WB523CF03RCN35386": {
+      "vin": "WB523CF03RCN35386",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 53977,
+      "miles": 22757,
+      "dealer": "Hendrick BMW Northlake",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN35386",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$53,977\n22,757\nHendrick BMW Northlake - 306.9 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 53977,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 53977
+        }
+      ]
+    },
+    "WB523CF05RCN42484": {
+      "vin": "WB523CF05RCN42484",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 49991,
+      "miles": 38848,
+      "dealer": "Hendrick BMW",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF05RCN42484",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,991\n38,848\nHendrick BMW - 315 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 49991,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 49991
+        }
+      ]
+    },
+    "WB523CF03RCN68646": {
+      "vin": "WB523CF03RCN68646",
+      "year_make_model": "2024 BMW iX",
+      "trim": "iX xDrive50",
+      "price": 45900,
+      "miles": 34212,
+      "dealer": "Hendrick BMW",
+      "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN68646",
+      "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$45,900\n34,212\nHendrick BMW - 315 mi",
+      "first_seen": "2026-04-09",
+      "last_seen": "2026-04-09",
+      "status": "active",
+      "original_price": 45900,
+      "price_history": [
+        {
+          "date": "2026-04-09",
+          "price": 45900
+        }
+      ]
+    }
+  }
+}

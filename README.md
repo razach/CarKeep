@@ -22,14 +22,20 @@ A financial modeling tool to analyze and compare the total cost of ownership bet
 
 1. Install dependencies:
 ```bash
-pip install pandas xlsxwriter
+pip install pandas xlsxwriter playwright playwright-stealth matplotlib seaborn numpy
+playwright install chromium
 ```
 
 2. Configure your scenarios in `Module1_TCO_Analysis/scenarios/scenarios.json`
 
-3. Run the TCO analysis:
+3. **Run the TCO analysis:** (Module 1)
 ```bash
 cd Module1_TCO_Analysis && python3 run_analysis.py
+```
+
+4. **Run the CPO Prospecting tracker:** (Module 2)
+```bash
+./Module2_Prospecting/scrapers/daily_run.sh
 ```
 
 ## Project Structure
@@ -41,14 +47,21 @@ cd Module1_TCO_Analysis && python3 run_analysis.py
   - `ResearchData/` - General research notes, actuals, and reference materials
   - `run_analysis.py` - Main entry point to generate all reports
   - `car_comparison.md` - Human-readable analysis summary
+
 - **Module2_Prospecting/** - Answers "Which specific iX is the best deal?"
-  - `data/` - Vehicle library and individual CPO listing details
-  - `scrapers/` - Tracking scripts
+  - `data/prospects_db.json` - Normalized persistent database tracking market inventory and prices over time
+  - `scrapers/daily_run.sh` - Automated end-to-end execution wrapper
+  - `scrapers/bmw_cpo_scraper.py` - Playwright stealth scraper bypassing bot detection
+  - `scrapers/update_inventory.py` - Upserts daily scraped json into the main prospects database
+  - `reports/generate_report.py` - Generates statistical Market Value graphs via Seaborn
+  - `reports/daily_summary.md` - AI-generated markdown summary containing best value targets and pricing metrics
+
 - `AI_GUIDE.md` - Guide for extending the model
 
 ## Output Files
 
 - **Module 1 Outputs**: `car_ownership_analysis.xlsx`, `cost_difference_matrix.csv`, `monthly_payment_matrix.csv`, `summary_matrix.csv`
+- **Module 2 Outputs**: `value_matrix.png`, `daily_summary.md`
 
 ## Documentation
 
