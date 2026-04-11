@@ -21,8 +21,8 @@
     "name": "Acura RDX",
     "mpg_combined": 24,
     "fuel_type": "regular_87",
-    "gas_price_per_gallon": 3.53,
-    "gas_price_source": "AAA NJ average, March 13 2026",
+    "gas_price_per_gallon": 4.00,
+    "gas_price_source": "User input average",
     "_note": "24 MPG = EPA FWD combined; use 23 MPG if SH-AWD"
   },
   "ev_vehicle": {

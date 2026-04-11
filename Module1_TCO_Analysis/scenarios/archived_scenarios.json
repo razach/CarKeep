@@ -1,0 +1,105 @@
+{
+  "examples": {
+    "BMW_iX_CPO_Purchase": {
+      "type": "purchase",
+      "name": "BMW iX",
+      "msrp": 46995,
+      "values_3yr": [
+        46995,
+        32896,
+        26317,
+        22370
+      ],
+      "loan_term": 72,
+      "interest_rate": 0.0619,
+      "trade_in_incentives": 0,
+      "down_payment": 10000.0,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        400,
+        600,
+        800
+      ],
+      "fuel_monthly": 57.6,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.3
+    },
+    "Polestar_3_Lease": {
+      "type": "lease",
+      "name": "Polestar 3",
+      "msrp": 76600,
+      "values_3yr": [
+        76600,
+        61280,
+        52088,
+        44428
+      ],
+      "down_payment": 5530.0,
+      "refundable_msd": 3500.0,
+      "monthly_payment": 312.0,
+      "lease_term_months": 27,
+      "money_factor": 0.00045,
+      "residual_value": 40598,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        0,
+        0,
+        0
+      ],
+      "fuel_monthly": 45.0,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.3
+    },
+    "BMW_iX_Lease": {
+      "type": "lease",
+      "name": "BMW iX xDrive45",
+      "msrp": 81000,
+      "values_3yr": [
+        81000,
+        60750,
+        49815,
+        43740
+      ],
+      "down_payment": 6044.0,
+      "refundable_msd": 0.0,
+      "disposition_fee": 495.0,
+      "monthly_payment": 621.0,
+      "lease_term_months": 36,
+      "money_factor": 0.0008,
+      "residual_value": 43740,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        0,
+        0,
+        0
+      ],
+      "fuel_monthly": 57.6,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.3
+    },
+    "2024_BMW_iX_Fairfax": {
+      "type": "purchase",
+      "name": "2024 BMW iX xDrive50",
+      "msrp": 47999,
+      "values_3yr": [
+        47999,
+        33599,
+        26879,
+        22559
+      ],
+      "loan_term": 72,
+      "interest_rate": 0.0619,
+      "trade_in_incentives": 0,
+      "down_payment": 10000.0,
+      "insurance_monthly": 168.04,
+      "maintenance_annual": [
+        400,
+        600,
+        800
+      ],
+      "fuel_monthly": 57.6,
+      "property_tax_rate": 0.0457,
+      "pptra_relief": 0.3
+    }
+  }
+}
