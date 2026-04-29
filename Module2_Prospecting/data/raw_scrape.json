@@ -4,30 +4,20 @@
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
     "price": 49498,
-    "miles": 23671,
+    "miles": 23676,
     "dealer": "BMW of Sterling",
     "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF09RCN06281",
-    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,498\n23,671\nBMW of Sterling - 17.9 mi"
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,498\n23,676\nBMW of Sterling - 17.9 mi"
   },
   {
     "vin": "Unknown",
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
     "price": 49498,
-    "miles": 23671,
+    "miles": 23676,
     "dealer": "BMW of Sterling",
     "url": "",
-    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,498\n23,671\nBMW of Sterling - 17.9 mi"
-  },
-  {
-    "vin": "WB523CF07RCN39165",
-    "year_make_model": "2024 BMW iX",
-    "trim": "iX xDrive50",
-    "price": 47989,
-    "miles": 32761,
-    "dealer": "BMW of Sterling",
-    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF07RCN39165",
-    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$47,989\n32,761\nBMW of Sterling - 17.9 mi"
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,498\n23,676\nBMW of Sterling - 17.9 mi"
   },
   {
     "vin": "WB523CF05RCN76523",
@@ -50,34 +40,64 @@
     "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$52,898\n22,794\nBMW of Sterling - 17.9 mi"
   },
   {
-    "vin": "WB523CF03RCN34772",
-    "year_make_model": "2024 BMW iX",
-    "trim": "iX xDrive50",
-    "price": 46598,
-    "miles": 29629,
-    "dealer": "BMW of Sterling",
-    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN34772",
-    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,598\n29,629\nBMW of Sterling - 17.9 mi"
-  },
-  {
     "vin": "WB523CF02RCN04680",
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
     "price": 46989,
-    "miles": 38860,
+    "miles": 38862,
     "dealer": "BMW of Sterling",
     "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN04680",
-    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,989\n38,860\nBMW of Sterling - 17.9 mi"
+    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,989\n38,862\nBMW of Sterling - 17.9 mi"
+  },
+  {
+    "vin": "WB523CF03RCN12786",
+    "year_make_model": "2024 BMW iX",
+    "trim": "iX xDrive50",
+    "price": 47884,
+    "miles": 54504,
+    "dealer": "BMW of Silver Spring",
+    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN12786",
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$47,884\n54,504\nBMW of Silver Spring - 27.1 mi"
   },
   {
     "vin": "WB523CF02RCN03917",
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
-    "price": 48974,
+    "price": 48374,
     "miles": 43309,
     "dealer": "BMW of Silver Spring",
     "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN03917",
-    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$48,974\n43,309\nBMW of Silver Spring - 27.1 mi"
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$48,374\n43,309\nBMW of Silver Spring - 27.1 mi"
+  },
+  {
+    "vin": "WB523CF0XRCN49057",
+    "year_make_model": "2024 BMW iX",
+    "trim": "iX xDrive50",
+    "price": 54789,
+    "miles": 27764,
+    "dealer": "BMW of Annapolis",
+    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF0XRCN49057",
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$54,789\n27,764\nBMW of Annapolis - 46.3 mi"
+  },
+  {
+    "vin": "WB523CF02RCP05172",
+    "year_make_model": "2024 BMW iX",
+    "trim": "iX xDrive50",
+    "price": 50699,
+    "miles": 33950,
+    "dealer": "BMW of Annapolis",
+    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCP05172",
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$50,699\n33,950\nBMW of Annapolis - 46.3 mi"
+  },
+  {
+    "vin": "WB523CF04RCN34635",
+    "year_make_model": "2024 BMW iX",
+    "trim": "iX xDrive50",
+    "price": 46799,
+    "miles": 57432,
+    "dealer": "BMW of Owings Mills",
+    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF04RCN34635",
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$46,799\n57,432\nBMW of Owings Mills - 51.2 mi"
   },
   {
     "vin": "WB523CF01RCN01687",
@@ -87,7 +107,7 @@
     "miles": 26252,
     "dealer": "Union Park BMW",
     "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF01RCN01687",
-    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,999\n26,252\nUnion Park BMW - 113.7 mi"
+    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$49,999\n26,252\nUnion Park BMW - 113.7 mi"
   },
   {
     "vin": "WB523CF00RCR00364",
@@ -120,16 +140,6 @@
     "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$50,754\n32,533\nBMW of Mt. Laurel - 147.4 mi"
   },
   {
-    "vin": "WB523CF02RCN03934",
-    "year_make_model": "2024 BMW iX",
-    "trim": "iX xDrive50",
-    "price": 51409,
-    "miles": 32893,
-    "dealer": "BMW of Mt. Laurel",
-    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN03934",
-    "raw_text": "Contact Dealer for Images\n2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$51,409\n32,893\nBMW of Mt. Laurel - 147.4 mi"
-  },
-  {
     "vin": "WB523CF00RCN69950",
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
@@ -150,16 +160,6 @@
     "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$52,794\n30,327\nBMW of Atlantic City - 150 mi"
   },
   {
-    "vin": "WB523CF03RCN15266",
-    "year_make_model": "2024 BMW iX",
-    "trim": "iX xDrive50",
-    "price": 41999,
-    "miles": 47555,
-    "dealer": "BMW of Bridgewater",
-    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF03RCN15266",
-    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$41,999\n47,555\nBMW of Bridgewater - 189.1 mi"
-  },
-  {
     "vin": "WB523CF04RCN12280",
     "year_make_model": "2024 BMW iX",
     "trim": "iX xDrive50",
@@ -168,15 +168,5 @@
     "dealer": "BMW of Morristown",
     "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF04RCN12280",
     "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$53,496\n35,708\nBMW of Morristown - 204.6 mi"
-  },
-  {
-    "vin": "WB523CF02RCN27036",
-    "year_make_model": "2024 BMW iX",
-    "trim": "iX xDrive50",
-    "price": 45646,
-    "miles": 40164,
-    "dealer": "BMW of Ramsey",
-    "url": "https://www.bmwusa.com/certified-preowned-search/detail/WB523CF02RCN27036",
-    "raw_text": "2024 BMW iX\niX xDrive50\nDEALER PRICE\nMILES\n$45,646\n40,164\nBMW of Ramsey - 229.6 mi"
   }
 ]

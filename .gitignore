@@ -25,7 +25,11 @@ prototype_results/
 .idea/
 
 # Personal/sensitive files
+*.pdf
 Actuals/
 Insurance/
+Module4_Paperwork/Documents/Car Data/
+Module4_Paperwork/Documents/Finance/
 bmw_loan.md
 bmw_loan_gray.md
+eng.traineddata
